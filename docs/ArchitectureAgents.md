@@ -1,0 +1,42 @@
+# Architecture Agents
+> **Platform:** Android (Jetpack Compose)
+> **Architecture:** MVI + Clean Architecture
+> **Domain:** AI Smart Study Planner
+
+---
+
+## 1. System Agents (MVI Actors)
+
+The presentation layer operates on a unidirectional data flow governed by specific MVI agents. These agents ensure a predictable state machine for complex screens like the Dashboard and the Active Learning Study Room.
+
+*   **State Manager (The Single Source of Truth):** Holds the mutually exclusive `ViewState` and persists critical data across state changes. 
+*   **Intent Processor (User Actions & System Triggers):** Acts as the ingestion engine for all UI interactions. It maps intents (e.g., `SearchSubmitted`, `LoadInitialData`) to specific Domain Use Cases.
+*   **Effect Dispatcher (One-Off Side Effects):** Handles transient UI events that should not be persisted in the state, such as navigation routing, displaying Snackbars, or triggering one-time Toasts.
+
+## 2. Domain & Data Agents (App Flow Coordinators)
+
+To prevent repository bloat, data coordination is handled per *App Flow* rather than per feature. 
+
+*   **App Flow Repositories:** Coordinators that manage data operations for a complete user journey (e.g., `AuthenticationFlowRepository`, `CourseManagementFlowRepository`). They orchestrate multiple data sources to serve the domain layer.
+*   **Use Case Interactors:** Granular, single-responsibility agents residing in the Domain layer. They execute specific business rules, such as validating a user's study capacity parameters or executing a custom exception mapping (e.g., `AuthException`, `NetworkException`).
+
+## 3. AI & Business Logic Agents
+
+The AI Smart Study Planner relies on specialized intelligent agents to handle dynamic scheduling and contextual learning[cite: 2].
+
+### Dynamic Roadmap Engine
+This algorithmic agent recalculates and reschedules remaining tasks to ensure adequate preparation time[cite: 2]. 
+
+| Trigger | Action | Result |
+| :--- | :--- | :--- |
+| Injection of upcoming assessment (e.g., pop quiz)[cite: 2] | Increases priority weight of the corresponding course[cite: 2] | Reactive rescheduling of the semester timeline[cite: 2] |
+
+### Contextual AI Assistant
+This active learning agent operates within the Study Room to provide grounded explanations without breaking user focus[cite: 2].
+
+| Capability | Constraint | Output |
+| :--- | :--- | :--- |
+| Pedagogical Summaries | Based solely on uploaded materials[cite: 2] | Auto-generated, simplified topic breakdowns[cite: 2] |
+| Deep-dive Q&A | Disabled for Custom Courses (Online/External)[cite: 2] | Contextual answers to reduce cognitive load[cite: 2] |
+
+---
