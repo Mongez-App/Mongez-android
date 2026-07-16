@@ -1,7 +1,7 @@
 # Architecture Layers & Integration
 > **Platform:** Android (Jetpack Compose)
 > **Architecture:** Multi-Module + Clean Architecture
-> **Core Tech Stack:** Ktor (Network), Koin (DI)
+> **Core Tech Stack:** Retrofit (Network), Dagger Hilt (DI)
 
 ---
 
@@ -11,10 +11,10 @@ The project architecture strictly separates concerns into independent modules. T
 
 | Module Layer | Responsibility | Dependencies |
 | :--- | :--- | :--- |
-| **App** | Application class, Koin DI initialization, Navigation host. | Feature modules, Core modules |
+| **App** | Application class, Hilt DI initialization, Navigation host. | Feature modules, Core modules |
 | **Presentation (Features)** | MVI Contracts (State, Intent, Effect), UI rendering. | Domain, Design System |
-| **Domain** | Pure Kotlin business logic, Koin modules, `Result` wrapper, custom exceptions. | None (No Android dependencies) |
-| **Data** | Mappers, data sources, Ktor network setup, `safeApi` utility, Koin DI. | Domain |
+| **Domain** | Pure Kotlin business logic, Hilt modules, `Result` wrapper, custom exceptions. | None (No Android dependencies) |
+| **Data** | Mappers, data sources, Retrofit network setup, `safeApi` utility, Hilt DI. | Domain |
 | **Design System** | Single source of truth for all visual elements. | Compose Foundation |
 
 ## 2. Layer Specifications
@@ -40,18 +40,18 @@ The Domain layer is the pure Kotlin core of the application, entirely agnostic o
 *   Contains Use Cases representing core business rules (e.g., calculating study streaks or formatting pedagogical summaries).
 *   Defines Data Classes representing core domain models (`Course`, `StudySession`, `RoadmapEvent`).
 *   Defines App Flow Repository interfaces to be implemented by the Data layer.
-*   Houses Domain Koin DI modules and Custom Exceptions (`AppException`, `AuthException`, `NetworkException`).
+*   Houses Domain Hilt DI modules and Custom Exceptions (`AppException`, `AuthException`, `NetworkException`).
 
 ### 2.3 The Data Layer
-The Data layer coordinates the retrieval, caching, and mapping of raw data into Domain models utilizing Ktor for remote communication.
+The Data layer coordinates the retrieval, caching, and mapping of raw data into Domain models utilizing Retrofit for remote communication.
 
 *   Implements the App Flow Repositories defined in the Domain layer.
-*   Houses **Ktor** HTTP client configurations and remote endpoints.
+*   Houses **Retrofit** HTTP client configurations and remote endpoints.
 *   Implements network safety utilities:
-    *   `safeApi`: An extension function responsible for wrapping all Ktor API calls, ensuring safe execution.
-    *   `handleException`: An extension function utilized within `safeApi` to map Ktor network errors and timeouts into domain-specific Custom Exceptions (`NetworkException`, `AuthException`).
+    *   `safeApi`: An extension function responsible for wrapping all Retrofit API calls, ensuring safe execution.
+    *   `handleException`: An extension function utilized within `safeApi` to map Retrofit network errors and timeouts into domain-specific Custom Exceptions (`NetworkException`, `AuthException`).
 *   Houses Data Transfer Object (DTO) Mappers to convert raw network/database responses into pure Domain models.
-*   Contains Data Koin DI modules.
+*   Contains Data Hilt DI modules.
 
 ### 2.4 The Design System Layer
 The Design System prevents UI duplication and enforces consistency. It is the single source of truth for the app's visual identity.
@@ -62,3 +62,13 @@ The Design System prevents UI duplication and enforces consistency. It is the si
 *   Feature modules must never define hardcoded colors, padding, or custom text styles.
 
 ---
+
+## 3. Development Guidelines
+
+### Dependency Management
+When adding a new dependency, it must be added to the version catalog file (`gradle/libs.versions.toml`) first, and then referenced in the appropriate `build.gradle.kts` file.
+
+### Coding Conventions
+When using a class, do not use its fully qualified name inline. Always import the class and use its simple name.
+*   **Do:** `MutableStateFlow state = MutableStateFlow("")`
+*   **Don't:** `kotlinx.coroutines.flow.MutableStateFlow state = kotlinx.coroutines.flow.MutableStateFlow("")`
