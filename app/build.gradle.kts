@@ -36,4 +36,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    //Splash Libirary
+    implementation(libs.androidx.core.splashscreen)
 }

@@ -24,18 +24,31 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Root Activity — applies [MongezTheme] and sets up the main scaffold
  * with bottom navigation.
  */
 class MainActivity : ComponentActivity() {
+    private var isInitialStateLoading = true
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        splashScreen.setKeepOnScreenCondition {
+            isInitialStateLoading
+        }
+        lifecycleScope.launch {
+            delay(1500) // Replace with actual loading logic
+            isInitialStateLoading = false
+        }
         enableEdgeToEdge()
         setContent {
             MongezTheme {
