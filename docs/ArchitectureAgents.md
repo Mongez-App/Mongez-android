@@ -40,3 +40,13 @@ This active learning agent operates within the Study Room to provide grounded ex
 | Deep-dive Q&A | Disabled for Custom Courses (Online/External)[cite: 2] | Contextual answers to reduce cognitive load[cite: 2] |
 
 ---
+
+## 4. Development Guidelines
+
+### Dependency Management
+When adding a new dependency, it must be added to the version catalog file (`gradle/libs.versions.toml`) first, and then referenced in the appropriate `build.gradle.kts` file.
+
+### Coding Conventions
+When using a class, do not use its fully qualified name inline. Always import the class and use its simple name.
+*   **Do:** `MutableStateFlow state = MutableStateFlow("")`
+*   **Don't:** `kotlinx.coroutines.flow.MutableStateFlow state = kotlinx.coroutines.flow.MutableStateFlow("")`
