@@ -47,6 +47,10 @@ This active learning agent operates within the Study Room to provide grounded ex
 When adding a new dependency, it must be added to the version catalog file (`gradle/libs.versions.toml`) first, and then referenced in the appropriate `build.gradle.kts` file.
 
 ### Coding Conventions
-When using a class, do not use its fully qualified name inline. Always import the class and use its simple name.
-*   **Do:** `MutableStateFlow state = MutableStateFlow("")`
-*   **Don't:** `kotlinx.coroutines.flow.MutableStateFlow state = kotlinx.coroutines.flow.MutableStateFlow("")`
+- **No Fully Qualified Names (FQNs):** When using a class, do not use its fully qualified name inline. Always import the class and use its simple name.
+  *   **Do:** `private fun navigateToHome(user: User)`
+  *   **Don't:** `private fun navigateToHome(user: com.iti.mongez.domain.auth.model.User)`
+- **Modern UI Components:** Always use the most up-to-date and modern Jetpack Compose APIs. Avoid using deprecated or obsolete composables.
+  *   **Do:** `HorizontalDivider(...)`
+  *   **Don't:** `Divider(...)` (Deprecated)
+- **Component Reusability:** When creating generic UI elements (like `SocialButton`), place them directly in the `design_system` module rather than duplicating them locally inside presentation screens.

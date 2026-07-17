@@ -116,7 +116,7 @@ fun AppTextField(
                 focusedTextColor = Theme.colorScheme.input.text,
                 unfocusedTextColor = Theme.colorScheme.input.text,
                 disabledTextColor = Theme.colorScheme.text.disabled,
-                focusedBorderColor = Theme.colorScheme.input.focusedBorder,
+                focusedBorderColor = Theme.colorScheme.input.focusedBorder.copy(alpha = 0.5f),
                 unfocusedBorderColor = Theme.colorScheme.input.border,
                 errorBorderColor = Theme.colorScheme.input.errorBorder,
                 disabledBorderColor = Theme.colorScheme.border.disabled,

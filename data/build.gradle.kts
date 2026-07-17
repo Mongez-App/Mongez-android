@@ -1,5 +1,6 @@
 plugins {
     id("mongez.android.library")
+    id("mongez.android.hilt")
 }
 
 android {

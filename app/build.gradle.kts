@@ -1,6 +1,7 @@
 plugins {
     id("mongez.android.application")
     id("mongez.compose")
+    id("mongez.android.hilt")
 }
 
 android {

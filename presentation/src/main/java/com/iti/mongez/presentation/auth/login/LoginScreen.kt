@@ -1,0 +1,265 @@
+package com.iti.mongez.presentation.auth.login
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.iti.mongez.designsystem.components.button.AppButton
+import com.iti.mongez.designsystem.components.button.SocialButton
+import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
+import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
+import com.iti.mongez.designsystem.components.textfield.AppPasswordTextField
+import com.iti.mongez.designsystem.components.textfield.AppTextField
+import com.iti.mongez.designsystem.theme.Theme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.iti.mongez.designsystem.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
+    onNavigateToHome: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
+    onShowSnackbar: (String) -> Unit
+) {
+    val state by viewModel.state.collectAsState()
+    var topErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is LoginEffect.NavigateToHome -> onNavigateToHome()
+                LoginEffect.NavigateToSignUp -> onNavigateToSignUp()
+                LoginEffect.NavigateToForgotPassword -> onShowSnackbar("Forgot password clicked")
+                is LoginEffect.ShowError -> {
+                    topErrorMessage = effect.message
+                    delay(3000)
+                    topErrorMessage = null
+                }
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LoginContent(
+            state = state,
+            onIntent = viewModel::onIntent
+        )
+        
+        AnimatedVisibility(
+            visible = topErrorMessage != null,
+            enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(Theme.spacing.md)
+                .padding(top = 32.dp)
+        ) {
+            topErrorMessage?.let { message ->
+                AppSnackbarContent(
+                    message = message,
+                    type = AppSnackbarType.Error
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoginContent(
+    state: LoginState,
+    onIntent: (LoginIntent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Theme.colorScheme.surface.background)
+            .padding(Theme.spacing.xl)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(Theme.spacing.xxl))
+
+        // Header
+        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(end = Theme.spacing.md, top = 4.dp)
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_sparkle),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(Theme.colorScheme.border.secondary.copy(alpha = 0.5f))
+                )
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "Welcome back",
+                    style = Theme.typography.headline.medium.copy(fontWeight = FontWeight.Bold),
+                    color = Theme.colorScheme.text.primary
+                )
+                Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                Text(
+                    text = "Log in to continue your\nstudy journey",
+                    style = Theme.typography.body.large,
+                    color = Theme.colorScheme.text.secondary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Theme.spacing.xxl))
+
+        // Form
+        AppTextField(
+            value = state.email,
+            onValueChange = { onIntent(LoginIntent.OnEmailChanged(it)) },
+            label = "Email",
+            placeholder = "youremail@example.com",
+            leadingIcon = Icons.Outlined.Email, // Added email icon
+            isError = state.emailError != null,
+            errorMessage = state.emailError
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing.lg))
+
+        AppPasswordTextField(
+            value = state.password,
+            onValueChange = { onIntent(LoginIntent.OnPasswordChanged(it)) },
+            label = "Password",
+            placeholder = "••••••••••••", // Updated placeholder to match dots in image
+            leadingIcon = Icons.Outlined.Lock, // Added lock icon
+            imeAction = ImeAction.Done,
+            isError = state.passwordError != null,
+            errorMessage = state.passwordError
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing.md))
+
+        // Forgot Password
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Text(
+                text = "Forgot Password?",
+                style = Theme.typography.label.large,
+                color = Theme.colorScheme.brand.primary,
+                modifier = Modifier.clickable { onIntent(LoginIntent.OnForgotPasswordClicked) }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(Theme.spacing.xl))
+
+        // Continue Button
+        AppButton(
+            text = "Continue",
+            onClick = { onIntent(LoginIntent.OnLoginClicked) },
+            isLoading = state.isLoading,
+            fullWidth = true
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing.xl))
+
+        // OR Divider
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = Theme.colorScheme.border.primary.copy(alpha = 0.5f)
+            )
+            Text(
+                text = "OR",
+                modifier = Modifier.padding(horizontal = Theme.spacing.md),
+                style = Theme.typography.body.medium,
+                color = Theme.colorScheme.text.tertiary
+            )
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = Theme.colorScheme.border.primary.copy(alpha = 0.5f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(Theme.spacing.xl))
+
+        // Social Buttons
+        SocialButton(
+            text = "Continue as Guest",
+            icon = Icons.Outlined.Person,
+            onClick = { onIntent(LoginIntent.OnGuestClicked) }
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing.md))
+
+        SocialButton(
+            text = "Sign in with Google",
+            icon = ImageVector.vectorResource(id = R.drawable.ic_google),
+            onClick = { onIntent(LoginIntent.OnGoogleSignInClicked) }
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(Theme.spacing.xl))
+
+        // Sign Up Link
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Don't have an account? ",
+                style = Theme.typography.body.medium,
+                color = Theme.colorScheme.text.secondary
+            )
+            Text(
+                text = "Sign up",
+                style = Theme.typography.label.large,
+                color = Theme.colorScheme.brand.primary,
+                modifier = Modifier.clickable { onIntent(LoginIntent.OnSignUpClicked) }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(Theme.spacing.xl))
+    }
+}

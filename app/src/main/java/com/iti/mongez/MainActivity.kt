@@ -30,6 +30,8 @@ import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.auth.login.LoginScreen
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -37,6 +39,7 @@ import kotlinx.coroutines.launch
  * Root Activity — applies [MongezTheme] and sets up the main scaffold
  * with bottom navigation.
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var isInitialStateLoading = true
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +55,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MongezTheme {
-                MainScreen()
+                LoginScreen(
+                    onNavigateToHome = {},
+                    onNavigateToSignUp = {},
+                    onShowSnackbar = {},
+                )
             }
         }
     }
