@@ -12,7 +12,6 @@ dependencies {
     implementation(project(":design_system"))
 
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

@@ -85,6 +85,11 @@ fun AppButton(
                 modifier = heightModifier,
                 enabled = enabled && !isLoading,
                 shape = shape,
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = if (enabled && !isLoading) Theme.elevation.sm else Theme.elevation.none,
+                    pressedElevation = Theme.elevation.xs,
+                    disabledElevation = Theme.elevation.none,
+                ),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = bgColor,
                     contentColor = contentColor,
