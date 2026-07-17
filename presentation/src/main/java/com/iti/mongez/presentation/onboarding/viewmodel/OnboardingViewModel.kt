@@ -40,24 +40,18 @@ class OnboardingViewModel : ViewModel() {
     private fun loadPages() {
         val pages = listOf(
             OnboardingPage(
-                title = "Study without the stress",
-                description = "AI creates your perfect study\n" +
-                        "schedule automatically.",
+                titleRes = R.string.onboarding_page1_title,
+                descriptionRes = R.string.onboarding_page1_description,
                 imageRes = R.drawable.onboarding_1
             ),
             OnboardingPage(
-                title = "Your time, perfectly\n" +
-                        "optimized",
-                description = "Sync your calendar and let AI fit\n" +
-                        "studying into your free time.",
+                titleRes = R.string.onboarding_page2_title,
+                descriptionRes = R.string.onboarding_page2_description,
                 imageRes = R.drawable.onboarding_2
             ),
             OnboardingPage(
-                title = "Learn with your\n" +
-                        "personal AI tutor",
-                description = "Summaries, explanations, and\n" +
-                        "smart study sessions—all in one\n" +
-                        "place.",
+                titleRes = R.string.onboarding_page3_title,
+                descriptionRes = R.string.onboarding_page3_description,
                 imageRes = R.drawable.onboarding_3
             )
         )

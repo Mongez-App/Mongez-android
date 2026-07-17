@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Onboarding Page 1 -->
+    <string name="onboarding_page1_title">ادرس بدون توتر</string>
+    <string name="onboarding_page1_description">الذكاء الاصطناعي ينشئ جدولك الدراسي المثالي\nتلقائيًا.</string>
+
+    <!-- Onboarding Page 2 -->
+    <string name="onboarding_page2_title">وقتك، محسّن\nبشكل مثالي</string>
+    <string name="onboarding_page2_description">قم بمزامنة تقويمك ودع الذكاء الاصطناعي ينسق\nدراستك في وقت فراغك.</string>
+
+    <!-- Onboarding Page 3 -->
+    <string name="onboarding_page3_title">تعلم مع معلمك\nالخاص بالذكاء الاصطناعي</string>
+    <string name="onboarding_page3_description">ملخصات، تفسيرات، وجلسات\nدراسة ذكية—كل ذلك في مكان\nواحد.</string>
+
+    <!-- Onboarding Actions -->
+    <string name="onboarding_skip">تخطي</string>
+    <string name="onboarding_previous">السابق</string>
+    <string name="onboarding_next">التالي</string>
+    <string name="onboarding_get_started">ابدأ الآن</string>
+    <string name="onboarding_illustration_placeholder">توضيح</string>
+</resources>

@@ -1,5 +1,8 @@
 package com.iti.mongez.presentation.onboarding.uiState
 
+import androidx.annotation.StringRes
+import androidx.annotation.DrawableRes
+
 data class OnboardingUiState(
     val isLoading: Boolean = false,
     val currentPageIndex: Int = 0,
@@ -8,7 +11,7 @@ data class OnboardingUiState(
 )
 
 data class OnboardingPage(
-    val title: String,
-    val description: String,
-    val imageRes: Int? = null
+    @StringRes val titleRes: Int,
+    @StringRes val descriptionRes: Int,
+    @DrawableRes val imageRes: Int? = null
 )

@@ -9,10 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingPage
+import com.iti.mongez.presentation.R
 
 @Composable
 fun OnboardingPageItem(
@@ -41,7 +43,7 @@ fun OnboardingPageItem(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Illustration",
+                    text = stringResource(id = R.string.onboarding_illustration_placeholder),
                     style = Theme.typography.body.medium,
                     color = Theme.colorScheme.text.secondary
                 )
@@ -51,7 +53,7 @@ fun OnboardingPageItem(
         Spacer(modifier = Modifier.height(Theme.spacing.giant))
 
         Text(
-            text = page.title,
+            text = stringResource(id = page.titleRes),
             style = Theme.typography.headline.medium,
             color = Theme.colorScheme.text.primary,
             textAlign = TextAlign.Center
@@ -60,7 +62,7 @@ fun OnboardingPageItem(
         Spacer(modifier = Modifier.height(Theme.spacing.md))
 
         Text(
-            text = page.description,
+            text = stringResource(id = page.descriptionRes),
             style = Theme.typography.body.large,
             color = Theme.colorScheme.text.secondary,
             textAlign = TextAlign.Center
