@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.iti.mongez.designsystem.foundation.color.AppColorScheme
@@ -20,6 +21,9 @@ import com.iti.mongez.designsystem.foundation.motion.AppMotion
 import com.iti.mongez.designsystem.foundation.radius.AppRadius
 import com.iti.mongez.designsystem.foundation.spacing.AppSpacing
 import com.iti.mongez.designsystem.foundation.typography.AppTypography
+import com.iti.mongez.designsystem.foundation.typography.IbmPlexArabicFontFamily
+import com.iti.mongez.designsystem.foundation.typography.PoppinsFontFamily
+import com.iti.mongez.designsystem.foundation.typography.asMaterialTypography
 import com.iti.mongez.designsystem.foundation.typography.defaultAppTypography
 
 // ──────────────────────────────────────────────────────────────
@@ -48,8 +52,12 @@ fun MongezTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
+    val configuration = LocalConfiguration.current
+    val isArabic = configuration.locales[0].language == "ar"
+    val fontFamily = if (isArabic) IbmPlexArabicFontFamily else PoppinsFontFamily
+
     val appColorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-    val appTypography = defaultAppTypography()
+    val appTypography = defaultAppTypography(fontFamily)
 
     // Bridge to Material 3 for components that still read MaterialTheme
     val materialColorScheme = if (darkTheme) {
@@ -97,6 +105,7 @@ fun MongezTheme(
     ) {
         MaterialTheme(
             colorScheme = materialColorScheme,
+            typography = appTypography.asMaterialTypography(),
             content = content,
         )
     }

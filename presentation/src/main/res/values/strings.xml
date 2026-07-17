@@ -2,15 +2,15 @@
 <resources>
     <!-- Onboarding Page 1 -->
     <string name="onboarding_page1_title">Study without the stress</string>
-    <string name="onboarding_page1_description">AI creates your perfect study\nschedule automatically.</string>
+    <string name="onboarding_page1_description">AI creates your perfect study schedule automatically.</string>
 
     <!-- Onboarding Page 2 -->
-    <string name="onboarding_page2_title">Your time, perfectly\noptimized</string>
-    <string name="onboarding_page2_description">Sync your calendar and let AI fit\nstudying into your free time.</string>
+    <string name="onboarding_page2_title">Your time, perfectly optimized</string>
+    <string name="onboarding_page2_description">Sync your calendar and let AI fit studying into your free time.</string>
 
     <!-- Onboarding Page 3 -->
-    <string name="onboarding_page3_title">Learn with your\npersonal AI tutor</string>
-    <string name="onboarding_page3_description">Summaries, explanations, and\nsmart study sessions—all in one\nplace.</string>
+    <string name="onboarding_page3_title">Learn with your personal AI tutor</string>
+    <string name="onboarding_page3_description">Summaries, explanations, and smart study sessions—all in one place.</string>
 
     <!-- Onboarding Actions -->
     <string name="onboarding_skip">Skip</string>

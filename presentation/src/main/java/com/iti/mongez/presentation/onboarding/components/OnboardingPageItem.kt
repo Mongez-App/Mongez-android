@@ -24,7 +24,7 @@ fun OnboardingPageItem(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(Theme.spacing.xl),
+            .padding(Theme.spacing.lg),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

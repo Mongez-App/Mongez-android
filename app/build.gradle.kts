@@ -1,6 +1,8 @@
 plugins {
     id("mongez.android.application")
     id("mongez.compose")
+    alias(libs.plugins.hilt)
+    id("kotlin-kapt")
 }
 
 android {
@@ -20,6 +22,10 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(project(":design_system"))
     implementation(project(":domain"))
@@ -30,6 +36,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -40,4 +47,7 @@ dependencies {
 
     //Splash Libirary
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }

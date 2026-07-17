@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -38,27 +39,43 @@ import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.domain.core.result.Result
+import com.iti.mongez.domain.onboarding.usecase.CheckOnboardingStatusUseCase
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import com.iti.mongez.presentation.onboarding.viewmodel.OnboardingViewModel
-import kotlinx.coroutines.delay
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Root Activity — applies [MongezTheme] and sets up the main scaffold
  * with navigation.
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private var isInitialStateLoading = true
+
+    @Inject
+    lateinit var checkOnboardingStatusUseCase: CheckOnboardingStatusUseCase
+
+    private var isInitialStateLoading by mutableStateOf(true)
+    private var startDestination by mutableStateOf("onboarding")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
         splashScreen.setKeepOnScreenCondition {
             isInitialStateLoading
         }
+
         lifecycleScope.launch {
-            delay(1500) // Replace with actual loading logic
+            val result = checkOnboardingStatusUseCase()
+            if (result is Result.Success && result.data) {
+                startDestination = "main"
+            }
             isInitialStateLoading = false
         }
+
         enableEdgeToEdge()
         setContent {
             MongezTheme {
@@ -66,28 +83,30 @@ class MainActivity : ComponentActivity() {
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
 
-                NavHost(
-                    navController = navController,
-                    startDestination = "onboarding"
-                ) {
-                    composable("onboarding") {
-                        val onboardingViewModel: OnboardingViewModel = viewModel()
-                        OnboardingScreen(
-                            viewModel = onboardingViewModel,
-                            onNavigateToHome = {
-                                navController.navigate("main") {
-                                    popUpTo("onboarding") { inclusive = true }
+                if (!isInitialStateLoading) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination
+                    ) {
+                        composable("onboarding") {
+                            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+                            OnboardingScreen(
+                                viewModel = onboardingViewModel,
+                                onNavigateToHome = {
+                                    navController.navigate("main") {
+                                        popUpTo("onboarding") { inclusive = true }
+                                    }
+                                },
+                                onShowSnackbar = { message ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(message)
+                                    }
                                 }
-                            },
-                            onShowSnackbar = { message ->
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(message)
-                                }
-                            }
-                        )
-                    }
-                    composable("main") {
-                        MainScreen(snackbarHostState)
+                            )
+                        }
+                        composable("main") {
+                            MainScreen(snackbarHostState)
+                        }
                     }
                 }
             }

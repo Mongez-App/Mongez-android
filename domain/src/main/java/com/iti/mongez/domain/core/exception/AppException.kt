@@ -5,6 +5,6 @@ package com.iti.mongez.domain.core.exception
  */
 sealed class AppException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
-class AuthException(message: String) : AppException(message)
-class NetworkException(message: String) : AppException(message)
-class UnknownException(message: String) : AppException(message)
+class AuthException(message: String, cause: Throwable? = null) : AppException(message, cause)
+class NetworkException(message: String, cause: Throwable? = null) : AppException(message, cause)
+class UnknownException(message: String, cause: Throwable? = null) : AppException(message, cause)

@@ -7,6 +7,8 @@ import com.iti.mongez.presentation.onboarding.uiState.OnboardingEffect
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingPage
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingUiState
 import com.iti.mongez.presentation.R
+import com.iti.mongez.domain.onboarding.usecase.CompleteOnboardingUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,8 +16,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class OnboardingViewModel : ViewModel() {
+@HiltViewModel
+class OnboardingViewModel @Inject constructor(
+    private val completeOnboardingUseCase: CompleteOnboardingUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
     val uiState: StateFlow<OnboardingUiState> = _uiState.asStateFlow()
@@ -72,13 +78,16 @@ class OnboardingViewModel : ViewModel() {
         if (currentState.isLastPage) {
             navigateToHome()
         } else {
-            // Logic to move to next page will be handled by PagerState in UI, 
-            // but we can update state if needed.
+            viewModelScope.launch {
+                _effect.emit(OnboardingEffect.ScrollToNextPage)
+            }
         }
     }
 
     private fun navigateToHome() {
         viewModelScope.launch {
+            // Save onboarding completion state in DataStore via UseCase
+            completeOnboardingUseCase()
             _effect.emit(OnboardingEffect.NavigateToHome)
         }
     }

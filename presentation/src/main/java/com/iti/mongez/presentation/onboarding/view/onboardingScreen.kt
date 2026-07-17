@@ -3,6 +3,7 @@ package com.iti.mongez.presentation.onboarding.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,18 +25,28 @@ fun OnboardingScreen(
     onShowSnackbar: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { state.onboardingPages.size })
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is OnboardingEffect.NavigateToHome -> onNavigateToHome()
                 is OnboardingEffect.ShowSnackbar -> onShowSnackbar(effect.message)
+                is OnboardingEffect.ScrollToNextPage -> {
+                    scope.launch {
+                        if (pagerState.currentPage < pagerState.pageCount - 1) {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
+                    }
+                }
             }
         }
     }
 
     OnboardingContent(
         state = state,
+        pagerState = pagerState,
         onIntent = viewModel::processIntent
     )
 }
@@ -43,9 +54,9 @@ fun OnboardingScreen(
 @Composable
 private fun OnboardingContent(
     state: OnboardingUiState,
+    pagerState: PagerState,
     onIntent: (OnboardingIntent) -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { state.onboardingPages.size })
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState.currentPage) {
@@ -86,13 +97,7 @@ private fun OnboardingContent(
         OnboardingActions(
             isFirstPage = pagerState.currentPage == 0,
             isLastPage = state.isLastPage,
-            onNextClick = {
-                scope.launch {
-                    if (pagerState.currentPage < state.onboardingPages.size - 1) {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                    }
-                }
-            },
+            onNextClick = { onIntent(OnboardingIntent.OnNextClicked) },
             onBackClick = {
                 scope.launch {
                     if (pagerState.currentPage > 0) {
