@@ -8,6 +8,8 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin)
+    compileOnly(libs.hilt.android.plugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -31,6 +33,10 @@ gradlePlugin {
         register("kotlinLibrary") {
             id = "mongez.kotlin.library"
             implementationClass = "com.iti.mongez.KotlinLibraryConventionPlugin"
+        }
+        register("androidHilt") {
+            id = "mongez.android.hilt"
+            implementationClass = "com.iti.mongez.AndroidHiltConventionPlugin"
         }
     }
 }

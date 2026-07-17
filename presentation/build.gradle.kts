@@ -1,7 +1,6 @@
 plugins {
     id("mongez.android.library.compose")
-    alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    id("mongez.android.hilt")
 }
 
 android {
@@ -13,7 +12,6 @@ dependencies {
     implementation(project(":design_system"))
 
     implementation(libs.androidx.navigation.compose)
-    
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

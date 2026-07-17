@@ -1,7 +1,5 @@
 package com.iti.mongez.domain.onboarding.repository
-
-import com.iti.mongez.domain.core.result.Result
-
+import com.iti.mongez.domain.core.Result
 /**
  * Interface to be implemented by the Data layer (e.g., DataStore implementation).
  */

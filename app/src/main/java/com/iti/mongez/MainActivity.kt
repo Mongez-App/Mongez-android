@@ -30,8 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,11 +39,11 @@ import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
-import com.iti.mongez.domain.core.result.Result
+import dagger.hilt.android.AndroidEntryPoint
+import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.onboarding.usecase.CheckOnboardingStatusUseCase
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import com.iti.mongez.presentation.onboarding.viewmodel.OnboardingViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -82,7 +82,6 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
-
                 if (!isInitialStateLoading) {
                     NavHost(
                         navController = navController,

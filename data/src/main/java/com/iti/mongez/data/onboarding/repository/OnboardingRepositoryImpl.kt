@@ -1,10 +1,10 @@
 package com.iti.mongez.data.onboarding.repository
 
 import com.iti.mongez.data.onboarding.source.OnboardingLocalDataSource
-import com.iti.mongez.domain.core.exception.UnknownException
-import com.iti.mongez.domain.core.result.Result
 import com.iti.mongez.domain.onboarding.repository.OnboardingRepository
 import javax.inject.Inject
+import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.core.exceptions.AppException
 
 class OnboardingRepositoryImpl @Inject constructor(
     private val localDataSource: OnboardingLocalDataSource
@@ -15,7 +15,7 @@ class OnboardingRepositoryImpl @Inject constructor(
             localDataSource.setOnboardingCompleted()
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Failure(UnknownException("Failed to save onboarding state", e))
+            Result.Failure(AppException.UnknownException(message = "Failed to save onboarding state", e))
         }
     }
 
@@ -24,7 +24,7 @@ class OnboardingRepositoryImpl @Inject constructor(
             val isCompleted = localDataSource.isOnboardingCompleted()
             Result.Success(isCompleted)
         } catch (e: Exception) {
-            Result.Failure(UnknownException("Failed to read onboarding state", e))
+            Result.Failure(AppException.UnknownException(message = "Failed to read onboarding state", e))
         }
     }
 }

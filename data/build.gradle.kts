@@ -1,7 +1,6 @@
 plugins {
     id("mongez.android.library")
-    alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    id("mongez.android.hilt")
 }
 
 android {
@@ -10,9 +9,5 @@ android {
 
 dependencies {
     implementation(project(":domain"))
-    
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    
     implementation(libs.androidx.datastore.preferences)
 }

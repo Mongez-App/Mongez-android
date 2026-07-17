@@ -1,8 +1,7 @@
 plugins {
     id("mongez.android.application")
     id("mongez.compose")
-    alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    id("mongez.android.hilt")
 }
 
 android {
@@ -20,10 +19,6 @@ android {
             isMinifyEnabled = false
         }
     }
-}
-
-kapt {
-    correctErrorTypes = true
 }
 
 dependencies {
@@ -47,7 +42,4 @@ dependencies {
 
     //Splash Libirary
     implementation(libs.androidx.core.splashscreen)
-
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 }
