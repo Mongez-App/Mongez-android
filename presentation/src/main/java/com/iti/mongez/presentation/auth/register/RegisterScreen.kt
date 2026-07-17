@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,8 @@ import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.theme.Theme
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import com.iti.mongez.designsystem.R
+import com.iti.mongez.designsystem.R as DesignSystemR
+import com.iti.mongez.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -114,7 +116,7 @@ private fun RegisterContent(
                 modifier = Modifier.padding(end = Theme.spacing.md, top = 4.dp)
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_sparkle),
+                    imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_sparkle),
                     contentDescription = null,
                     tint = Color.Unspecified,
                     modifier = Modifier.size(24.dp)
@@ -132,13 +134,13 @@ private fun RegisterContent(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Create account",
+                    text = stringResource(R.string.create_account),
                     style = Theme.typography.headline.medium.copy(fontWeight = FontWeight.Bold),
                     color = Theme.colorScheme.text.primary
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.xs))
                 Text(
-                    text = "Join us and start your\nlearning journey",
+                    text = stringResource(R.string.register_subtitle),
                     style = Theme.typography.body.large,
                     color = Theme.colorScheme.text.secondary
                 )
@@ -151,8 +153,8 @@ private fun RegisterContent(
         AppTextField(
             value = state.firstName,
             onValueChange = { onIntent(RegisterIntent.OnFirstNameChanged(it)) },
-            label = "First Name",
-            placeholder = "Mouhamad",
+            label = stringResource(R.string.first_name_label),
+            placeholder = stringResource(R.string.first_name_placeholder),
             leadingIcon = Icons.Outlined.Person,
             isError = state.firstNameError != null,
             errorMessage = state.firstNameError
@@ -163,9 +165,9 @@ private fun RegisterContent(
         AppTextField(
             value = state.email,
             onValueChange = { onIntent(RegisterIntent.OnEmailChanged(it)) },
-            label = "Email",
+            label = stringResource(R.string.email_label),
             leadingIcon = Icons.Outlined.Email,
-            placeholder = "youremail@example.com",
+            placeholder = stringResource(R.string.email_placeholder),
             isError = state.emailError != null,
             errorMessage = state.emailError
         )
@@ -175,8 +177,8 @@ private fun RegisterContent(
         AppPasswordTextField(
             value = state.password,
             onValueChange = { onIntent(RegisterIntent.OnPasswordChanged(it)) },
-            label = "Password",
-            placeholder = "••••••••••••",
+            label = stringResource(R.string.password_label),
+            placeholder = stringResource(R.string.password_placeholder),
             leadingIcon = Icons.Outlined.Lock,
             imeAction = ImeAction.Next,
             isError = state.passwordError != null,
@@ -188,8 +190,8 @@ private fun RegisterContent(
         AppPasswordTextField(
             value = state.confirmPassword,
             onValueChange = { onIntent(RegisterIntent.OnConfirmPasswordChanged(it)) },
-            label = "Confirm Password",
-            placeholder = "••••••••••••",
+            label = stringResource(R.string.confirm_password_label),
+            placeholder = stringResource(R.string.password_placeholder),
             leadingIcon = Icons.Outlined.Lock,
             imeAction = ImeAction.Done,
             isError = state.confirmPasswordError != null,
@@ -200,7 +202,7 @@ private fun RegisterContent(
 
         // Create Account Button
         AppButton(
-            text = "Create Account",
+            text = stringResource(R.string.create_account_btn),
             onClick = { onIntent(RegisterIntent.OnRegisterClicked) },
             isLoading = state.isLoading,
             fullWidth = true
@@ -218,7 +220,7 @@ private fun RegisterContent(
                 color = Theme.colorScheme.border.primary.copy(alpha = 0.5f)
             )
             Text(
-                text = "OR",
+                text = stringResource(R.string.or_divider),
                 modifier = Modifier.padding(horizontal = Theme.spacing.md),
                 style = Theme.typography.body.medium,
                 color = Theme.colorScheme.text.tertiary
@@ -233,8 +235,8 @@ private fun RegisterContent(
 
         // Social Buttons
         SocialButton(
-            text = "Sign up with Google",
-            icon = ImageVector.vectorResource(id = R.drawable.ic_google),
+            text = stringResource(R.string.sign_up_google),
+            icon = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_google),
             onClick = { onIntent(RegisterIntent.OnGoogleSignUpClicked) }
         )
 
@@ -248,12 +250,12 @@ private fun RegisterContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Already have an account? ",
+                text = stringResource(R.string.already_have_account),
                 style = Theme.typography.body.medium,
                 color = Theme.colorScheme.text.secondary
             )
             Text(
-                text = "Log in",
+                text = stringResource(R.string.log_in),
                 style = Theme.typography.label.large,
                 color = Theme.colorScheme.brand.primary,
                 modifier = Modifier.clickable { onIntent(RegisterIntent.OnLoginClicked) }

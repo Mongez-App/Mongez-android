@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,8 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import com.iti.mongez.designsystem.R
+import com.iti.mongez.designsystem.R as DesignSystemR
+import com.iti.mongez.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -116,7 +118,7 @@ private fun LoginContent(
                 modifier = Modifier.padding(end = Theme.spacing.md, top = 4.dp)
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_sparkle),
+                    imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_sparkle),
                     contentDescription = null,
                     tint = Color.Unspecified,
                     modifier = Modifier.size(24.dp)
@@ -134,13 +136,13 @@ private fun LoginContent(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Welcome back",
+                    text = stringResource(R.string.welcome_back),
                     style = Theme.typography.headline.medium.copy(fontWeight = FontWeight.Bold),
                     color = Theme.colorScheme.text.primary
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.xs))
                 Text(
-                    text = "Log in to continue your\nstudy journey",
+                    text = stringResource(R.string.login_subtitle),
                     style = Theme.typography.body.large,
                     color = Theme.colorScheme.text.secondary
                 )
@@ -153,8 +155,8 @@ private fun LoginContent(
         AppTextField(
             value = state.email,
             onValueChange = { onIntent(LoginIntent.OnEmailChanged(it)) },
-            label = "Email",
-            placeholder = "youremail@example.com",
+            label = stringResource(R.string.email_label),
+            placeholder = stringResource(R.string.email_placeholder),
             leadingIcon = Icons.Outlined.Email, // Added email icon
             isError = state.emailError != null,
             errorMessage = state.emailError
@@ -165,8 +167,8 @@ private fun LoginContent(
         AppPasswordTextField(
             value = state.password,
             onValueChange = { onIntent(LoginIntent.OnPasswordChanged(it)) },
-            label = "Password",
-            placeholder = "••••••••••••", // Updated placeholder to match dots in image
+            label = stringResource(R.string.password_label),
+            placeholder = stringResource(R.string.password_placeholder), // Updated placeholder to match dots in image
             leadingIcon = Icons.Outlined.Lock, // Added lock icon
             imeAction = ImeAction.Done,
             isError = state.passwordError != null,
@@ -181,7 +183,7 @@ private fun LoginContent(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "Forgot Password?",
+                text = stringResource(R.string.forgot_password),
                 style = Theme.typography.label.large,
                 color = Theme.colorScheme.brand.primary,
                 modifier = Modifier.clickable { onIntent(LoginIntent.OnForgotPasswordClicked) }
@@ -192,7 +194,7 @@ private fun LoginContent(
 
         // Continue Button
         AppButton(
-            text = "Continue",
+            text = stringResource(R.string.continue_btn),
             onClick = { onIntent(LoginIntent.OnLoginClicked) },
             isLoading = state.isLoading,
             fullWidth = true
@@ -210,7 +212,7 @@ private fun LoginContent(
                 color = Theme.colorScheme.border.primary.copy(alpha = 0.5f)
             )
             Text(
-                text = "OR",
+                text = stringResource(R.string.or_divider),
                 modifier = Modifier.padding(horizontal = Theme.spacing.md),
                 style = Theme.typography.body.medium,
                 color = Theme.colorScheme.text.tertiary
@@ -225,7 +227,7 @@ private fun LoginContent(
 
         // Social Buttons
         SocialButton(
-            text = "Continue as Guest",
+            text = stringResource(R.string.continue_as_guest),
             icon = Icons.Outlined.Person,
             onClick = { onIntent(LoginIntent.OnGuestClicked) }
         )
@@ -233,8 +235,8 @@ private fun LoginContent(
         Spacer(modifier = Modifier.height(Theme.spacing.md))
 
         SocialButton(
-            text = "Sign in with Google",
-            icon = ImageVector.vectorResource(id = R.drawable.ic_google),
+            text = stringResource(R.string.sign_in_google),
+            icon = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_google),
             onClick = { onIntent(LoginIntent.OnGoogleSignInClicked) }
         )
 
@@ -248,12 +250,12 @@ private fun LoginContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Don't have an account? ",
+                text = stringResource(R.string.dont_have_account),
                 style = Theme.typography.body.medium,
                 color = Theme.colorScheme.text.secondary
             )
             Text(
-                text = "Sign up",
+                text = stringResource(R.string.sign_up),
                 style = Theme.typography.label.large,
                 color = Theme.colorScheme.brand.primary,
                 modifier = Modifier.clickable { onIntent(LoginIntent.OnSignUpClicked) }
