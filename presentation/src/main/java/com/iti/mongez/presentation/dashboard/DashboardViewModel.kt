@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
+import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.dashboard.usecase.GetDashboardDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,44 +17,68 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DashboardViewModel @Inject constructor() : ViewModel() {
+class DashboardViewModel @Inject constructor(
+    private val getDashboardDataUseCase: GetDashboardDataUseCase
+) : ViewModel() {
 
-    private val _state = MutableStateFlow(DashboardUiState())
+    private val _state = MutableStateFlow(DashboardUiState(isLoading = true))
     val state: StateFlow<DashboardUiState> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<DashboardEffect>()
     val effect: SharedFlow<DashboardEffect> = _effect.asSharedFlow()
 
     init {
-        loadDashboardMockData()
+        loadDashboardData()
     }
 
-    private fun loadDashboardMockData() {
-        _state.value = DashboardUiState(
-            userName = "Abdullah",
-            greetingSubtext = "Let's hit today's tasks",
-            streakCount = 12,
-            isStreakActive = true,
-            focusTitle = "Today's Focus",
-            focusTopic = "Operating\nSystems",
-            focusDuration = "2h 15m",
-            goals = listOf(
-                GoalItem("Today's Goal", 3, 5, "tasks", GoalType.DAILY),
-                GoalItem("Weekly Progress", 12, 20, "hours", GoalType.WEEKLY),
-                GoalItem("Monthly", 45, 80, "tasks", GoalType.MONTHLY)
-            ),
-            tasks = listOf(
-                TaskItem("1", "Read Chapter 4", "45 min", TaskPriority.HIGH, isCompleted = true),
-                TaskItem("2", "Practice DFS Problems", "30 min", TaskPriority.MEDIUM, isCompleted = false),
-                TaskItem("3", "Finish Quiz", "20 min", TaskPriority.LOW, isCompleted = false)
-            ),
-            deadlines = listOf(
-                DeadlineItem("1", "Networks", "Assignment", "Tomorrow", isUrgent = true),
-                DeadlineItem("2", "Operating Systems", "Midterm", "4 days left", isUrgent = false)
-            )
-        )
-    }
+    private fun loadDashboardData() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
 
+            when (val result = getDashboardDataUseCase()) {
+                is Result.Success -> {
+                    val data = result.data
+                    val summary = data.summary
+
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        streakCount = data.streak,
+                        isStreakActive = data.streak > 0,
+                        focusTopic = summary.focus?.courseName ?: "No Focus Set",
+                        focusDuration = "${summary.focus?.durationMinutes ?: 0} min",
+                        goals = listOf(
+                            GoalItem("Today's Goal", summary.metrics.todayCompletedTasks, summary.metrics.todayTotalTasks, "tasks", GoalType.DAILY),
+                            GoalItem("Weekly Progress", summary.metrics.weeklyHoursCompleted, summary.metrics.weeklyHoursGoal, "hours", GoalType.WEEKLY),
+                            GoalItem("Monthly", summary.metrics.monthlyHoursCompleted, summary.metrics.monthlyHoursGoal, "hours", GoalType.MONTHLY)
+                        ),
+                        tasks = summary.tasks.map { task ->
+                            TaskItem(
+                                id = task.id,
+                                title = task.title,
+                                duration = "${task.durationMinutes} min",
+                                priority = TaskPriority.valueOf(task.priority), // Ensure enum matching
+                                isCompleted = task.isCompleted
+                            )
+                        },
+                        deadlines = summary.deadlines.map { deadline ->
+                            DeadlineItem(
+                                id = deadline.id,
+                                subject = deadline.courseName,
+                                taskType = deadline.title,
+                                timeLeft = deadline.dueText,
+                                isUrgent = deadline.dueText.contains("Tomorrow", ignoreCase = true) || deadline.dueText.contains("Days", ignoreCase = true)
+                            )
+                        }
+                    )
+                }
+                is Result.Failure -> {
+                    _state.value = _state.value.copy(isLoading = false)
+                    _effect.emit(DashboardEffect.ShowSnackbar("Failed to load dashboard data.", AppSnackbarType.Error))
+                }
+                is Result.Loading -> { /* Handled internally by initial copy */ }
+            }
+        }
+    }
     fun onEvent(event: DashboardEvent) {
         when (event) {
             is DashboardEvent.OnTaskCheckedToggled -> {
