@@ -1,7 +1,7 @@
 package com.iti.mongez.data.core.network
 
 
-import com.iti.mongez.data.utils.network.TokenManager
+import com.iti.mongez.data.sources.local.TokenManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
