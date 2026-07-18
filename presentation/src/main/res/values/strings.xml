@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Onboarding Page 1 -->
+    <string name="onboarding_page1_title">Study without the stress</string>
+    <string name="onboarding_page1_description">AI creates your perfect study schedule automatically.</string>
+
+    <!-- Onboarding Page 2 -->
+    <string name="onboarding_page2_title">Your time, perfectly optimized</string>
+    <string name="onboarding_page2_description">Sync your calendar and let AI fit studying into your free time.</string>
+
+    <!-- Onboarding Page 3 -->
+    <string name="onboarding_page3_title">Learn with your personal AI tutor</string>
+    <string name="onboarding_page3_description">Summaries, explanations, and smart study sessions—all in one place.</string>
+
+    <!-- Onboarding Actions -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_previous">Previous</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_illustration_placeholder">Illustration</string>
+
+    <!-- Auth Strings -->
+    <string name="welcome_back">Welcome back</string>
+    <string name="login_subtitle">Log in to continue your\nstudy journey</string>
+    <string name="email_label">Email</string>
+    <string name="email_placeholder">youremail@example.com</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">••••••••••••</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="continue_btn">Continue</string>
+    <string name="or_divider">OR</string>
+    <string name="continue_as_guest">Continue as Guest</string>
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="dont_have_account">Don\'t have an account\? </string>
+    <string name="sign_up">Sign up</string>
+    <string name="create_account">Create account</string>
+    <string name="register_subtitle">Join us and start your\nlearning journey</string>
+    <string name="first_name_label">First Name</string>
+    <string name="first_name_placeholder">Mouhamad</string>
+    <string name="confirm_password_label">Confirm Password</string>
+    <string name="create_account_btn">Create Account</string>
+    <string name="sign_up_google">Sign up with Google</string>
+    <string name="already_have_account">Already have an account\? </string>
+    <string name="log_in">Log in</string>
+    
+    <!-- Error Messages -->
+    <string name="error_email_empty">Email cannot be empty</string>
+    <string name="error_password_empty">Password cannot be empty</string>
+    <string name="error_login_failed">Login failed</string>
+    <string name="error_google_sign_in">Google Sign-In not implemented yet</string>
+    <string name="error_first_name_required">First name is required</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_passwords_not_match">Passwords do not match</string>
+    <string name="error_registration_failed">Registration failed</string>
+    <string name="error_google_sign_up">Google Sign-Up not implemented yet</string>
+</resources>

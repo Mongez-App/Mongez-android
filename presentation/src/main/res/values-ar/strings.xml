@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Onboarding Page 1 -->
+    <string name="onboarding_page1_title">ادرس بدون توتر</string>
+    <string name="onboarding_page1_description">الذكاء الاصطناعي ينشئ جدولك الدراسي المثالي تلقائيًا.</string>
+
+    <!-- Onboarding Page 2 -->
+    <string name="onboarding_page2_title">وقتك، محسّن بشكل مثالي</string>
+    <string name="onboarding_page2_description">قم بمزامنة تقويمك ودع الذكاء الاصطناعي ينسق دراستك في وقت فراغك.</string>
+
+    <!-- Onboarding Page 3 -->
+    <string name="onboarding_page3_title">تعلم مع معلمك الخاص بالذكاء الاصطناعي</string>
+    <string name="onboarding_page3_description">ملخصات، تفسيرات، وجلسات دراسة ذكية—كل ذلك في مكان واحد.</string>
+
+    <!-- Onboarding Actions -->
+    <string name="onboarding_skip">تخطي</string>
+    <string name="onboarding_previous">السابق</string>
+    <string name="onboarding_next">التالي</string>
+    <string name="onboarding_get_started">ابدأ الآن</string>
+    <string name="onboarding_illustration_placeholder">توضيح</string>
+
+    <!-- Auth Strings -->
+    <string name="welcome_back">مرحبًا بعودتك</string>
+    <string name="login_subtitle">سجل الدخول لمواصلة\nرحلتك الدراسية</string>
+    <string name="email_label">البريد الإلكتروني</string>
+    <string name="email_placeholder">youremail@example.com</string>
+    <string name="password_label">كلمة المرور</string>
+    <string name="password_placeholder">••••••••••••</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
+    <string name="continue_btn">متابعة</string>
+    <string name="or_divider">أو</string>
+    <string name="continue_as_guest">المتابعة كضيف</string>
+    <string name="sign_in_google">تسجيل الدخول باستخدام Google</string>
+    <string name="dont_have_account">ليس لديك حساب؟ </string>
+    <string name="sign_up">إنشاء حساب</string>
+    <string name="create_account">إنشاء حساب</string>
+    <string name="register_subtitle">انضم إلينا وابدأ\nرحلتك التعليمية</string>
+    <string name="first_name_label">الاسم الأول</string>
+    <string name="first_name_placeholder">محمد</string>
+    <string name="confirm_password_label">تأكيد كلمة المرور</string>
+    <string name="create_account_btn">إنشاء الحساب</string>
+    <string name="sign_up_google">إنشاء حساب باستخدام Google</string>
+    <string name="already_have_account">لديك حساب بالفعل؟ </string>
+    <string name="log_in">تسجيل الدخول</string>
+    
+    <!-- Error Messages -->
+    <string name="error_email_empty">لا يمكن أن يكون البريد الإلكتروني فارغًا</string>
+    <string name="error_password_empty">لا يمكن أن تكون كلمة المرور فارغة</string>
+    <string name="error_login_failed">فشل تسجيل الدخول</string>
+    <string name="error_google_sign_in">تسجيل الدخول بـ Google غير مدعوم حاليًا</string>
+    <string name="error_first_name_required">الاسم الأول مطلوب</string>
+    <string name="error_email_required">البريد الإلكتروني مطلوب</string>
+    <string name="error_password_required">كلمة المرور مطلوبة</string>
+    <string name="error_passwords_not_match">كلمتا المرور غير متطابقتين</string>
+    <string name="error_registration_failed">فشل إنشاء الحساب</string>
+    <string name="error_google_sign_up">التسجيل بـ Google غير مدعوم حاليًا</string>
+</resources>

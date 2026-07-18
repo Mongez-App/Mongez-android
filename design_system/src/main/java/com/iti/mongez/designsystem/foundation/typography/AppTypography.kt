@@ -1,5 +1,6 @@
 package com.iti.mongez.designsystem.foundation.typography
 
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -158,5 +159,28 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
                 lineHeight = 14.sp,
             ),
         ),
+    )
+}
+
+/**
+ * Bridges [AppTypography] to Material 3 [Typography].
+ */
+fun AppTypography.asMaterialTypography(): Typography {
+    return Typography(
+        displayLarge = display.large,
+        displayMedium = display.medium,
+        displaySmall = display.small,
+        headlineLarge = headline.large,
+        headlineMedium = headline.medium,
+        headlineSmall = headline.small,
+        titleLarge = title.large,
+        titleMedium = title.medium,
+        titleSmall = title.small,
+        bodyLarge = body.large,
+        bodyMedium = body.medium,
+        bodySmall = body.small,
+        labelLarge = label.large,
+        labelMedium = label.medium,
+        labelSmall = label.small,
     )
 }

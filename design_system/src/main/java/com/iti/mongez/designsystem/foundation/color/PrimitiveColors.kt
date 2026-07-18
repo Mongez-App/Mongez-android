@@ -15,7 +15,7 @@ internal object PrimitiveColors {
     val Purple300 = Color(0xFFC4B5FD)
     val Purple400 = Color(0xFFA78BFA)
     val Purple500 = Color(0xFF8B5CF6)
-    val Purple600 = Color(0xFF5B4CF6)
+    val Purple600 = Color(0xFF5A67D8)
     val Purple700 = Color(0xFF4C3FE0)
     val Purple800 = Color(0xFF4338CA)
     val Purple900 = Color(0xFF312E81)
@@ -77,7 +77,7 @@ internal object PrimitiveColors {
     // endregion
 
     // region Neutrals
-    val White = Color(0xFFFFFFFF)
+    val White = Color(0xFFF9F9FF)
     val Black = Color(0xFF000000)
     // endregion
 }
