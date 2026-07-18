@@ -31,4 +31,4 @@ include(":design_system")
 include(":domain")
 include(":data")
 include(":presentation")
- 
+include(":navigation")

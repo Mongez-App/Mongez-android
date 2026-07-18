@@ -4,51 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
-import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
-import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
-import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.MongezTheme
-import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.navigation.AppNavHost
 import dagger.hilt.android.AndroidEntryPoint
-import com.iti.mongez.domain.core.Result
-import com.iti.mongez.domain.onboarding.usecase.CheckOnboardingStatusUseCase
-import com.iti.mongez.presentation.dashboard.DashboardScreen
-import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
-import com.iti.mongez.presentation.onboarding.viewmodel.OnboardingViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Root Activity — applies [MongezTheme] and sets up the main scaffold
@@ -57,175 +16,18 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var checkOnboardingStatusUseCase: CheckOnboardingStatusUseCase
-
-    private var isInitialStateLoading by mutableStateOf(true)
-    private var startDestination by mutableStateOf("onboarding")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        splashScreen.setKeepOnScreenCondition {
-            isInitialStateLoading
-        }
-
-        lifecycleScope.launch {
-            val result = checkOnboardingStatusUseCase()
-            if (result is Result.Success && result.data) {
-                startDestination = "main"
-            }
-            isInitialStateLoading = false
-        }
-
         enableEdgeToEdge()
         setContent {
             MongezTheme {
-                val navController = rememberNavController()
-                val snackbarHostState = remember { SnackbarHostState() }
-                val scope = rememberCoroutineScope()
-                if (!isInitialStateLoading) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = startDestination
-                    ) {
-                        composable("onboarding") {
-                            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
-                            OnboardingScreen(
-                                viewModel = onboardingViewModel,
-                                onNavigateToHome = {
-                                    navController.navigate("main") {
-                                        popUpTo("onboarding") { inclusive = true }
-                                    }
-                                },
-                                onShowSnackBar = { message ->
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(message)
-                                    }
-                                }
-                            )
-                        }
-                        composable("main") {
-                            MainScreen(snackbarHostState)
-                        }
-                    }
-                }
+                AppNavHost()
             }
         }
     }
 }
 
-// ────────────────────────────────────────────────────────────────
-// Navigation Items
-// ────────────────────────────────────────────────────────────────
+// Cleaned up MainScreen and items
 
-private val navigationItems = listOf(
-    AppNavigationBarItem(
-        label = "Home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home,
-    ),
-    AppNavigationBarItem(
-        label = "Courses",
-        selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
-        unselectedIcon = Icons.AutoMirrored.Outlined.MenuBook,
-    ),
-    AppNavigationBarItem(
-        label = "Roadmap",
-        selectedIcon = Icons.Filled.CalendarMonth,
-        unselectedIcon = Icons.Outlined.CalendarMonth,
-    ),
-    AppNavigationBarItem(
-        label = "Profile",
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person,
-    ),
-)
-
-// ────────────────────────────────────────────────────────────────
-// Main Screen
-// ────────────────────────────────────────────────────────────────
-
-@Composable
-private fun MainScreen(snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }) {
-    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-    var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
-    val scope = rememberCoroutineScope()
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Theme.colorScheme.surface.background,
-        snackbarHost = {
-            // UPDATED: Pass a custom lambda to the SnackbarHost
-            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
-                AppSnackbarContent(
-                    message = snackbarData.visuals.message,
-                    type = activeSnackbarType,
-                    modifier = Modifier.padding(Theme.spacing.md)
-                )
-            }
-        },
-        bottomBar = {
-            AppNavigationBar(
-                items = navigationItems,
-                selectedIndex = selectedTab,
-                onItemSelected = { selectedTab = it },
-            )
-        },
-    ) { innerPadding ->
-        // Placeholder content — feature screens will be wired here via Navigation
-        when (selectedTab) {
-            0 -> {
-                // Home/Dashboard Tab
-                DashboardScreen(
-                    innerPadding = innerPadding,
-                    onNavigateToFocus = {
-                        // TODO: Handle navigation to Focus Session
-                    },
-                    onViewAllTasks = {
-                        // TODO: Handle navigation to All Tasks screen
-                    },
-                    onViewAllDeadlines = {
-                        // TODO: Handle navigation to All Deadlines screen
-                    },
-                )
-            }
-
-            1 -> {
-                // Courses Tab Placeholder
-                Text("Courses Content", modifier = Modifier.padding(innerPadding))
-            }
-
-            2 -> {
-                // Roadmap Tab Placeholder
-                Text("Roadmap Content", modifier = Modifier.padding(innerPadding))
-            }
-
-            3 -> {
-                // Profile Tab Placeholder
-                Text("Profile Content", modifier = Modifier.padding(innerPadding))
-            }
-        }
-    }
-}
-
-// ────────────────────────────────────────────────────────────────
-// Preview
-// ────────────────────────────────────────────────────────────────
-
-@Preview(showBackground = true, name = "Main Screen — Light")
-@Composable
-private fun MainScreenPreview() {
-    MongezTheme {
-        MainScreen()
-    }
-}
-
-@Preview(showBackground = true, name = "Main Screen — Dark")
-@Composable
-private fun MainScreenDarkPreview() {
-    MongezTheme(darkTheme = true) {
-        MainScreen()
-    }
-}

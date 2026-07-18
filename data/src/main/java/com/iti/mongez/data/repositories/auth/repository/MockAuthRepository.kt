@@ -5,9 +5,13 @@ import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.core.exceptions.AuthException
 import kotlinx.coroutines.delay
+import com.iti.mongez.data.sources.local.TokenManager
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
-class MockAuthRepository @Inject constructor() : AuthRepository {
+class MockAuthRepository @Inject constructor(
+    private val tokenManager: TokenManager
+) : AuthRepository {
     override suspend fun login(email: String, password: String): Result<User> {
         delay(1500) // Simulate network delay
         if (email == "test@test.com" && password == "password") {
@@ -26,5 +30,9 @@ class MockAuthRepository @Inject constructor() : AuthRepository {
     override suspend fun loginWithGoogle(idToken: String): Result<User> {
         delay(1500) // Simulate network delay
         return Result.Success(User(id = "3", email = "google@user.com", firstName = "Google", token = "mock_token"))
+    }
+
+    override suspend fun hasToken(): Boolean {
+        return tokenManager.tokenFlow.firstOrNull() != null
     }
 }
