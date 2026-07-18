@@ -18,7 +18,7 @@ fun OnboardingSkipButton(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(Theme.spacing.md),
+            .padding(Theme.spacing.lg),
         horizontalArrangement = Arrangement.End
     ) {
         if (isVisible) {

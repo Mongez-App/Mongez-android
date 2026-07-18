@@ -10,6 +10,7 @@ data class BrandColors(
     val primaryContainer: Color,
     val onPrimary: Color,
     val onPrimaryContainer: Color,
+    val indicatorUnselected: Color,
 )
 
 @Immutable
@@ -125,6 +126,7 @@ val LightColorScheme = AppColorScheme(
         primaryContainer = PrimitiveColors.Purple100,
         onPrimary = PrimitiveColors.White,
         onPrimaryContainer = PrimitiveColors.Purple900,
+        indicatorUnselected = PrimitiveColors.Gray250,
     ),
     text = TextColors(
         primary = PrimitiveColors.Gray900,
@@ -213,6 +215,7 @@ val DarkColorScheme = AppColorScheme(
         primaryContainer = PrimitiveColors.Purple900,
         onPrimary = PrimitiveColors.White,
         onPrimaryContainer = PrimitiveColors.Purple200,
+        indicatorUnselected = PrimitiveColors.Gray700,
     ),
     text = TextColors(
         primary = PrimitiveColors.White,

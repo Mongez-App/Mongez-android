@@ -2,35 +2,42 @@ package com.iti.mongez.presentation.onboarding.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.lerp
 import com.iti.mongez.designsystem.theme.Theme
+import kotlin.math.absoluteValue
 
 @Composable
 fun OnboardingIndicator(
-    pageCount: Int,
-    currentPage: Int,
+    pagerState: PagerState,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing.xl),
-        horizontalArrangement = Arrangement.Center
+            .padding(vertical = Theme.spacing.md),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        repeat(pageCount) { index ->
-            val isSelected = index == currentPage
+        repeat(pagerState.pageCount) { index ->
+            val pageOffset = (pagerState.currentPage - index + pagerState.currentPageOffsetFraction).absoluteValue
+            val fraction = 1f - pageOffset.coerceIn(0f, 1f)
+
+            val width = lerp(Theme.spacing.sm, Theme.spacing.xl, fraction)
+            val color = lerp(Theme.colorScheme.brand.indicatorUnselected, Theme.colorScheme.brand.primary, fraction)
+
             Box(
                 modifier = Modifier
                     .padding(horizontal = Theme.spacing.xs)
-                    .size(if (isSelected) Theme.spacing.md else Theme.spacing.sm)
+                    .size(width = width, height = Theme.spacing.sm)
                     .clip(CircleShape)
-                    .background(
-                        if (isSelected) Theme.colorScheme.brand.primary 
-                        else Theme.colorScheme.border.secondary
-                    )
+                    .background(color)
             )
         }
     }

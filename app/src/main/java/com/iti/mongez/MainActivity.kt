@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                                         popUpTo("onboarding") { inclusive = true }
                                     }
                                 },
-                                onShowSnackbar = { message ->
+                                onShowSnackBar = { message ->
                                     scope.launch {
                                         snackbarHostState.showSnackbar(message)
                                     }
