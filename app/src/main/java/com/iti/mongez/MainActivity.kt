@@ -42,8 +42,13 @@ import com.iti.mongez.designsystem.theme.Theme
 import dagger.hilt.android.AndroidEntryPoint
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.onboarding.usecase.CheckOnboardingStatusUseCase
+import com.iti.mongez.domain.auth.usecase.CheckAuthStatusUseCase
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import com.iti.mongez.presentation.onboarding.viewmodel.OnboardingViewModel
+import com.iti.mongez.presentation.auth.login.LoginScreen
+import com.iti.mongez.presentation.auth.register.RegisterScreen
+import com.iti.mongez.presentation.preferences.view.PreferencesScreen
+import com.iti.mongez.presentation.preferences.viewmodel.PreferencesViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -57,6 +62,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var checkOnboardingStatusUseCase: CheckOnboardingStatusUseCase
 
+    @Inject
+    lateinit var checkAuthStatusUseCase: CheckAuthStatusUseCase
+
     private var isInitialStateLoading by mutableStateOf(true)
     private var startDestination by mutableStateOf("onboarding")
 
@@ -69,10 +77,17 @@ class MainActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            val result = checkOnboardingStatusUseCase()
-            if (result is Result.Success && result.data) {
-                startDestination = "main"
+            val onboardingResult = checkOnboardingStatusUseCase()
+            val isOnboardingCompleted = onboardingResult is Result.Success && onboardingResult.data
+            
+            if (isOnboardingCompleted) {
+                val authResult = checkAuthStatusUseCase()
+                val isLoggedIn = authResult is Result.Success && authResult.data
+                startDestination = if (isLoggedIn) "main" else "login"
+            } else {
+                startDestination = "onboarding"
             }
+            
             isInitialStateLoading = false
         }
 
@@ -92,8 +107,60 @@ class MainActivity : ComponentActivity() {
                             OnboardingScreen(
                                 viewModel = onboardingViewModel,
                                 onNavigateToHome = {
-                                    navController.navigate("main") {
+                                    navController.navigate("login") {
                                         popUpTo("onboarding") { inclusive = true }
+                                    }
+                                },
+                                onShowSnackBar = { message ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(message)
+                                    }
+                                }
+                            )
+                        }
+                        composable("login") {
+                            LoginScreen(
+                                onNavigateToHome = {
+                                    navController.navigate("preferences") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                },
+                                onNavigateToSignUp = {
+                                    navController.navigate("register")
+                                },
+                                onShowSnackbar = { message ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(message)
+                                    }
+                                }
+                            )
+                        }
+                        composable("register") {
+                            RegisterScreen(
+                                onNavigateToHome = {
+                                    navController.navigate("preferences") {
+                                        popUpTo("register") { inclusive = true }
+                                    }
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = true }
+                                    }
+                                },
+                                onShowSnackbar = { message ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(message)
+                                    }
+                                }
+                            )
+                        }
+                        composable("preferences") {
+                            val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+                            PreferencesScreen(
+                                viewModel = preferencesViewModel,
+                                onNavigateToDashboard = {
+                                    navController.navigate("main") {
+                                        popUpTo("preferences") { inclusive = true }
                                     }
                                 },
                                 onShowSnackBar = { message ->
