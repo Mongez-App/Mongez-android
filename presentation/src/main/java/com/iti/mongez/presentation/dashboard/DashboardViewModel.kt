@@ -35,9 +35,8 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
 
-            when (val result = getDashboardDataUseCase()) {
-                is Result.Success -> {
-                    val data = result.data
+            getDashboardDataUseCase().fold(
+                onSuccess = { data ->
                     val summary = data.summary
 
                     _state.value = _state.value.copy(
@@ -70,13 +69,13 @@ class DashboardViewModel @Inject constructor(
                             )
                         }
                     )
-                }
-                is Result.Failure -> {
+                },
+                onFailure = {
                     _state.value = _state.value.copy(isLoading = false)
                     _effect.emit(DashboardEffect.ShowSnackbar("Failed to load dashboard data.", AppSnackbarType.Error))
-                }
-                is Result.Loading -> { /* Handled internally by initial copy */ }
-            }
+                },
+                onLoading = { /* Handled internally by initial copy */ }
+            )
         }
     }
     fun onEvent(event: DashboardEvent) {
