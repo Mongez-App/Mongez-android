@@ -1,8 +1,10 @@
-package com.iti.mongez.data.dashboard.remote
+package com.iti.mongez.data.sources.remote.services
 
+import com.iti.mongez.data.dtos.DashboardResponseDto
+import com.iti.mongez.data.dtos.ProfileResponseDto
 import retrofit2.http.GET
 
-interface DashboardApiService {
+interface ApiService {
     @GET("users/me/profile")
     suspend fun getUserProfile(): ProfileResponseDto
 

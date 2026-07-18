@@ -1,4 +1,4 @@
-package com.iti.mongez.data.dashboard.remote
+package com.iti.mongez.data.dtos
 
 import com.google.gson.annotations.SerializedName
 import com.iti.mongez.domain.dashboard.model.*

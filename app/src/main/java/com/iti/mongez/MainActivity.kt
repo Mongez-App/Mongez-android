@@ -189,11 +189,6 @@ private fun MainScreen(snackbarHostState: SnackbarHostState = remember { Snackba
                     onViewAllDeadlines = {
                         // TODO: Handle navigation to All Deadlines screen
                     },
-                    onShowSnackbar = { message, type ->
-                        // Synchronize structural type right before displaying the snackbar host
-                        activeSnackbarType = type
-                        scope.launch { snackbarHostState.showSnackbar(message) }
-                    }
                 )
             }
 

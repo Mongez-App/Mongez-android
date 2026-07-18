@@ -1,6 +1,7 @@
-package com.iti.mongez.data.onboarding.di
+package com.iti.mongez.data.di
 
-import com.iti.mongez.data.onboarding.repository.OnboardingRepositoryImpl
+
+import com.iti.mongez.data.repositories.onboarding.OnboardingRepositoryImpl
 import com.iti.mongez.domain.onboarding.repository.OnboardingRepository
 import dagger.Binds
 import dagger.Module
@@ -10,7 +11,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class OnboardingDataModule {
+abstract class OnboardingModule {
 
     @Binds
     @Singleton

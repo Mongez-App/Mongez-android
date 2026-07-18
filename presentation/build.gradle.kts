@@ -1,8 +1,6 @@
 plugins {
     id("mongez.android.library.compose")
     id("mongez.android.hilt")
-    id("mongez.android.network")
-
 }
 
 android {
@@ -17,3 +15,4 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 }
+

@@ -1,4 +1,4 @@
-package com.iti.mongez.data.core.local
+package com.iti.mongez.data.utils.network
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

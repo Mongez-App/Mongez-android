@@ -1,4 +1,4 @@
-package com.iti.mongez.data.core.network
+package com.iti.mongez.data.network
 
 
 import com.iti.mongez.domain.core.Result
@@ -36,7 +36,7 @@ private fun Throwable.toDomainException(): AppException {
                 )
             }
         }
-        is IOException, is SocketTimeoutException -> {
+        is IOException -> {
             NetworkException.NoConnection()
         }
         is AppException -> {
