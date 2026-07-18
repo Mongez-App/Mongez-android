@@ -37,14 +37,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
-import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
-import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import dagger.hilt.android.AndroidEntryPoint
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.onboarding.usecase.CheckOnboardingStatusUseCase
-import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import com.iti.mongez.presentation.onboarding.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.launch
@@ -150,22 +147,11 @@ private val navigationItems = listOf(
 @Composable
 private fun MainScreen(snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-    var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
-    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Theme.colorScheme.surface.background,
-        snackbarHost = {
-            // UPDATED: Pass a custom lambda to the SnackbarHost
-            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
-                AppSnackbarContent(
-                    message = snackbarData.visuals.message,
-                    type = activeSnackbarType,
-                    modifier = Modifier.padding(Theme.spacing.md)
-                )
-            }
-        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             AppNavigationBar(
                 items = navigationItems,
@@ -175,43 +161,12 @@ private fun MainScreen(snackbarHostState: SnackbarHostState = remember { Snackba
         },
     ) { innerPadding ->
         // Placeholder content — feature screens will be wired here via Navigation
-        when (selectedTab) {
-            0 -> {
-                // Home/Dashboard Tab
-                DashboardScreen(
-                    innerPadding = innerPadding,
-                    onNavigateToFocus = {
-                        // TODO: Handle navigation to Focus Session
-                    },
-                    onViewAllTasks = {
-                        // TODO: Handle navigation to All Tasks screen
-                    },
-                    onViewAllDeadlines = {
-                        // TODO: Handle navigation to All Deadlines screen
-                    },
-                    onShowSnackbar = { message, type ->
-                        // Synchronize structural type right before displaying the snackbar host
-                        activeSnackbarType = type
-                        scope.launch { snackbarHostState.showSnackbar(message) }
-                    }
-                )
-            }
-
-            1 -> {
-                // Courses Tab Placeholder
-                Text("Courses Content", modifier = Modifier.padding(innerPadding))
-            }
-
-            2 -> {
-                // Roadmap Tab Placeholder
-                Text("Roadmap Content", modifier = Modifier.padding(innerPadding))
-            }
-
-            3 -> {
-                // Profile Tab Placeholder
-                Text("Profile Content", modifier = Modifier.padding(innerPadding))
-            }
-        }
+        Text(
+            text = "Welcome to Mongez! — ${navigationItems[selectedTab].label}",
+            style = Theme.typography.title.large,
+            color = Theme.colorScheme.text.primary,
+            modifier = Modifier.padding(innerPadding).padding(Theme.spacing.xl),
+        )
     }
 }
 
