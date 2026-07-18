@@ -1,6 +1,8 @@
 plugins {
     id("mongez.android.library.compose")
     id("mongez.android.hilt")
+    id("mongez.android.network")
+
 }
 
 android {

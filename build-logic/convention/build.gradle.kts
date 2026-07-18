@@ -38,5 +38,9 @@ gradlePlugin {
             id = "mongez.android.hilt"
             implementationClass = "com.iti.mongez.AndroidHiltConventionPlugin"
         }
+        register("androidNetwork") {
+            id = "mongez.android.network"
+            implementationClass = "com.iti.mongez.AndroidNetworkConventionPlugin"
+        }
     }
 }
