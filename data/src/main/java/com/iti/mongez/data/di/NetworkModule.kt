@@ -1,6 +1,7 @@
-package com.iti.mongez.data.core.network.di
+package com.iti.mongez.data.di
 
 import com.iti.mongez.data.core.network.AuthInterceptor
+import com.iti.mongez.data.sources.remote.services.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +37,11 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit) : ApiService {
+        return retrofit.create(ApiService::class.java)
     }
 }

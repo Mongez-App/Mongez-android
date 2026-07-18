@@ -1,4 +1,4 @@
-package com.iti.mongez.data.core.local
+package com.iti.mongez.data.di
 
 
 import android.content.Context
@@ -13,7 +13,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 // 1. Define the DataStore delegate at the top level of the file
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "mongez_prefs")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "")
 
 @Module
 @InstallIn(SingletonComponent::class)

@@ -1,4 +1,4 @@
-package com.iti.mongez.data.auth.repository
+package com.iti.mongez.data.repositories.auth.repository
 
 import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.repository.AuthRepository
