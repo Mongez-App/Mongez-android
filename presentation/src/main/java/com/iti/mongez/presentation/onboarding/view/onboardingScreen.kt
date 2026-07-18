@@ -7,6 +7,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.util.lerp
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.onboarding.components.OnboardingActions
 import com.iti.mongez.presentation.onboarding.components.OnboardingIndicator
@@ -17,12 +19,13 @@ import com.iti.mongez.presentation.onboarding.uiState.OnboardingEffect
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingUiState
 import com.iti.mongez.presentation.onboarding.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel,
     onNavigateToHome: () -> Unit,
-    onShowSnackbar: (String) -> Unit
+    onShowSnackBar: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(pageCount = { state.onboardingPages.size })
@@ -32,7 +35,7 @@ fun OnboardingScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is OnboardingEffect.NavigateToHome -> onNavigateToHome()
-                is OnboardingEffect.ShowSnackbar -> onShowSnackbar(effect.message)
+                is OnboardingEffect.ShowSnackbar -> onShowSnackBar(effect.message)
                 is OnboardingEffect.ScrollToNextPage -> {
                     scope.launch {
                         if (pagerState.currentPage < pagerState.pageCount - 1) {
@@ -81,15 +84,40 @@ private fun OnboardingContent(
         ) { pageIndex ->
             if (pageIndex < state.onboardingPages.size) {
                 val page = state.onboardingPages[pageIndex]
-                OnboardingPageItem(page = page)
+                OnboardingPageItem(
+                    page = page,
+                    modifier = Modifier.graphicsLayer {
+                        val pageOffset = (
+                                (pagerState.currentPage - pageIndex) + pagerState
+                                    .currentPageOffsetFraction
+                                ).absoluteValue
+
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+
+                        scaleY = lerp(
+                            start = 0.8f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+
+                        scaleX = lerp(
+                            start = 0.8f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.lg))
 
         OnboardingIndicator(
-            pageCount = state.onboardingPages.size,
-            currentPage = pagerState.currentPage
+            pagerState = pagerState
         )
 
         Spacer(modifier = Modifier.height(Theme.spacing.xxl))

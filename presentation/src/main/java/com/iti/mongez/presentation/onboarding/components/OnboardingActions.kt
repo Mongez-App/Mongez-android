@@ -21,7 +21,7 @@ fun OnboardingActions(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing.xl)
+            .padding(horizontal = Theme.spacing.lg)
             .padding(bottom = Theme.spacing.xl),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
     ) {

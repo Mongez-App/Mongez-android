@@ -60,9 +60,9 @@ fun AppButton(
     leadingIcon: ImageVector? = null,
     fullWidth: Boolean = true,
 ) {
-    val shape = RoundedCornerShape(Theme.radius.lg)
+    val shape = RoundedCornerShape(Theme.radius.md)
     val heightModifier = modifier
-        .height(56.dp)
+        .height(48.dp)
         .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier)
 
     when (variant) {
@@ -85,11 +85,6 @@ fun AppButton(
                 modifier = heightModifier,
                 enabled = enabled && !isLoading,
                 shape = shape,
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = if (enabled && !isLoading) Theme.elevation.sm else Theme.elevation.none,
-                    pressedElevation = Theme.elevation.xs,
-                    disabledElevation = Theme.elevation.none,
-                ),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = bgColor,
                     contentColor = contentColor,
