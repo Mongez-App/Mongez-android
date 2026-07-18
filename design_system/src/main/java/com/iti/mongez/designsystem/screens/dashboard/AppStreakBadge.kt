@@ -1,4 +1,5 @@
 package com.iti.mongez.designsystem.screens.dashboard
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,14 +17,6 @@ import androidx.compose.ui.unit.sp
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
-/**
- * A reusable streak badge component to display the user's current streak.
- * Matches the expanded two-line typography and large icon design.
- *
- * @param streakCount The number of consecutive days/actions completed.
- * @param modifier Modifier to be applied to the layout.
- * @param isActive Determines the visual state (active vs. inactive) of the streak.
- */
 @Composable
 fun AppStreakBadge(
     streakCount: Int,
@@ -33,9 +26,8 @@ fun AppStreakBadge(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp) // Space between text block and fire icon
+        horizontalArrangement = Arrangement.spacedBy(8.dp) // Reduced spacing for a tighter badge
     ) {
-
         // Left Side: Text Block
         Column(
             verticalArrangement = Arrangement.Center
@@ -46,8 +38,7 @@ fun AppStreakBadge(
             ) {
                 Text(
                     text = streakCount.toString(),
-                    // Assuming headline.medium or similar for the large text
-                    style = Theme.typography.headline.medium,
+                    style = Theme.typography.title.medium, // Downscaled from headline.medium
                     color = if (isActive) {
                         Theme.colorScheme.state.warning
                     } else {
@@ -57,12 +48,12 @@ fun AppStreakBadge(
                     modifier = Modifier.alignByBaseline()
                 )
 
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
                     text = "Day",
-                    style = Theme.typography.headline.medium,
-                    color = Theme.colorScheme.text.primary, // Dark Navy/Black
+                    style = Theme.typography.title.medium, // Downscaled from headline.medium
+                    color = Theme.colorScheme.text.primary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.alignByBaseline()
                 )
@@ -71,17 +62,16 @@ fun AppStreakBadge(
             // Bottom Line: "Streak"
             Text(
                 text = "Streak",
-                style = Theme.typography.headline.medium,
+                style = Theme.typography.label.large, // Downscaled from headline.medium
                 color = Theme.colorScheme.text.primary,
                 fontWeight = FontWeight.Bold
             )
         }
 
         // Right Side: Large Icon
-        // Rendered as text to keep the emoji, scaled up significantly to match the image
         Text(
             text = if (isActive) "🔥" else "🧊",
-            fontSize = 56.sp
+            fontSize = 32.sp // Scaled down significantly from 56.sp to fit the UI
         )
     }
 }
@@ -93,18 +83,6 @@ private fun AppStreakBadgeActivePreview() {
         AppStreakBadge(
             streakCount = 12,
             isActive = true,
-            modifier = Modifier.padding(24.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Streak Badge - Inactive")
-@Composable
-private fun AppStreakBadgeInactivePreview() {
-    MongezTheme {
-        AppStreakBadge(
-            streakCount = 0,
-            isActive = false,
             modifier = Modifier.padding(24.dp)
         )
     }

@@ -74,7 +74,7 @@ fun AppTaskCard(
             .background(Theme.colorScheme.surface.background)
             .border(
                 width = 1.dp,
-                color = Theme.colorScheme.border.secondary,
+                color = Theme.colorScheme.text.disabled,
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable { onToggle(!isCompleted) }
@@ -92,7 +92,7 @@ fun AppTaskCard(
                 )
                 .border(
                     width = if (isCompleted) 0.dp else 2.dp, // Thicker border for unselected state
-                    color = if (isCompleted) Theme.colorScheme.state.success else Theme.colorScheme.border.secondary,
+                    color = if (isCompleted) Theme.colorScheme.state.success else Theme.colorScheme.text.disabled,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
