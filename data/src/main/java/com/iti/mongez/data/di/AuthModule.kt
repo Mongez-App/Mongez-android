@@ -1,6 +1,7 @@
-package com.iti.mongez.data.auth.di
+package com.iti.mongez.data.di
 
-import com.iti.mongez.data.auth.repository.MockAuthRepository
+
+import com.iti.mongez.data.repositories.auth.repository.MockAuthRepository
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import dagger.Binds
 import dagger.Module

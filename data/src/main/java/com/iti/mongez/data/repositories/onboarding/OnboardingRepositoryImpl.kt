@@ -1,13 +1,13 @@
-package com.iti.mongez.data.onboarding.repository
+package com.iti.mongez.data.repositories.onboarding
 
-import com.iti.mongez.data.onboarding.source.OnboardingLocalDataSource
-import com.iti.mongez.domain.onboarding.repository.OnboardingRepository
-import javax.inject.Inject
+import com.iti.mongez.data.sources.local.AppPreferences
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.core.exceptions.AppException
+import com.iti.mongez.domain.onboarding.repository.OnboardingRepository
+import javax.inject.Inject
 
 class OnboardingRepositoryImpl @Inject constructor(
-    private val localDataSource: OnboardingLocalDataSource
+    private val localDataSource: AppPreferences
 ) : OnboardingRepository {
 
     override suspend fun setOnboardingCompleted(): Result<Unit> {
