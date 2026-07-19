@@ -24,7 +24,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel,
-    onNavigateToHome: () -> Unit,
+    onNavigateToAuth: () -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -34,7 +34,7 @@ fun OnboardingScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is OnboardingEffect.NavigateToHome -> onNavigateToHome()
+                is OnboardingEffect.NavigateToHome -> onNavigateToAuth()
                 is OnboardingEffect.ShowSnackbar -> onShowSnackBar(effect.message)
                 is OnboardingEffect.ScrollToNextPage -> {
                     scope.launch {

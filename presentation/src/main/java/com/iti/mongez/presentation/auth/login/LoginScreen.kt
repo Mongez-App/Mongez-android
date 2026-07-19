@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
-    onNavigateToHome: () -> Unit,
+    onNavigateToPreferences: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onShowSnackbar: (String) -> Unit
 ) {
@@ -59,7 +59,7 @@ fun LoginScreen(
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is LoginEffect.NavigateToHome -> onNavigateToHome()
+                is LoginEffect.NavigateToHome -> onNavigateToPreferences()
                 LoginEffect.NavigateToSignUp -> onNavigateToSignUp()
                 LoginEffect.NavigateToForgotPassword -> onShowSnackbar("Forgot password clicked")
                 is LoginEffect.ShowError -> {
