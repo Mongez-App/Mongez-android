@@ -1,7 +1,7 @@
 package com.iti.mongez.presentation.preferences.uiState
 
 sealed class PreferencesEffect {
-    object NavigateToDashboard : PreferencesEffect()
+    data class NavigateToDashboard(val showDefaultAlert: Boolean) : PreferencesEffect()
     object ScrollToNextPage : PreferencesEffect()
     object ScrollToPreviousPage : PreferencesEffect()
     object ScrollToSyncCalendar : PreferencesEffect()

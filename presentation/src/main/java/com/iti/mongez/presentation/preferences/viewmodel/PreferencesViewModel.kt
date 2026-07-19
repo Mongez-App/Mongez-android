@@ -6,6 +6,7 @@ import com.iti.mongez.presentation.preferences.contract.PreferencesIntent
 import com.iti.mongez.presentation.preferences.uiState.PreferencesEffect
 import com.iti.mongez.presentation.preferences.uiState.PreferencesStep
 import com.iti.mongez.presentation.preferences.uiState.PreferencesUiState
+import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PreferencesViewModel @Inject constructor() : ViewModel() {
+class PreferencesViewModel @Inject constructor(
+    private val savePreferencesUseCase: SavePreferencesUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PreferencesUiState())
     val uiState = _uiState.asStateFlow()
@@ -85,12 +88,23 @@ class PreferencesViewModel @Inject constructor() : ViewModel() {
 
     private fun handleSkip() {
         if (_uiState.value.currentStep == PreferencesStep.SyncCalendar) {
-            completeSetup()
+            saveDefaultPreferencesAndComplete()
         } else {
             _uiState.update { it.copy(currentStep = PreferencesStep.SyncCalendar) }
             viewModelScope.launch {
                 _effect.emit(PreferencesEffect.ScrollToSyncCalendar)
             }
+        }
+    }
+
+    private fun saveDefaultPreferencesAndComplete() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val defaultHours = 8
+            val defaultDays = listOf("Sun", "Mon", "Tue", "Wed", "Thu")
+            savePreferencesUseCase(defaultHours, defaultDays)
+            _uiState.update { it.copy(isLoading = false, isSetupComplete = true) }
+            _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = true))
         }
     }
 
@@ -101,9 +115,15 @@ class PreferencesViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun completeSetup() {
-        _uiState.update { it.copy(isSetupComplete = true) }
         viewModelScope.launch {
-            _effect.emit(PreferencesEffect.NavigateToDashboard)
+            _uiState.update { it.copy(isLoading = true) }
+            val currentState = _uiState.value
+            savePreferencesUseCase(
+                currentState.studyHours,
+                currentState.selectedDays.toList()
+            )
+            _uiState.update { it.copy(isLoading = false, isSetupComplete = true) }
+            _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = false))
         }
     }
 }
