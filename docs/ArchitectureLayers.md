@@ -11,8 +11,8 @@ The project architecture strictly separates concerns into independent modules. T
 
 | Module Layer | Responsibility | Dependencies |
 | :--- | :--- | :--- |
-| **App** | Application class, Hilt DI initialization, Navigation host. | Feature modules, Core modules |
-| **Presentation (Features)** | MVI Contracts (State, Intent, Effect), UI rendering. | Domain, Design System |
+| **App** | Application class, Hilt DI initialization, Navigation host, and shared signing keystore configuration (`keystores/debug.keystore`). | Feature modules, Core modules |
+| **Presentation (Features)** | MVI Contracts (State, Intent, Effect organized in `contract/`, `uiState/`, `view/`, `viewmodel/`), UI rendering. | Domain, Design System |
 | **Domain** | Pure Kotlin business logic, Hilt modules, `Result` wrapper, custom exceptions. | None (No Android dependencies) |
 | **Data** | Mappers, data sources, Retrofit network setup, `safeApi` utility, Hilt DI. | Domain |
 | **Design System** | Single source of truth for all visual elements. | Compose Foundation |

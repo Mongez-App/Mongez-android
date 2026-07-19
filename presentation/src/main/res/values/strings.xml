@@ -54,4 +54,19 @@
     <string name="error_passwords_not_match">Passwords do not match</string>
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_google_sign_up">Google Sign-Up not implemented yet</string>
+
+    <!-- Preferences Setup -->
+    <string name="preferences_step_of_3">Step %d of 3</string>
+    <string name="preferences_study_hours_title">How many hours would you study daily ?</string>
+    <string name="preferences_study_hours_subtitle">We\'ll personalize your plan based on the time you have</string>
+    <string name="preferences_available_days_title">Which days are available ?</string>
+    <string name="preferences_available_days_subtitle">Select all that apply</string>
+    <string name="preferences_sync_calendar_title">Sync your Calendar</string>
+    <string name="preferences_sync_calendar_subtitle">Connect your Google Calendar so AI can avoid conflicts and create the best schedule for you.</string>
+    <string name="preferences_sync_google_calendar">Sync Google Calendar</string>
+    <string name="preferences_skip_for_now">Skip for now</string>
+    <string name="preferences_previous">Previous</string>
+    <string name="preferences_next">Next</string>
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_PLACEHOLDER</string>
 </resources>
+

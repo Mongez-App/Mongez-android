@@ -2,10 +2,20 @@ plugins {
     id("mongez.android.application")
     id("mongez.compose")
     id("mongez.android.hilt")
+    alias(libs.plugins.google.services)
 }
 
 android {
     namespace = "com.iti.mongez"
+
+    signingConfigs {
+        create("sharedDebug") {
+            storeFile = file("../keystores/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
 
     defaultConfig {
         applicationId = "com.iti.mongez"
@@ -15,6 +25,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("sharedDebug")
+        }
         release {
             isMinifyEnabled = false
         }

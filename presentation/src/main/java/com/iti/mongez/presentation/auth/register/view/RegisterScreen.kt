@@ -1,4 +1,4 @@
-package com.iti.mongez.presentation.auth.register
+package com.iti.mongez.presentation.auth.register.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,15 +23,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.SocialButton
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -43,8 +49,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.iti.mongez.designsystem.R as DesignSystemR
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.auth.register.contract.RegisterIntent
+import com.iti.mongez.presentation.auth.register.uiState.RegisterEffect
+import com.iti.mongez.presentation.auth.register.uiState.RegisterUiState
+import com.iti.mongez.presentation.auth.register.viewmodel.RegisterViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
@@ -55,6 +66,8 @@ fun RegisterScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var topErrorMessage by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
@@ -65,6 +78,31 @@ fun RegisterScreen(
                     topErrorMessage = effect.message
                     delay(3000)
                     topErrorMessage = null
+                }
+                RegisterEffect.LaunchGoogleSignUp -> {
+                    coroutineScope.launch {
+                        try {
+                            val credentialManager = CredentialManager.create(context)
+                            val googleIdOption = GetGoogleIdOption.Builder()
+                                .setFilterByAuthorizedAccounts(false)
+                                .setServerClientId(context.getString(R.string.default_web_client_id))
+                                .setAutoSelectEnabled(true)
+                                .build()
+                            val request = GetCredentialRequest.Builder()
+                                .addCredentialOption(googleIdOption)
+                                .build()
+                            val result = credentialManager.getCredential(context, request)
+                            val credential = result.credential
+                            if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                                viewModel.onIntent(RegisterIntent.OnGoogleIdTokenReceived(googleIdTokenCredential.idToken))
+                            } else {
+                                onShowSnackbar("Unknown credential type")
+                            }
+                        } catch (e: Exception) {
+                            onShowSnackbar(e.message ?: "Google Sign-Up failed")
+                        }
+                    }
                 }
             }
         }
@@ -97,7 +135,7 @@ fun RegisterScreen(
 
 @Composable
 private fun RegisterContent(
-    state: RegisterState,
+    state: RegisterUiState,
     onIntent: (RegisterIntent) -> Unit
 ) {
     Column(
