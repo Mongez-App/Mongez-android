@@ -33,7 +33,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun PreferencesScreen(
     viewModel: PreferencesViewModel,
-    onNavigateToDashboard: () -> Unit,
+    onNavigateToDashboard: (Boolean) -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -47,7 +47,7 @@ fun PreferencesScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                PreferencesEffect.NavigateToDashboard -> onNavigateToDashboard()
+                is PreferencesEffect.NavigateToDashboard -> onNavigateToDashboard(effect.showDefaultAlert)
                 PreferencesEffect.ScrollToNextPage -> {
                     scope.launch {
                         if (pagerState.currentPage < 2) {
@@ -130,7 +130,8 @@ private fun PreferencesContent(
                         text = stringResource(id = R.string.preferences_next),
                         onClick = { onIntent(PreferencesIntent.OnNextClicked) },
                         variant = AppButtonVariant.Primary,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        isLoading = state.isLoading
                     )
                 }
             }

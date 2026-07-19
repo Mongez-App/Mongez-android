@@ -67,4 +67,14 @@
     <string name="preferences_skip_for_now">تخطي الآن</string>
     <string name="preferences_previous">السابق</string>
     <string name="preferences_next">التالي</string>
+
+    <!-- Default Schedule Dialog -->
+    <string name="schedule_default_title">تم ضبط الجدول على الوضع الافتراضي</string>
+    <string name="schedule_default_description">لقد قمنا ببناء جدول مهامك باستخدام تفضيلات الدراسة الافتراضية.</string>
+    <string name="study_time_label">وقت الدراسة</string>
+    <string name="default_study_hours_value">8 ساعات / يوم</string>
+    <string name="study_days_label">أيام الدراسة</string>
+    <string name="change_settings_hint">هل تريد تغيير هذا؟ توجه إلى الإعدادات لتخصيص ساعات وأيام الدراسة الخاصة بك.</string>
+    <string name="got_it">فهمت</string>
+    <string name="go_to_settings">الذهاب للإعدادات</string>
 </resources>

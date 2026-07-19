@@ -29,6 +29,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.dashboard.DashboardScreen
+import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
 private val navigationItems = listOf(
     AppNavigationBarItem(
@@ -54,9 +55,23 @@ private val navigationItems = listOf(
 )
 
 @Composable
-fun MainScreen(snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }) {
+fun MainScreen(
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    showDefaultAlert: Boolean = false
+) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
+    var isDefaultScheduleDialogOpen by remember { mutableStateOf(showDefaultAlert) }
+
+    if (isDefaultScheduleDialogOpen) {
+        DefaultScheduleDialog(
+            onDismiss = { isDefaultScheduleDialogOpen = false },
+            onGoToSettings = {
+                isDefaultScheduleDialogOpen = false
+                // Logic to go to settings
+            }
+        )
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

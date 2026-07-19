@@ -13,13 +13,12 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 // 1. Define the DataStore delegate at the top level of the file
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "mongez_prefs")
 
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
 
-    // 2. Provide the DataStore instance to Hilt
     @Provides
     @Singleton
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
