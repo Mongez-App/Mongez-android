@@ -1,4 +1,4 @@
-package com.iti.mongez.presentation.auth.login
+package com.iti.mongez.presentation.auth.login.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,15 +19,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.SocialButton
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -43,29 +49,61 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.iti.mongez.designsystem.R as DesignSystemR
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.auth.login.contract.LoginIntent
+import com.iti.mongez.presentation.auth.login.uiState.LoginEffect
+import com.iti.mongez.presentation.auth.login.uiState.LoginUiState
+import com.iti.mongez.presentation.auth.login.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
-    onNavigateToHome: () -> Unit,
+    onNavigateToPreferences: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onShowSnackbar: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     var topErrorMessage by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is LoginEffect.NavigateToHome -> onNavigateToHome()
+                is LoginEffect.NavigateToHome -> onNavigateToPreferences()
                 LoginEffect.NavigateToSignUp -> onNavigateToSignUp()
                 LoginEffect.NavigateToForgotPassword -> onShowSnackbar("Forgot password clicked")
                 is LoginEffect.ShowError -> {
                     topErrorMessage = effect.message
                     delay(3000)
                     topErrorMessage = null
+                }
+                LoginEffect.LaunchGoogleSignIn -> {
+                    coroutineScope.launch {
+                        try {
+                            val credentialManager = CredentialManager.create(context)
+                            val googleIdOption = GetGoogleIdOption.Builder()
+                                .setFilterByAuthorizedAccounts(false)
+                                .setServerClientId(context.getString(R.string.default_web_client_id))
+                                .setAutoSelectEnabled(true)
+                                .build()
+                            val request = GetCredentialRequest.Builder()
+                                .addCredentialOption(googleIdOption)
+                                .build()
+                            val result = credentialManager.getCredential(context, request)
+                            val credential = result.credential
+                            if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                                viewModel.onIntent(LoginIntent.OnGoogleIdTokenReceived(googleIdTokenCredential.idToken))
+                            } else {
+                                onShowSnackbar("Unknown credential type")
+                            }
+                        } catch (e: Exception) {
+                            onShowSnackbar(e.message ?: "Google Sign-In failed")
+                        }
+                    }
                 }
             }
         }
@@ -98,7 +136,7 @@ fun LoginScreen(
 
 @Composable
 private fun LoginContent(
-    state: LoginState,
+    state: LoginUiState,
     onIntent: (LoginIntent) -> Unit
 ) {
     Column(
@@ -157,7 +195,7 @@ private fun LoginContent(
             onValueChange = { onIntent(LoginIntent.OnEmailChanged(it)) },
             label = stringResource(R.string.email_label),
             placeholder = stringResource(R.string.email_placeholder),
-            leadingIcon = Icons.Outlined.Email, // Added email icon
+            leadingIcon = Icons.Outlined.Email,
             isError = state.emailError != null,
             errorMessage = state.emailError
         )
@@ -168,8 +206,8 @@ private fun LoginContent(
             value = state.password,
             onValueChange = { onIntent(LoginIntent.OnPasswordChanged(it)) },
             label = stringResource(R.string.password_label),
-            placeholder = stringResource(R.string.password_placeholder), // Updated placeholder to match dots in image
-            leadingIcon = Icons.Outlined.Lock, // Added lock icon
+            placeholder = stringResource(R.string.password_placeholder),
+            leadingIcon = Icons.Outlined.Lock,
             imeAction = ImeAction.Done,
             isError = state.passwordError != null,
             errorMessage = state.passwordError

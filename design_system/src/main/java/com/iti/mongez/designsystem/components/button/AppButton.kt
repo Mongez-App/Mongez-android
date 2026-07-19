@@ -22,13 +22,54 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+
+fun Modifier.appShadow(
+    color: Color = Color(0xFF5B4FE9).copy(alpha = 0.3f),
+    borderRadius: Dp = 14.dp,
+    blurRadius: Dp = 20.dp,
+    offsetY: Dp = 10.dp,
+    offsetX: Dp = 0.dp,
+    spread: Dp = 0.dp
+) = drawBehind {
+    drawIntoCanvas { canvas ->
+        val paint = Paint()
+        val frameworkPaint = paint.asFrameworkPaint()
+        if (blurRadius != 0.dp) {
+            frameworkPaint.maskFilter = (android.graphics.BlurMaskFilter(
+                blurRadius.toPx(),
+                android.graphics.BlurMaskFilter.Blur.NORMAL
+            ))
+        }
+        frameworkPaint.color = color.toArgb()
+
+        val leftPixel = offsetX.toPx() - spread.toPx()
+        val topPixel = offsetY.toPx() - spread.toPx()
+        val rightPixel = size.width + offsetX.toPx() + spread.toPx()
+        val bottomPixel = size.height + offsetY.toPx() + spread.toPx()
+
+        canvas.drawRoundRect(
+            left = leftPixel,
+            top = topPixel,
+            right = rightPixel,
+            bottom = bottomPixel,
+            radiusX = borderRadius.toPx(),
+            radiusY = borderRadius.toPx(),
+            paint = paint
+        )
+    }
+}
 
 enum class AppButtonVariant {
     Primary,
@@ -54,11 +95,13 @@ fun AppButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    innerModifier: Modifier = Modifier,
     variant: AppButtonVariant = AppButtonVariant.Primary,
     enabled: Boolean = true,
     isLoading: Boolean = false,
     leadingIcon: ImageVector? = null,
     fullWidth: Boolean = true,
+    containerColor: Color? = null,
 ) {
     val shape = RoundedCornerShape(Theme.radius.md)
     val heightModifier = modifier
@@ -69,6 +112,7 @@ fun AppButton(
         AppButtonVariant.Primary -> {
             val bgColor by animateColorAsState(
                 targetValue = when {
+                    containerColor != null -> containerColor
                     !enabled -> Theme.colorScheme.button.disabledBackground
                     else -> Theme.colorScheme.button.primaryBackground
                 },
@@ -82,7 +126,7 @@ fun AppButton(
 
             Button(
                 onClick = onClick,
-                modifier = heightModifier,
+                modifier = heightModifier.then(innerModifier),
                 enabled = enabled && !isLoading,
                 shape = shape,
                 colors = ButtonDefaults.buttonColors(
@@ -114,7 +158,7 @@ fun AppButton(
                     else Theme.colorScheme.button.disabledContent,
                 ),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Theme.colorScheme.button.secondaryBackground,
+                    containerColor = containerColor ?: Theme.colorScheme.button.secondaryBackground,
                     contentColor = Theme.colorScheme.button.secondaryContent,
                     disabledContentColor = Theme.colorScheme.button.disabledContent,
                 ),
@@ -142,7 +186,7 @@ fun AppButton(
                     else Theme.colorScheme.button.disabledContent,
                 ),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
+                    containerColor = containerColor ?: Color.Transparent,
                     contentColor = Theme.colorScheme.brand.primary,
                     disabledContentColor = Theme.colorScheme.button.disabledContent,
                 ),
@@ -165,6 +209,7 @@ fun AppButton(
                 enabled = enabled && !isLoading,
                 shape = shape,
                 colors = ButtonDefaults.textButtonColors(
+                    containerColor = containerColor ?: Color.Transparent,
                     contentColor = Theme.colorScheme.brand.primary,
                     disabledContentColor = Theme.colorScheme.button.disabledContent,
                 ),

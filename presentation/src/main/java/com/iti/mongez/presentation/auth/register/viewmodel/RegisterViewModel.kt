@@ -1,9 +1,16 @@
-package com.iti.mongez.presentation.auth.register
+package com.iti.mongez.presentation.auth.register.viewmodel
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.domain.auth.usecase.RegisterUseCase
+import com.iti.mongez.domain.auth.usecase.LoginWithGoogleUseCase
 import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.core.exceptions.AppException
+import com.iti.mongez.presentation.auth.register.contract.RegisterIntent
+import com.iti.mongez.presentation.auth.register.uiState.RegisterEffect
+import com.iti.mongez.presentation.auth.register.uiState.RegisterUiState
+import com.iti.mongez.presentation.utils.toFriendlyMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +24,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(RegisterState())
-    val state: StateFlow<RegisterState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(RegisterUiState())
+    val state: StateFlow<RegisterUiState> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<RegisterEffect>()
     val effect: SharedFlow<RegisterEffect> = _effect.asSharedFlow()
@@ -32,8 +40,9 @@ class RegisterViewModel @Inject constructor(
             is RegisterIntent.OnEmailChanged -> _state.update { it.copy(email = intent.email, emailError = null) }
             is RegisterIntent.OnPasswordChanged -> _state.update { it.copy(password = intent.password, passwordError = null) }
             is RegisterIntent.OnConfirmPasswordChanged -> _state.update { it.copy(confirmPassword = intent.password, confirmPasswordError = null) }
+            is RegisterIntent.OnGoogleIdTokenReceived -> loginWithGoogle(intent.idToken)
             RegisterIntent.OnRegisterClicked -> register()
-            RegisterIntent.OnGoogleSignUpClicked -> handleGoogleSignUp()
+            RegisterIntent.OnGoogleSignUpClicked -> emitEffect(RegisterEffect.LaunchGoogleSignUp)
             RegisterIntent.OnLoginClicked -> emitEffect(RegisterEffect.NavigateToLogin)
         }
     }
@@ -48,6 +57,9 @@ class RegisterViewModel @Inject constructor(
         }
         if (currentState.email.isBlank()) {
             _state.update { it.copy(emailError = "Email is required") }
+            hasError = true
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
+            _state.update { it.copy(emailError = "Please enter a valid email address") }
             hasError = true
         }
         if (currentState.password.isBlank()) {
@@ -70,7 +82,10 @@ class RegisterViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false) }
-                    emitEffect(RegisterEffect.ShowError(exception.message ?: "Registration failed"))
+                    val message = (exception as? AppException)?.toFriendlyMessage()
+                        ?: exception.message
+                        ?: "Registration failed. Please try again."
+                    emitEffect(RegisterEffect.ShowError(message))
                 },
                 onLoading = {
                     _state.update { it.copy(isLoading = true) }
@@ -79,8 +94,26 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    private fun handleGoogleSignUp() {
-        emitEffect(RegisterEffect.ShowError("Google Sign-Up not implemented yet"))
+    private fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            loginWithGoogleUseCase(idToken).fold(
+                onSuccess = { user ->
+                    _state.update { it.copy(isLoading = false) }
+                    emitEffect(RegisterEffect.NavigateToHome(user))
+                },
+                onFailure = { exception ->
+                    _state.update { it.copy(isLoading = false) }
+                    val message = (exception as? AppException)?.toFriendlyMessage()
+                        ?: exception.message
+                        ?: "Google Sign-Up failed. Please try again."
+                    emitEffect(RegisterEffect.ShowError(message))
+                },
+                onLoading = {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            )
+        }
     }
 
     private fun emitEffect(effect: RegisterEffect) {

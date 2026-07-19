@@ -9,11 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
+import com.iti.mongez.designsystem.components.button.AppSkipButton
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.onboarding.components.OnboardingActions
 import com.iti.mongez.presentation.onboarding.components.OnboardingIndicator
 import com.iti.mongez.presentation.onboarding.components.OnboardingPageItem
-import com.iti.mongez.presentation.onboarding.components.OnboardingSkipButton
 import com.iti.mongez.presentation.onboarding.contract.OnboardingIntent
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingEffect
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingUiState
@@ -24,7 +24,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel,
-    onNavigateToHome: () -> Unit,
+    onNavigateToAuth: () -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -34,7 +34,7 @@ fun OnboardingScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is OnboardingEffect.NavigateToHome -> onNavigateToHome()
+                is OnboardingEffect.NavigateToHome -> onNavigateToAuth()
                 is OnboardingEffect.ShowSnackbar -> onShowSnackBar(effect.message)
                 is OnboardingEffect.ScrollToNextPage -> {
                     scope.launch {
@@ -73,7 +73,7 @@ private fun OnboardingContent(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        OnboardingSkipButton(
+        AppSkipButton(
             isVisible = !state.isLastPage,
             onSkipClick = { onIntent(OnboardingIntent.OnSkipClicked) }
         )

@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.MongezTheme
@@ -35,15 +36,17 @@ fun AppChip(
     onSelectedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    selectedContainerColor: Color = Theme.colorScheme.chip.selectedBackground,
+    selectedLabelColor: Color = Theme.colorScheme.chip.selectedContent,
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (selected) Theme.colorScheme.chip.selectedBackground
+        targetValue = if (selected) selectedContainerColor
         else Theme.colorScheme.chip.unselectedBackground,
         animationSpec = tween(Theme.motion.duration.fast),
         label = "chip_bg",
     )
     val contentColor by animateColorAsState(
-        targetValue = if (selected) Theme.colorScheme.chip.selectedContent
+        targetValue = if (selected) selectedLabelColor
         else Theme.colorScheme.chip.unselectedContent,
         animationSpec = tween(Theme.motion.duration.fast),
         label = "chip_content",

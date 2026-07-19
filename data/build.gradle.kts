@@ -17,4 +17,10 @@ dependencies {
     implementation(libs.google.gson)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play)
+    implementation(libs.google.id)
+    implementation(libs.kotlinx.coroutines.play.services)
 }
+
+
