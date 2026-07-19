@@ -1,9 +1,16 @@
-package com.iti.mongez.presentation.auth.login
+package com.iti.mongez.presentation.auth.login.viewmodel
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.usecase.LoginUseCase
+import com.iti.mongez.domain.auth.usecase.LoginWithGoogleUseCase
+import com.iti.mongez.domain.core.exceptions.AppException
+import com.iti.mongez.presentation.auth.login.contract.LoginIntent
+import com.iti.mongez.presentation.auth.login.uiState.LoginEffect
+import com.iti.mongez.presentation.auth.login.uiState.LoginUiState
+import com.iti.mongez.presentation.utils.toFriendlyMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +24,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(LoginState())
-    val state: StateFlow<LoginState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(LoginUiState())
+    val state: StateFlow<LoginUiState> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<LoginEffect>()
     val effect: SharedFlow<LoginEffect> = _effect.asSharedFlow()
@@ -34,9 +42,12 @@ class LoginViewModel @Inject constructor(
             is LoginIntent.OnPasswordChanged -> {
                 _state.update { it.copy(password = intent.password, passwordError = null) }
             }
+            is LoginIntent.OnGoogleIdTokenReceived -> {
+                loginWithGoogle(intent.idToken)
+            }
             LoginIntent.OnLoginClicked -> login()
             LoginIntent.OnGuestClicked -> navigateToHome(null)
-            LoginIntent.OnGoogleSignInClicked -> handleGoogleSignIn()
+            LoginIntent.OnGoogleSignInClicked -> emitEffect(LoginEffect.LaunchGoogleSignIn)
             LoginIntent.OnSignUpClicked -> emitEffect(LoginEffect.NavigateToSignUp)
             LoginIntent.OnForgotPasswordClicked -> emitEffect(LoginEffect.NavigateToForgotPassword)
         }
@@ -46,6 +57,10 @@ class LoginViewModel @Inject constructor(
         val currentState = state.value
         if (currentState.email.isBlank()) {
             _state.update { it.copy(emailError = "Email cannot be empty") }
+            return
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
+            _state.update { it.copy(emailError = "Please enter a valid email address") }
             return
         }
         if (currentState.password.isBlank()) {
@@ -62,7 +77,10 @@ class LoginViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false) }
-                    emitEffect(LoginEffect.ShowError(exception.message ?: "Login failed"))
+                    val message = (exception as? AppException)?.toFriendlyMessage()
+                        ?: exception.message
+                        ?: "Login failed. Please try again."
+                    emitEffect(LoginEffect.ShowError(message))
                 },
                 onLoading = {
                     _state.update { it.copy(isLoading = true) }
@@ -71,9 +89,26 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun handleGoogleSignIn() {
-        // Not implemented in this phase
-        emitEffect(LoginEffect.ShowError("Google Sign-In not implemented yet"))
+    private fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            loginWithGoogleUseCase(idToken).fold(
+                onSuccess = { user ->
+                    _state.update { it.copy(isLoading = false) }
+                    emitEffect(LoginEffect.NavigateToHome(user))
+                },
+                onFailure = { exception ->
+                    _state.update { it.copy(isLoading = false) }
+                    val message = (exception as? AppException)?.toFriendlyMessage()
+                        ?: exception.message
+                        ?: "Google Sign-In failed. Please try again."
+                    emitEffect(LoginEffect.ShowError(message))
+                },
+                onLoading = {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            )
+        }
     }
 
     private fun navigateToHome(user: User?) {

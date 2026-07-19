@@ -13,8 +13,8 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.NavEntry
 import com.iti.mongez.domain.core.usecase.GetInitialRouteUseCase
 import com.iti.mongez.domain.utils.StartDestination
-import com.iti.mongez.presentation.auth.login.LoginScreen
-import com.iti.mongez.presentation.auth.register.RegisterScreen
+import com.iti.mongez.presentation.auth.login.view.LoginScreen
+import com.iti.mongez.presentation.auth.register.view.RegisterScreen
 import com.iti.mongez.presentation.main.MainScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import com.iti.mongez.presentation.preferences.view.PreferencesScreen

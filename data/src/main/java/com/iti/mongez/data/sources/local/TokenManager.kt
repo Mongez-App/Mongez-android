@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,5 +35,12 @@ class TokenManager @Inject constructor(
         dataStore.edit { preferences ->
             preferences.remove(TOKEN_KEY)
         }
+    }
+
+    // Check if a token is present
+    suspend fun hasToken(): Boolean {
+        return !dataStore.data.map { preferences ->
+            preferences[TOKEN_KEY]
+        }.first().isNullOrEmpty()
     }
 }

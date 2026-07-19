@@ -1,6 +1,6 @@
-package com.iti.mongez.domain.auth.model
+package com.iti.mongez.data.local.entity
 
-data class User(
+data class UserEntity(
     val id: String,
     val email: String,
     val name: String,
