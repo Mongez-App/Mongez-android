@@ -19,6 +19,7 @@ import androidx.navigation3.runtime.NavEntry
 import com.iti.mongez.domain.core.usecase.GetInitialRouteUseCase
 import com.iti.mongez.domain.utils.StartDestination
 import com.iti.mongez.presentation.auth.login.LoginScreen
+import com.iti.mongez.presentation.courses.CoursesScreen
 import com.iti.mongez.presentation.main.MainScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
