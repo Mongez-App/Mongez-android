@@ -44,6 +44,7 @@ fun DefaultScheduleDialog(
         onDismiss = onDismiss,
         secondaryActionText = stringResource(id = R.string.go_to_settings),
         onSecondaryAction = onGoToSettings,
+        secondaryActionContainerColor = Theme.colorScheme.surface.surfaceVariant,
         illustration = {
             Box(
                 modifier = Modifier
@@ -67,7 +68,7 @@ fun DefaultScheduleDialog(
                         .fillMaxWidth()
                         .padding(top = Theme.spacing.lg)
                         .background(
-                            Color(0xFFF6F7FB),
+                            Theme.colorScheme.surface.surfaceVariant,
                             RoundedCornerShape(Theme.radius.lg)
                         )
                         .padding(Theme.spacing.lg)
@@ -142,8 +143,8 @@ fun DefaultScheduleDialog(
                                         selected = true,
                                         onSelectedChange = {},
                                         enabled = true,
-                                        selectedContainerColor = Color(0xFFEEEBFF),
-                                        selectedLabelColor = Color(0xFF5B4FE9)
+                                        selectedContainerColor = Theme.colorScheme.brand.primaryContainer,
+                                        selectedLabelColor = Theme.colorScheme.brand.primary
                                     )
                                 }
                             }
@@ -154,22 +155,19 @@ fun DefaultScheduleDialog(
                 Spacer(modifier = Modifier.height(Theme.spacing.xl))
 
                 val hintText = stringResource(id = R.string.change_settings_hint)
-                val settingsWord = stringResource(id = R.string.go_to_settings)
+                val targetWord = stringResource(id = R.string.go_to_settings)
                 val annotatedHint = buildAnnotatedString {
-                    val parts = hintText.split(settingsWord)
-                    if (parts.size > 1) {
-                        append(parts[0])
-                        withStyle(
+                    append(hintText)
+                    val start = hintText.indexOf(targetWord)
+                    if (start != -1) {
+                        addStyle(
                             style = SpanStyle(
-                                color = Color(0xFF5B4FE9),
+                                color = Theme.colorScheme.brand.primary,
                                 fontWeight = FontWeight.Bold
-                            )
-                        ) {
-                            append(settingsWord)
-                        }
-                        append(parts[1])
-                    } else {
-                        append(hintText)
+                            ),
+                            start = start,
+                            end = start + targetWord.length
+                        )
                     }
                 }
 

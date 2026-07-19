@@ -101,6 +101,7 @@ fun AppButton(
     isLoading: Boolean = false,
     leadingIcon: ImageVector? = null,
     fullWidth: Boolean = true,
+    containerColor: Color? = null,
 ) {
     val shape = RoundedCornerShape(Theme.radius.md)
     val heightModifier = modifier
@@ -111,6 +112,7 @@ fun AppButton(
         AppButtonVariant.Primary -> {
             val bgColor by animateColorAsState(
                 targetValue = when {
+                    containerColor != null -> containerColor
                     !enabled -> Theme.colorScheme.button.disabledBackground
                     else -> Theme.colorScheme.button.primaryBackground
                 },
@@ -156,7 +158,7 @@ fun AppButton(
                     else Theme.colorScheme.button.disabledContent,
                 ),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Theme.colorScheme.button.secondaryBackground,
+                    containerColor = containerColor ?: Theme.colorScheme.button.secondaryBackground,
                     contentColor = Theme.colorScheme.button.secondaryContent,
                     disabledContentColor = Theme.colorScheme.button.disabledContent,
                 ),
@@ -184,7 +186,7 @@ fun AppButton(
                     else Theme.colorScheme.button.disabledContent,
                 ),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
+                    containerColor = containerColor ?: Color.Transparent,
                     contentColor = Theme.colorScheme.brand.primary,
                     disabledContentColor = Theme.colorScheme.button.disabledContent,
                 ),
@@ -207,6 +209,7 @@ fun AppButton(
                 enabled = enabled && !isLoading,
                 shape = shape,
                 colors = ButtonDefaults.textButtonColors(
+                    containerColor = containerColor ?: Color.Transparent,
                     contentColor = Theme.colorScheme.brand.primary,
                     disabledContentColor = Theme.colorScheme.button.disabledContent,
                 ),

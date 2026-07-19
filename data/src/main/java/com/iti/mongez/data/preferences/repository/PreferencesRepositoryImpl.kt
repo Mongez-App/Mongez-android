@@ -1,25 +1,35 @@
 package com.iti.mongez.data.preferences.repository
 
+import com.iti.mongez.data.preferences.sources.PreferencesDataSource
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.model.UserPreferences
 import com.iti.mongez.domain.preferences.repository.PreferencesRepository
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-class PreferencesRepositoryImpl @Inject constructor() : PreferencesRepository {
-    
-    private var cachedPreferences: UserPreferences? = null
+class PreferencesRepositoryImpl @Inject constructor(
+    private val dataSource: PreferencesDataSource
+) : PreferencesRepository {
 
     override suspend fun savePreferences(preferences: UserPreferences): Result<UserPreferences> {
-        delay(1000) // Simulate network delay
-        cachedPreferences = preferences
-        return Result.Success(preferences)
+        return try {
+            dataSource.savePreferences(preferences)
+            Result.Success(preferences)
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
     }
 
     override suspend fun getPreferences(): Result<UserPreferences> {
-        delay(500)
-        return cachedPreferences?.let { 
-            Result.Success(it) 
-        } ?: Result.Failure(Exception("No preferences found"))
+        return try {
+            val preferences = dataSource.userPreferencesFlow.first()
+            if (preferences != null) {
+                Result.Success(preferences)
+            } else {
+                Result.Failure(Exception("No preferences found"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
     }
 }

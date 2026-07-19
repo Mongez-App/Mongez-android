@@ -49,6 +49,7 @@ fun StudyHoursPicker(
 
     val shadowColorValue = Theme.colorScheme.brand.primary.copy(alpha = 0.7f)
     val strokeColorValue = Theme.colorScheme.brand.primary.copy(alpha = 0.2f)
+    val backgroundColorValue = Theme.colorScheme.surface.background
 
     Box(
         modifier = modifier
@@ -82,7 +83,7 @@ fun StudyHoursPicker(
 
                     val fillPaint = Paint().apply {
                         style = PaintingStyle.Fill
-                        color = Color(0xFFF9F9FF)
+                        color = backgroundColorValue
                     }
                     canvas.drawRoundRect(
                         left = 0f,
