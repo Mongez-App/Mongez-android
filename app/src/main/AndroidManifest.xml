@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.iti.mongez">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name="com.iti.mongez.MongezApplication"
         android:allowBackup="true"

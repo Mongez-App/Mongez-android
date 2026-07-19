@@ -4,15 +4,16 @@ plugins {
 }
 
 android {
-    namespace = "com.iti.mongez.presentation"
+    namespace = "com.iti.mongez.navigation"
 }
 
 dependencies {
     implementation(project(":domain"))
-    implementation(project(":design_system"))
+    implementation(project(":presentation"))
 
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 }
-
