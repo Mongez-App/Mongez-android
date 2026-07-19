@@ -45,7 +45,7 @@ class NavViewModel @Inject constructor(
             _startDestination.value = when (destination) {
                 StartDestination.ONBOARDING -> AppRoute.Onboarding
                 StartDestination.LOGIN -> AppRoute.Login
-                StartDestination.DASHBOARD -> AppRoute.Dashboard
+                StartDestination.DASHBOARD -> AppRoute.Dashboard()
             }
         }
     }
@@ -106,15 +106,15 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             is AppRoute.Preferences -> NavEntry(AppRoute.Preferences) {
                 PreferencesScreen(
                     viewModel = hiltViewModel(),
-                    onNavigateToDashboard = {
+                    onNavigateToDashboard = { showDefaultAlert ->
                         backStack.clear()
-                        backStack.add(AppRoute.Dashboard)
+                        backStack.add(AppRoute.Dashboard(showDefaultAlert = showDefaultAlert))
                     },
                     onShowSnackBar = { /* Handle */ }
                 )
             }
-            is AppRoute.Dashboard -> NavEntry(AppRoute.Dashboard) {
-                MainScreen()
+            is AppRoute.Dashboard -> NavEntry(AppRoute.Dashboard()) {
+                MainScreen(showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert)
             }
             else -> NavEntry(key) {
                 Text("Unknown Route")

@@ -5,5 +5,5 @@ sealed interface AppRoute {
     object Login : AppRoute
     object Register : AppRoute
     object Preferences : AppRoute
-    object Dashboard : AppRoute
+    data class Dashboard(val showDefaultAlert: Boolean = false) : AppRoute
 }

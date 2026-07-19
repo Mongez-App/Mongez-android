@@ -23,6 +23,7 @@ internal object PrimitiveColors {
 
     // region Gray
     val Gray50 = Color(0xFFFCFCFD)
+    val Gray75 = Color(0xFFF6F7FB)
     val Gray100 = Color(0xFFF8F9FC)
     val Gray200 = Color(0xFFF2F4F7)
     val Gray250 = Color(0xFFE5E7EB)
