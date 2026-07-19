@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mongez</string>
+    <string name="app_skip">Skip</string>
 </resources>

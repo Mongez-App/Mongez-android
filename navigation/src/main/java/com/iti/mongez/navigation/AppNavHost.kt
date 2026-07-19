@@ -19,8 +19,11 @@ import androidx.navigation3.runtime.NavEntry
 import com.iti.mongez.domain.core.usecase.GetInitialRouteUseCase
 import com.iti.mongez.domain.utils.StartDestination
 import com.iti.mongez.presentation.auth.login.LoginScreen
+import com.iti.mongez.presentation.auth.register.RegisterScreen
 import com.iti.mongez.presentation.main.MainScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
+import com.iti.mongez.presentation.preferences.view.PreferencesScreen
+import com.iti.mongez.presentation.preferences.viewmodel.PreferencesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,7 +73,8 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 OnboardingScreen(
                     viewModel = hiltViewModel(),
                     onNavigateToHome = {
-                        backStack.add(AppRoute.Preferences)
+                        backStack.clear()
+                        backStack.add(AppRoute.Login)
                     },
                     onShowSnackBar = { /* Handle globally or locally */ }
                 )
@@ -79,17 +83,35 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 LoginScreen(
                     onNavigateToHome = {
                         backStack.clear()
-                        backStack.add(AppRoute.Dashboard)
+                        backStack.add(AppRoute.Preferences)
                     },
-                    onNavigateToSignUp = { /* TODO */ },
-                    onShowSnackbar = { /* TODO */ }
+                    onNavigateToSignUp = {
+                        backStack.add(AppRoute.Register)
+                    },
+                    onShowSnackbar = { /* Handle */ }
+                )
+            }
+            is AppRoute.Register -> NavEntry(AppRoute.Register) {
+                RegisterScreen(
+                    onNavigateToHome = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Preferences)
+                    },
+                    onNavigateToLogin = {
+                        backStack.remove(AppRoute.Register)
+                    },
+                    onShowSnackbar = { /* Handle */ }
                 )
             }
             is AppRoute.Preferences -> NavEntry(AppRoute.Preferences) {
-                // Placeholder for Preferences Screen
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Preferences Screen - Not Implemented Yet")
-                }
+                PreferencesScreen(
+                    viewModel = hiltViewModel(),
+                    onNavigateToDashboard = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Dashboard)
+                    },
+                    onShowSnackBar = { /* Handle */ }
+                )
             }
             is AppRoute.Dashboard -> NavEntry(AppRoute.Dashboard) {
                 MainScreen()
