@@ -9,8 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.AppButtonVariant
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 
@@ -66,3 +68,15 @@ fun SyncCalendarView(
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun SyncCalendarViewPreview() {
+    MongezTheme {
+        SyncCalendarView(
+            onSyncClick = {},
+            onSkipClick = {}
+        )
+    }
+}
+

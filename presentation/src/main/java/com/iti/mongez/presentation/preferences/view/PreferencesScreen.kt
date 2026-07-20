@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.lerp
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.AppButtonVariant
 import com.iti.mongez.designsystem.components.button.AppSkipButton
@@ -184,3 +186,21 @@ private fun PreferencesContent(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun PreferencesContentPreview() {
+    MongezTheme {
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        PreferencesContent(
+            state = PreferencesUiState(
+                currentStep = PreferencesStep.StudyHours,
+                dailyStudyHours = 4,
+                availableDays = listOf("Mon", "Wed", "Fri")
+            ),
+            pagerState = pagerState,
+            onIntent = {}
+        )
+    }
+}
+
