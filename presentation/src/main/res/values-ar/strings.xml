@@ -93,4 +93,36 @@
     <string name="roadmap_title">خارطة طريق الفصل الدراسي</string>
     <string name="roadmap_add_event">إضافة حدث</string>
     <string name="roadmap_filter_label">تصفية: %1$s - %2$s</string>
+    <!-- Tabs -->
+    <string name="tab_online_course">مقرر إلكتروني</string>
+    <string name="tab_upload_material">رفع المادة الدراسية</string>
+
+    <!-- Course -->
+    <string name="label_course_name">اسم المقرر</string>
+    <string name="hint_course_name">مثال: نظم التشغيل</string>
+
+    <string name="label_course_code">رمز المقرر</string>
+    <string name="hint_course_code">مثال: CS301</string>
+
+    <string name="my_courses">مقرراتي</string>
+    <string name="add_new_course">اضف مقرر</string>
+
+    <!-- Upload -->
+    <string name="course_material_title">المادة الدراسية</string>
+    <string name="upload_course_material">رفع المادة الدراسية</string>
+    <string name="upload_course_material_hint">ملف PDF أو DOC، بحد أقصى 10 ميجابايت</string>
+
+    <!-- Dates -->
+    <string name="label_start_date">تاريخ البدء</string>
+    <string name="hint_start_date">14/07/2026</string>
+    <string name="cd_select_start_date">اختر تاريخ البدء</string>
+
+    <string name="label_exam_date">تاريخ الامتحان</string>
+    <string name="hint_exam_date">15/08/2026</string>
+    <string name="cd_select_exam_date">اختر تاريخ الامتحان</string>
+
+    <!-- Buttons -->
+    <string name="button_add_course">إضافة المقرر</string>
+    <string name="action_ok">موافق</string>
+    <string name="action_cancel">إلغاء</string>
 </resources>

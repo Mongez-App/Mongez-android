@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 
@@ -52,3 +54,16 @@ fun PreferenceStepHeader(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun PreferenceStepHeaderPreview() {
+    MongezTheme {
+        Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.lg)) {
+            PreferenceStepHeader(step = 1)
+            PreferenceStepHeader(step = 2)
+            PreferenceStepHeader(step = 3)
+        }
+    }
+}
+

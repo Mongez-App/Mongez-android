@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.preferences.contract.PreferencesIntent
@@ -54,3 +56,15 @@ fun StudyHoursStep(state: PreferencesUiState, onIntent: (PreferencesIntent) -> U
         Spacer(modifier = Modifier.weight(1.5f))
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun StudyHoursStepPreview() {
+    MongezTheme {
+        StudyHoursStep(
+            state = PreferencesUiState(studyHours = 4),
+            onIntent = {}
+        )
+    }
+}
+

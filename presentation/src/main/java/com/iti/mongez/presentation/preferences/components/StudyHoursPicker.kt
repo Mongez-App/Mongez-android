@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import kotlinx.coroutines.launch
 
@@ -160,3 +162,17 @@ fun StudyHoursPicker(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun StudyHoursPickerPreview() {
+    MongezTheme {
+        Box(modifier = Modifier.padding(20.dp)) {
+            StudyHoursPicker(
+                selectedHours = 4,
+                onHoursChanged = {}
+            )
+        }
+    }
+}
+
