@@ -36,6 +36,8 @@ import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
+import com.iti.mongez.presentation.preferences.view.PreferencesScreen
+import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
 /**
@@ -81,7 +83,8 @@ fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showDefaultAlert: Boolean = false,
     onNavigateToPreferences: () -> Unit,
-    onNavigateToCourseDetails: (String) -> Unit
+    onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
@@ -102,9 +105,9 @@ fun MainScreen(
             onDismiss = {
                 isDefaultScheduleDialogOpen = false
             },
-            onGoToSettings = {
+            onGoToProfile = {
                 isDefaultScheduleDialogOpen = false
-                onNavigateToPreferences()
+                selectedTabIndex = 3 // Index of Profile tab
             }
         )
     }
@@ -143,7 +146,11 @@ fun MainScreen(
         MainScreenContent(
             tab = selectedTab,
             innerPadding = innerPadding,
-            onNavigateToCourseDetails = onNavigateToCourseDetails
+            onNavigateToCourseDetails = onNavigateToCourseDetails,
+            onNavigateToLogin = onNavigateToLogin,
+            onShowSnackBar = { message ->
+                // Use the snackbarHostState to show a snackbar
+            }
         )
     }
 }
@@ -152,7 +159,9 @@ fun MainScreen(
 private fun MainScreenContent(
     tab: MainTab,
     innerPadding: PaddingValues,
-    onNavigateToCourseDetails: (String) -> Unit
+    onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onShowSnackBar: (String) -> Unit
 ) {
     when (tab) {
 
@@ -182,11 +191,11 @@ private fun MainScreenContent(
         }
 
         MainTab.Profile -> {
-            Text(
-                text = stringResource(R.string.nav_profile) + " Content",
-                modifier = Modifier.padding(innerPadding),
-                color = Theme.colorScheme.text.primary,
-                style = Theme.typography.title.medium
+            ProfileScreen(
+                innerPadding = innerPadding,
+                viewModel = hiltViewModel(),
+                onNavigateToLogin = onNavigateToLogin,
+                onShowSnackBar = onShowSnackBar
             )
         }
     }

@@ -20,6 +20,7 @@ import com.iti.mongez.presentation.main.MainScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import androidx.compose.foundation.layout.PaddingValues
 import com.iti.mongez.presentation.preferences.view.PreferencesScreen
+import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,10 +110,14 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 MainScreen(
                     showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
                     onNavigateToPreferences = {
-                        //To-Do go to the profile
+                        // In the future, this could navigate specifically to the Profile tab
                     },
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
+                    },
+                    onNavigateToLogin = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Login)
                     }
                 )
             }
@@ -125,6 +130,17 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToAddEvent = {
                         //To-Do
                     }
+                )
+            }
+            is AppRoute.Profile -> NavEntry(AppRoute.Profile) {
+                ProfileScreen(
+                    innerPadding = PaddingValues(),
+                    viewModel = hiltViewModel(),
+                    onNavigateToLogin = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Login)
+                    },
+                    onShowSnackBar = { /* Handle */ }
                 )
             }
             is AppRoute.CourseDetails -> NavEntry(key) {

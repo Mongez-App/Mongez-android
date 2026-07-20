@@ -34,7 +34,7 @@ import com.iti.mongez.presentation.R
 @Composable
 fun DefaultScheduleDialog(
     onDismiss: () -> Unit,
-    onGoToSettings: () -> Unit
+    onGoToProfile: () -> Unit
 ) {
     AppConfirmationDialog(
         title = stringResource(id = R.string.schedule_default_title),
@@ -42,8 +42,8 @@ fun DefaultScheduleDialog(
         primaryActionText = stringResource(id = R.string.got_it),
         onPrimaryAction = onDismiss,
         onDismiss = onDismiss,
-        secondaryActionText = stringResource(id = R.string.go_to_settings),
-        onSecondaryAction = onGoToSettings,
+        secondaryActionText = stringResource(id = R.string.go_to_profile),
+        onSecondaryAction = onGoToProfile,
         secondaryActionContainerColor = Theme.colorScheme.surface.surfaceVariant,
         illustration = {
             Box(
@@ -155,7 +155,7 @@ fun DefaultScheduleDialog(
                 Spacer(modifier = Modifier.height(Theme.spacing.xl))
 
                 val hintText = stringResource(id = R.string.change_settings_hint)
-                val targetWord = stringResource(id = R.string.go_to_settings)
+                val targetWord = stringResource(id = R.string.go_to_profile)
                 val annotatedHint = buildAnnotatedString {
                     append(hintText)
                     val start = hintText.indexOf(targetWord)
@@ -195,7 +195,7 @@ fun DefaultScheduleDialogPreview() {
         ) {
             DefaultScheduleDialog(
                 onDismiss = {},
-                onGoToSettings = {}
+                onGoToProfile = {}
             )
         }
     }

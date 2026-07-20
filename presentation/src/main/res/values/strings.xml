@@ -76,9 +76,9 @@
     <string name="study_time_label">Study Time</string>
     <string name="default_study_hours_value">8 hours / day</string>
     <string name="study_days_label">Study Days</string>
-    <string name="change_settings_hint">Want to change this? Head to Settings to customize your study hours and days.</string>
+    <string name="change_settings_hint">Want to change this? Head to Profile to customize your study hours and days.</string>
     <string name="got_it">Got It</string>
-    <string name="go_to_settings">Go to Settings</string>
+    <string name="go_to_profile">Go to Profile</string>
 
     <!-- Roadmap -->
     <string name="roadmap_week_number">Week %1$d</string>
@@ -150,6 +150,15 @@
     <string name="nav_courses">Courses</string>
     <string name="nav_roadmap">Roadmap</string>
     <string name="nav_profile">Profile</string>
+
+    <!-- Profile -->
+    <string name="profile_studying_hours">Studying Hours</string>
+    <string name="profile_completed_tasks">Completed Tasks</string>
+    <string name="profile_streak_days">Streak Days</string>
+    <string name="profile_calendar_sync">Calendar Sync</string>
+    <string name="profile_dark_mode">Dark Mode</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_logout">Logout</string>
 </resources>
 
 
