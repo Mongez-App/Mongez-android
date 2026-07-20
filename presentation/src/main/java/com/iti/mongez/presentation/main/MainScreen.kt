@@ -33,7 +33,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
-import com.iti.mongez.presentation.courses.CoursesScreen
+import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
