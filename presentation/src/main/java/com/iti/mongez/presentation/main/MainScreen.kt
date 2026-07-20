@@ -80,7 +80,7 @@ private enum class MainTab(
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showDefaultAlert: Boolean = false,
-    onNavigateToPreferences: () -> Unit
+    onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit
 ) {
     var selectedTabIndex by rememberSaveable {
