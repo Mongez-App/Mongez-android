@@ -78,6 +78,38 @@
     <string name="change_settings_hint">Want to change this? Head to Settings to customize your study hours and days.</string>
     <string name="got_it">Got It</string>
     <string name="go_to_settings">Go to Settings</string>
+    <!-- Tabs -->
+    <string name="tab_online_course">Online Course</string>
+    <string name="tab_upload_material">Upload Material</string>
+
+    <!-- Course -->
+    <string name="label_course_name">Course Name</string>
+    <string name="hint_course_name">e.g. Operating Systems</string>
+
+    <string name="label_course_code">Course Code</string>
+    <string name="hint_course_code">e.g. CS301</string>
+
+    <string name="my_courses">My Courses</string>
+    <string name="add_new_course">Add New Course</string>
+
+    <!-- Upload -->
+    <string name="course_material_title">Course Material</string>
+    <string name="upload_course_material">Upload course material</string>
+    <string name="upload_course_material_hint">PDF or DOC, up to 10 MB</string>
+
+    <!-- Dates -->
+    <string name="label_start_date">Start Date</string>
+    <string name="hint_start_date">14/07/2026</string>
+    <string name="cd_select_start_date">Select start date</string>
+
+    <string name="label_exam_date">Exam Date</string>
+    <string name="hint_exam_date">15/08/2026</string>
+    <string name="cd_select_exam_date">Select exam date</string>
+
+    <!-- Buttons -->
+    <string name="button_add_course">Add Course</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
 </resources>
 
 

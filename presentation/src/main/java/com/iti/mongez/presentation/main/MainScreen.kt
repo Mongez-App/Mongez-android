@@ -23,11 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.courses.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
@@ -102,7 +104,12 @@ fun MainScreen(
                     onViewAllDeadlines = {},
                 )
             }
-            1 -> Text("Courses Content", modifier = Modifier.padding(innerPadding))
+            1 -> {
+                CoursesScreen(
+                    innerPadding = innerPadding,
+                    viewModel = hiltViewModel()
+                )
+            }
             2 -> Text("Roadmap Content", modifier = Modifier.padding(innerPadding))
             3 -> Text("Profile Content", modifier = Modifier.padding(innerPadding))
         }
