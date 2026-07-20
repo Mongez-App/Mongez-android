@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.iti.mongez" />
+                  <option name="mobileSdkAppId" value="1:742434995178:android:a2195259aead049f119093" />
+                  <option name="projectId" value="mongez-56da8" />
+                  <option name="projectNumber" value="742434995178" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
