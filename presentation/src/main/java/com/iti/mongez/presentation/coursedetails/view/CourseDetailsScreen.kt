@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
@@ -41,7 +42,10 @@ import com.iti.mongez.designsystem.components.button.AppGlowButton
 import com.iti.mongez.designsystem.components.menu.AppPopupMenu
 import com.iti.mongez.designsystem.components.menu.PopupMenuItem
 import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
+import com.iti.mongez.designsystem.components.chip.AppChip
 import com.iti.mongez.designsystem.screens.courses.AppDocumentCard
+import com.iti.mongez.designsystem.screens.courses.AppTaskCard
+import com.iti.mongez.designsystem.screens.courses.CourseProgressCard
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.feature.coursedetails.viewmodel.CourseDetailsViewModel
 import com.iti.mongez.presentation.R
@@ -122,9 +126,9 @@ fun CourseDetailsScreen(
                             PopupMenuItem(
                                 title = stringResource(R.string.edit_course),
                                 icon = Icons.Outlined.Edit,
-                                color = Color(0xFF374151),
-                                height = 45.dp,
-                                padding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                                color = Theme.colorScheme.text.primary,
+                                height = 48.dp,
+                                padding = PaddingValues(horizontal = Theme.spacing.lg, vertical = Theme.spacing.md),
                                 onClick = {
                                     viewModel.processIntent(CourseDetailsIntent.EditCourse)
                                 }
@@ -132,9 +136,9 @@ fun CourseDetailsScreen(
                             PopupMenuItem(
                                 title = stringResource(R.string.delete_course),
                                 icon = Icons.Outlined.Delete,
-                                color = Color(0xFFEF4444),
-                                height = 49.dp,
-                                padding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp),
+                                color = Theme.colorScheme.state.error,
+                                height = 48.dp,
+                                padding = PaddingValues(start = Theme.spacing.lg, end = Theme.spacing.lg, top = Theme.spacing.lg, bottom = Theme.spacing.md),
                                 onClick = {
                                     viewModel.processIntent(CourseDetailsIntent.DeleteCourse)
                                 }
@@ -208,13 +212,13 @@ fun CourseDetailsScreen(
                                     PopupMenuItem(
                                         title = stringResource(R.string.delete),
                                         icon = Icons.Outlined.Delete,
-                                        color = Color(0xFFEF4444),
-                                        height = 49.dp,
+                                        color = Theme.colorScheme.state.error,
+                                        height = 48.dp,
                                         padding = PaddingValues(
-                                            start = 16.dp,
-                                            end = 16.dp,
-                                            top = 16.dp,
-                                            bottom = 12.dp
+                                            start = Theme.spacing.lg,
+                                            end = Theme.spacing.lg,
+                                            top = Theme.spacing.lg,
+                                            bottom = Theme.spacing.md
                                         ),
                                         onClick = {
                                             viewModel.processIntent(
@@ -232,11 +236,78 @@ fun CourseDetailsScreen(
                     }
                 } else {
                     item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(Theme.spacing.xl),
-                            contentAlignment = Alignment.Center
+                        CourseProgressCard(
+                            completedTasks = state.completedTasks,
+                            totalTasks = state.totalTasks,
+                            percentage = state.progressPercentage
+                        )
+                    }
+                    
+                    item { Spacer(modifier = Modifier.height(Theme.spacing.lg)) }
+                    
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sm),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(stringResource(R.string.no_tasks_available_right_now), color = Theme.colorScheme.text.tertiary)
+                            items(state.taskFilters.size) { index ->
+                                val filter = state.taskFilters[index]
+                                AppChip(
+                                    label = filter,
+                                    selected = state.selectedTaskFilterIndex == index,
+                                    onSelectedChange = { 
+                                        viewModel.processIntent(CourseDetailsIntent.SelectTaskFilter(index)) 
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    
+                    val todayTasks = state.tasks.filter { it.isToday }
+                    if (todayTasks.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(Theme.spacing.lg))
+                            Text(
+                                text = "Today Tasks",
+                                style = Theme.typography.title.medium.copy(fontWeight = FontWeight.Bold),
+                                color = Theme.colorScheme.text.primary,
+                                modifier = Modifier.padding(bottom = Theme.spacing.sm)
+                            )
+                        }
+                        items(todayTasks, key = { it.id }) { task ->
+                            AppTaskCard(
+                                title = task.title,
+                                duration = task.duration,
+                                priority = task.priority,
+                                isCompleted = task.isCompleted,
+                                onClick = {
+                                    viewModel.processIntent(CourseDetailsIntent.ClickTask(task.id))
+                                }
+                            )
+                        }
+                    }
+                    
+                    val upcomingTasks = state.tasks.filter { !it.isToday }
+                    if (upcomingTasks.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(Theme.spacing.lg))
+                            Text(
+                                text = "Upcoming Tasks",
+                                style = Theme.typography.title.medium.copy(fontWeight = FontWeight.Bold),
+                                color = Theme.colorScheme.text.primary,
+                                modifier = Modifier.padding(bottom = Theme.spacing.sm)
+                            )
+                        }
+                        items(upcomingTasks, key = { it.id }) { task ->
+                            AppTaskCard(
+                                title = task.title,
+                                duration = task.duration,
+                                priority = task.priority,
+                                isCompleted = task.isCompleted,
+                                onClick = {
+                                    viewModel.processIntent(CourseDetailsIntent.ClickTask(task.id))
+                                }
+                            )
                         }
                     }
                 }

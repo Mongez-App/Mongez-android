@@ -1,6 +1,6 @@
 package com.iti.mongez.navigation
 
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -107,7 +107,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.Dashboard -> NavEntry(key) {
                 MainScreen(
-                    showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
+                    showDefaultAlert = (key).showDefaultAlert,
                     onNavigateToPreferences = {
                         //To-Do go to the profile
                     },
@@ -128,7 +128,6 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 )
             }
             is AppRoute.CourseDetails -> NavEntry(key) {
-                val route = key as AppRoute.CourseDetails
                 CourseDetailsScreen(
                     onNavigateBack = {
                         backStack.remove(key)

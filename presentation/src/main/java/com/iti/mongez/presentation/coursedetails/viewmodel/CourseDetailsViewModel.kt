@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 import com.iti.mongez.presentation.coursedetails.uistate.CourseDetailsUiState
 import com.iti.mongez.presentation.coursedetails.uistate.DocumentItem
+import com.iti.mongez.presentation.coursedetails.uistate.TaskItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,50 @@ import javax.inject.Inject
 @HiltViewModel
 class CourseDetailsViewModel @Inject constructor() : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CourseDetailsUiState())
+    private val _uiState = MutableStateFlow(CourseDetailsUiState(
+        tasks = listOf(
+            TaskItem(
+                id = "1",
+                title = "Read Chapter 4",
+                duration = "45 min",
+                priority = "HIGH",
+                isCompleted = true,
+                isToday = true
+            ),
+            TaskItem(
+                id = "2",
+                title = "Practice DFS Problems",
+                duration = "30 min",
+                priority = "MEDIUM",
+                isCompleted = false,
+                isToday = true
+            ),
+            TaskItem(
+                id = "3",
+                title = "Finish Quiz",
+                duration = "20 min",
+                priority = "LOW",
+                isCompleted = false,
+                isToday = true
+            ),
+            TaskItem(
+                id = "4",
+                title = "Practice DFS Problems",
+                duration = "30 min",
+                priority = "MEDIUM",
+                isCompleted = false,
+                isToday = false
+            ),
+            TaskItem(
+                id = "5",
+                title = "Read Chapter 4",
+                duration = "45 min",
+                priority = "HIGH",
+                isCompleted = false,
+                isToday = false
+            )
+        )
+    ))
     val uiState: StateFlow<CourseDetailsUiState> = _uiState.asStateFlow()
 
     init {
@@ -45,6 +89,21 @@ class CourseDetailsViewModel @Inject constructor() : ViewModel() {
             }
             is CourseDetailsIntent.ClickUploadMaterial -> {
                 // Handle upload action
+            }
+            is CourseDetailsIntent.SelectTaskFilter -> {
+                _uiState.update { it.copy(selectedTaskFilterIndex = intent.index) }
+            }
+            is CourseDetailsIntent.ClickTask -> {
+                _uiState.update { state ->
+                    val updatedTasks = state.tasks.map {
+                        if (it.id == intent.taskId) {
+                            it.copy(isCompleted = !it.isCompleted)
+                        } else {
+                            it
+                        }
+                    }
+                    state.copy(tasks = updatedTasks)
+                }
             }
         }
     }
