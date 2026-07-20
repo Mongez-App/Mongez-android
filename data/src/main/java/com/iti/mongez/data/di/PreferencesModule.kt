@@ -1,6 +1,6 @@
 package com.iti.mongez.data.di
 
-import com.iti.mongez.data.preferences.repository.PreferencesRepositoryImpl
+import com.iti.mongez.data.repositories.preferences.PreferencesRepositoryImpl
 import com.iti.mongez.domain.preferences.repository.PreferencesRepository
 import dagger.Binds
 import dagger.Module
