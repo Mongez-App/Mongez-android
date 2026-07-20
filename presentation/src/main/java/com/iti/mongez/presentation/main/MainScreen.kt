@@ -33,7 +33,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
-import com.iti.mongez.presentation.courses.CoursesScreen
+import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
@@ -45,37 +45,64 @@ private enum class MainTab(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 ) {
-    Home(R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home),
-    Courses(R.string.nav_courses, Icons.AutoMirrored.Filled.MenuBook, Icons.AutoMirrored.Outlined.MenuBook),
-    Roadmap(R.string.nav_roadmap, Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
-    Profile(R.string.nav_profile, Icons.Filled.Person, Icons.Outlined.Person);
+    Home(
+        R.string.nav_home,
+        Icons.Filled.Home,
+        Icons.Outlined.Home
+    ),
+
+    Courses(
+        R.string.nav_courses,
+        Icons.AutoMirrored.Filled.MenuBook,
+        Icons.AutoMirrored.Outlined.MenuBook
+    ),
+
+    Roadmap(
+        R.string.nav_roadmap,
+        Icons.Filled.CalendarMonth,
+        Icons.Outlined.CalendarMonth
+    ),
+
+    Profile(
+        R.string.nav_profile,
+        Icons.Filled.Person,
+        Icons.Outlined.Person
+    );
 
     companion object {
-        fun fromIndex(index: Int): MainTab = entries.getOrElse(index) { Home }
+        fun fromIndex(index: Int): MainTab =
+            entries.getOrElse(index) { Home }
     }
 }
 
 @Composable
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    showDefaultAlert: Boolean = false
+    showDefaultAlert: Boolean = false,
+    onNavigateToCourseDetails: (String) -> Unit
 ) {
-    // State for bottom navigation
-    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+    var selectedTabIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
     val selectedTab = MainTab.fromIndex(selectedTabIndex)
 
-    // Snackbar type state to allow custom styling of snackbars shown via Scaffold's host
-    var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
+    var activeSnackbarType by remember {
+        mutableStateOf(AppSnackbarType.Info)
+    }
 
-    // Dialog state - using rememberSaveable to handle configuration changes
-    var isDefaultScheduleDialogOpen by rememberSaveable { mutableStateOf(showDefaultAlert) }
+    var isDefaultScheduleDialogOpen by rememberSaveable {
+        mutableStateOf(showDefaultAlert)
+    }
 
     if (isDefaultScheduleDialogOpen) {
         DefaultScheduleDialog(
-            onDismiss = { isDefaultScheduleDialogOpen = false },
+            onDismiss = {
+                isDefaultScheduleDialogOpen = false
+            },
             onGoToSettings = {
                 isDefaultScheduleDialogOpen = false
-                // TODO: Wire up navigation to settings when available
+                // TODO: Navigate to Settings
             }
         )
     }
@@ -84,7 +111,9 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = Theme.colorScheme.surface.background,
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
+            SnackbarHost(
+                hostState = snackbarHostState
+            ) { snackbarData ->
                 AppSnackbarContent(
                     message = snackbarData.visuals.message,
                     type = activeSnackbarType,
@@ -98,17 +127,21 @@ fun MainScreen(
                     AppNavigationBarItem(
                         label = stringResource(tab.labelResId),
                         selectedIcon = tab.selectedIcon,
-                        unselectedIcon = tab.unselectedIcon,
+                        unselectedIcon = tab.unselectedIcon
                     )
                 },
                 selectedIndex = selectedTabIndex,
-                onItemSelected = { selectedTabIndex = it },
+                onItemSelected = {
+                    selectedTabIndex = it
+                }
             )
-        },
+        }
     ) { innerPadding ->
+
         MainScreenContent(
             tab = selectedTab,
-            innerPadding = innerPadding
+            innerPadding = innerPadding,
+            onNavigateToCourseDetails = onNavigateToCourseDetails
         )
     }
 }
@@ -116,22 +149,25 @@ fun MainScreen(
 @Composable
 private fun MainScreenContent(
     tab: MainTab,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    onNavigateToCourseDetails: (String) -> Unit
 ) {
     when (tab) {
+
         MainTab.Home -> {
             DashboardScreen(
                 innerPadding = innerPadding,
-                onNavigateToFocus = { /* TODO: Implement navigation */ },
-                onViewAllTasks = { /* TODO: Implement navigation */ },
-                onViewAllDeadlines = { /* TODO: Implement navigation */ },
+                onNavigateToFocus = {},
+                onViewAllTasks = {},
+                onViewAllDeadlines = {}
             )
         }
 
         MainTab.Courses -> {
             CoursesScreen(
                 innerPadding = innerPadding,
-                viewModel = hiltViewModel()
+                viewModel = hiltViewModel(),
+                onCourseClick = onNavigateToCourseDetails
             )
         }
 

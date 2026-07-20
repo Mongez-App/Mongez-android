@@ -1,9 +1,11 @@
-package com.iti.mongez.presentation.courses
+package com.iti.mongez.presentation.courses.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
+import com.iti.mongez.presentation.courses.contract.CoursesEffect
+import com.iti.mongez.presentation.courses.viewmodel.CoursesViewModel
 import kotlinx.coroutines.delay
 
 /**
@@ -13,6 +15,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun CoursesScreen(
     innerPadding: PaddingValues,
+    onCourseClick: (String) -> Unit,
     viewModel: CoursesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -44,6 +47,7 @@ fun CoursesScreen(
         innerPadding = innerPadding,
         topSnackbarMessage = topSnackbarMessage,
         topSnackbarType = topSnackbarType,
-        onIntent = viewModel::handleIntent
+        onIntent = viewModel::handleIntent,
+        onCourseClick = onCourseClick
     )
 }
