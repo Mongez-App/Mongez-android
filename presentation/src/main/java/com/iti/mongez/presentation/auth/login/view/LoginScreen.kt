@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.SocialButton
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -49,13 +44,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.iti.mongez.designsystem.R as DesignSystemR
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.auth.GoogleSignInManager
 import com.iti.mongez.presentation.auth.login.contract.LoginIntent
 import com.iti.mongez.presentation.auth.login.uiState.LoginEffect
 import com.iti.mongez.presentation.auth.login.uiState.LoginUiState
 import com.iti.mongez.presentation.auth.login.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun LoginScreen(
@@ -66,8 +62,11 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var topErrorMessage by remember { mutableStateOf<String?>(null) }
+
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    // GoogleSignInManager needs Activity context (for the CredentialManager bottom sheet).
+    // remember{} ties its lifetime to this Composable; LocalContext.current is the Activity.
+    val googleSignInManager = remember { GoogleSignInManager(context) }
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
@@ -77,33 +76,21 @@ fun LoginScreen(
                 LoginEffect.NavigateToForgotPassword -> onShowSnackbar("Forgot password clicked")
                 is LoginEffect.ShowError -> {
                     topErrorMessage = effect.message
-                    delay(3000)
+                    delay(3000.milliseconds)
                     topErrorMessage = null
                 }
                 LoginEffect.LaunchGoogleSignIn -> {
-                    coroutineScope.launch {
-                        try {
-                            val credentialManager = CredentialManager.create(context)
-                            val googleIdOption = GetGoogleIdOption.Builder()
-                                .setFilterByAuthorizedAccounts(false)
-                                .setServerClientId(context.getString(R.string.default_web_client_id))
-                                .setAutoSelectEnabled(true)
-                                .build()
-                            val request = GetCredentialRequest.Builder()
-                                .addCredentialOption(googleIdOption)
-                                .build()
-                            val result = credentialManager.getCredential(context, request)
-                            val credential = result.credential
-                            if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                                viewModel.onIntent(LoginIntent.OnGoogleIdTokenReceived(googleIdTokenCredential.idToken))
-                            } else {
-                                onShowSnackbar("Unknown credential type")
-                            }
-                        } catch (e: Exception) {
-                            onShowSnackbar(e.message ?: "Google Sign-In failed")
+                    // collectLatest is already a coroutine — no extra launch needed.
+                    // All boilerplate (request building, token extraction) is in GoogleSignInManager.
+                    runCatching { googleSignInManager.getGoogleIdToken() }
+                        .onSuccess { token ->
+                            viewModel.onIntent(LoginIntent.OnGoogleIdTokenReceived(token))
                         }
-                    }
+                        .onFailure { e ->
+                            topErrorMessage = e.message ?: "Google Sign-In failed"
+                            delay(3000.milliseconds)
+                            topErrorMessage = null
+                        }
                 }
             }
         }
@@ -114,7 +101,7 @@ fun LoginScreen(
             state = state,
             onIntent = viewModel::onIntent
         )
-        
+
         AnimatedVisibility(
             visible = topErrorMessage != null,
             enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),

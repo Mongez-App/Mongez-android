@@ -116,4 +116,11 @@
     <string name="delete_course">حذف المقرر</string>
     <string name="delete">حذف</string>
     <string name="no_tasks_available_right_now">لا توجد مهام متاحة الآن</string>
+
+
+    <!-- Navigation Labels -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_courses">المواد</string>
+    <string name="nav_roadmap">الخارطة</string>
+    <string name="nav_profile">الملف</string>
 </resources>

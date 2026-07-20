@@ -42,11 +42,12 @@ class LoginViewModel @Inject constructor(
             is LoginIntent.OnPasswordChanged -> {
                 _state.update { it.copy(password = intent.password, passwordError = null) }
             }
-            is LoginIntent.OnGoogleIdTokenReceived -> {
-                loginWithGoogle(intent.idToken)
-            }
+            is LoginIntent.OnGoogleIdTokenReceived -> loginWithGoogle(intent.idToken)
             LoginIntent.OnLoginClicked -> login()
             LoginIntent.OnGuestClicked -> navigateToHome(null)
+            // ViewModel tells the UI to launch the picker — the UI calls GoogleSignInManager
+            // and returns the token via OnGoogleIdTokenReceived. This keeps Activity context
+            // (required by CredentialManager) in the UI layer where it belongs.
             LoginIntent.OnGoogleSignInClicked -> emitEffect(LoginEffect.LaunchGoogleSignIn)
             LoginIntent.OnSignUpClicked -> emitEffect(LoginEffect.NavigateToSignUp)
             LoginIntent.OnForgotPasswordClicked -> emitEffect(LoginEffect.NavigateToForgotPassword)
