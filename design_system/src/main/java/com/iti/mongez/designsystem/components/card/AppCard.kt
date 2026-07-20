@@ -11,6 +11,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,11 +33,12 @@ fun AppCard(
     onClick: (() -> Unit)? = null,
     elevation: Dp = Theme.elevation.xs,
     borderWidth: Dp = 0.dp,
+    containerColor: Color = Theme.colorScheme.card.background,
     content: @Composable () -> Unit,
 ) {
     val shape = RoundedCornerShape(Theme.radius.xl)
     val colors = CardDefaults.cardColors(
-        containerColor = Theme.colorScheme.card.background,
+        containerColor = containerColor,
     )
     val border = if (borderWidth > 0.dp) {
         BorderStroke(borderWidth, Theme.colorScheme.card.border)

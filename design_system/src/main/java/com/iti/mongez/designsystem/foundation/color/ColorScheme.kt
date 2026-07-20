@@ -27,6 +27,7 @@ data class TextColors(
 data class SurfaceColors(
     val background: Color,
     val surface: Color,
+    val surfaceLow: Color,
     val surfaceVariant: Color,
     val surfaceContainer: Color,
     val surfaceHigh: Color,
@@ -139,6 +140,7 @@ val LightColorScheme = AppColorScheme(
     surface = SurfaceColors(
         background = PrimitiveColors.White,
         surface = PrimitiveColors.White,
+        surfaceLow = PrimitiveColors.Gray80,
         surfaceVariant = PrimitiveColors.Gray75,
         surfaceContainer = PrimitiveColors.Gray100,
         surfaceHigh = PrimitiveColors.Gray200,
@@ -228,6 +230,7 @@ val DarkColorScheme = AppColorScheme(
     surface = SurfaceColors(
         background = DarkBackground,
         surface = DarkSurface,
+        surfaceLow = DarkCard,
         surfaceVariant = DarkCard,
         surfaceContainer = DarkCard,
         surfaceHigh = Color(0xFF282B33),

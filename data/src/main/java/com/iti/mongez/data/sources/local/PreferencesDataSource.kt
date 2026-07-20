@@ -1,4 +1,4 @@
-package com.iti.mongez.data.preferences.sources
+package com.iti.mongez.data.sources.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -21,7 +21,7 @@ class PreferencesDataSource @Inject constructor(
     val userPreferencesFlow: Flow<UserPreferences?> = dataStore.data.map { preferences ->
         val hours = preferences[PreferencesKeys.DAILY_STUDY_HOURS]
         val days = preferences[PreferencesKeys.AVAILABLE_DAYS]
-        
+
         if (hours != null && days != null) {
             UserPreferences(
                 dailyStudyHours = hours,

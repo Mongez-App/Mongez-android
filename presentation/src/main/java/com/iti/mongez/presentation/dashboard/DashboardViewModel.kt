@@ -35,6 +35,30 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
 
+            // Mocking the API response for now
+            _state.value = _state.value.copy(
+                isLoading = false,
+                streakCount = 5,
+                isStreakActive = true,
+                focusTopic = "Algorithms",
+                focusDuration = "90 min",
+                goals = listOf(
+                    GoalItem("Today's Goal", 3, 5, "tasks", GoalType.DAILY),
+                    GoalItem("Weekly Progress", 12, 20, "hours", GoalType.WEEKLY),
+                    GoalItem("Monthly", 45, 80, "hours", GoalType.MONTHLY)
+                ),
+                tasks = listOf(
+                    TaskItem("1", "Process Management", "60 min", TaskPriority.HIGH, true),
+                    TaskItem("2", "Dynamic Programming", "90 min", TaskPriority.MEDIUM, false),
+                    TaskItem("3", "TCP/IP Stack", "45 min", TaskPriority.LOW, false)
+                ),
+                deadlines = listOf(
+                    DeadlineItem("1", "Algorithms", "Midterm Exam", "Tomorrow", true),
+                    DeadlineItem("2", "Database Systems", "Project Submission", "In 3 Days", false)
+                )
+            )
+
+            /*
             getDashboardDataUseCase().fold(
                 onSuccess = { data ->
                     val summary = data.summary
@@ -76,6 +100,7 @@ class DashboardViewModel @Inject constructor(
                 },
                 onLoading = { /* Handled internally by initial copy */ }
             )
+            */
         }
     }
     fun onEvent(event: DashboardEvent) {
