@@ -24,7 +24,9 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
 @Composable
@@ -150,3 +152,15 @@ private fun DayItem(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun DaysSelectionGridPreview() {
+    MongezTheme {
+        DaysSelectionGrid(
+            selectedDays = setOf("Sun", "Mon"),
+            onDayToggle = {}
+        )
+    }
+}
+
