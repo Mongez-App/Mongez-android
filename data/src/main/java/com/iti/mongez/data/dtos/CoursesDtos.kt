@@ -36,27 +36,3 @@ data class CreateCourseResponseDto(
 data class AlertDto(
     @SerializedName("message") val message: String
 )
-
-// Mappers
-fun CourseDto.toDomain() = Course(
-    id = id,
-    name = name,
-    courseCode = courseCode,
-    startDate = startDate,
-    examDate = examDate,
-    hasMaterials = hasMaterials,
-    completionPercentage = completionPercentage
-)
-
-fun CreateCourseResponseDto.toDomain() = CourseCreationResult(
-    course = Course(
-        id = id,
-        name = name,
-        courseCode = courseCode,
-        startDate = startDate,
-        examDate = examDate,
-        hasMaterials = hasMaterials,
-        completionPercentage = completionPercentage
-    ),
-    alertMessage = alert?.message
-)

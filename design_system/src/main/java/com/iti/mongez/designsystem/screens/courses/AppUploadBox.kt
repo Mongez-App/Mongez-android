@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +23,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,27 +44,23 @@ fun AppUploadBox(
     subtitle: String? = null,
     iconContent: @Composable () -> Unit,
 ) {
-    // Semantic mappings directly from AppColorScheme
     val titleColor = Theme.colorScheme.text.primary
     val subtitleColor = Theme.colorScheme.text.secondary
     val hintColor = Theme.colorScheme.text.hint
 
-    // The background is a very faint tint. We use surfaceVariant as the base gray/tinted background token.
     val boxBackgroundColor = Theme.colorScheme.surface.surfaceVariant
-    // primaryContainer maps to Purple100 (light) which perfectly mimics the #E0E7FF dashed border from CSS.
-    val dashedBorderColor = Theme.colorScheme.brand.primaryContainer
+    val dashedBorderColor = Theme.colorScheme.border.focused
 
     val iconBackgroundColor = Theme.colorScheme.surface.background
     val shadowColor = Theme.colorScheme.border.primary
-
+    val cornerRadius = Theme.radius.lg
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing.sm)
     ) {
-        // 1. Label Section
         Row(
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.xs)
         ) {
             Text(
                 text = title,
@@ -83,32 +77,30 @@ fun AppUploadBox(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
                     lineHeight = 16.sp,
-                    modifier = Modifier.padding(bottom = 1.dp) // Align baselines visually
+                    modifier = Modifier.padding(bottom = 1.dp)
                 )
             }
         }
 
-        // 2. Upload Box Area
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(172.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .clickable { onClick() }
+                .clip(RoundedCornerShape(Theme.radius.lg))
+                .clickable(onClick = onClick)
                 .background(boxBackgroundColor)
-                // Custom dashed border implementation
                 .drawBehind {
                     drawRoundRect(
                         color = dashedBorderColor,
                         style = Stroke(
                             width = 2.dp.toPx(),
                             pathEffect = PathEffect.dashPathEffect(
-                                intervals = floatArrayOf(20f, 20f), // Defines dash length and gap length
+                                intervals = floatArrayOf(20f, 20f),
                                 phase = 0f
                             )
                         ),
-                        cornerRadius = CornerRadius(16.dp.toPx())
+                        cornerRadius = CornerRadius(cornerRadius.toPx())
                     )
                 }
         ) {
@@ -116,13 +108,12 @@ fun AppUploadBox(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Circular Icon Container
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(Theme.spacing.huge)
                         .shadow(
-                            elevation = 1.dp,
+                            elevation = Theme.elevation.xs,
                             shape = CircleShape,
                             spotColor = shadowColor.copy(alpha = 0.05f),
                             ambientColor = shadowColor.copy(alpha = 0.05f)
@@ -132,9 +123,8 @@ fun AppUploadBox(
                     iconContent()
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Theme.spacing.lg))
 
-                // Primary Text ("Upload cover image")
                 Text(
                     text = primaryText,
                     color = titleColor,
@@ -143,9 +133,8 @@ fun AppUploadBox(
                     lineHeight = 20.sp
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Theme.spacing.xs))
 
-                // Secondary Text ("PNG or JPG, up to 5 MB")
                 Text(
                     text = secondaryText,
                     color = hintColor,
@@ -158,10 +147,6 @@ fun AppUploadBox(
     }
 }
 
-// ──────────────────────────────────────────────────────────────
-// Previews
-// ──────────────────────────────────────────────────────────────
-
 @Preview(showBackground = true, name = "Upload Box - Thumbnail Mode (Light)")
 @Composable
 private fun AppUploadBoxThumbnailPreview() {
@@ -169,7 +154,7 @@ private fun AppUploadBoxThumbnailPreview() {
         Box(
             modifier = Modifier
                 .background(Theme.colorScheme.surface.background)
-                .padding(24.dp)
+                .padding(Theme.spacing.xl)
         ) {
             AppUploadBox(
                 title = "Thumbnail",
@@ -177,8 +162,10 @@ private fun AppUploadBoxThumbnailPreview() {
                 secondaryText = "PNG or JPG, up to 5 MB",
                 onClick = {},
                 iconContent = {
-                    // Using an Emoji to match the provided Figma image (image_955408.png)
-                    Text(text = "🖼️", fontSize = 24.sp)
+                    Text(
+                        text = "🖼️",
+                        fontSize = 24.sp
+                    )
                 }
             )
         }
@@ -192,7 +179,7 @@ private fun AppUploadBoxMaterialPreview() {
         Box(
             modifier = Modifier
                 .background(Theme.colorScheme.surface.background)
-                .padding(24.dp)
+                .padding(Theme.spacing.xl)
         ) {
             AppUploadBox(
                 title = "Course Material",
@@ -201,7 +188,6 @@ private fun AppUploadBoxMaterialPreview() {
                 secondaryText = "Tap to browse files",
                 onClick = {},
                 iconContent = {
-                    // Simulating the plus icon matching the primary brand color (image_955424.png)
                     Text(
                         text = "+",
                         fontSize = 24.sp,

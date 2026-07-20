@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.AppButtonVariant
 import com.iti.mongez.designsystem.components.tabs.AppSegmentedTabs
@@ -45,11 +46,11 @@ fun AddCourseSheetContent(
 
     val tabs = listOf(
         SegmentedTabItem(
-            title = "Online Course",
+            title = stringResource(R.string.tab_online_course),
             iconPainter = painterResource(id = R.drawable.link_icon)
         ),
         SegmentedTabItem(
-            title = "Upload Material",
+            title = stringResource(R.string.tab_upload_material),
             iconPainter = painterResource(id = R.drawable.folder_icon)
         )
     )
@@ -64,22 +65,22 @@ fun AddCourseSheetContent(
         AppTextField(
             value = courseName,
             onValueChange = { courseName = it },
-            label = "Course Name",
-            placeholder = "e.g. Operating Systems"
+            label = stringResource(R.string.label_course_name),
+            placeholder = stringResource(R.string.hint_course_name)
         )
 
         AppTextField(
             value = courseCode,
             onValueChange = { courseCode = it },
-            label = "Course Code",
-            placeholder = "e.g. CS301"
+            label = stringResource(R.string.label_course_code),
+            placeholder = stringResource(R.string.hint_course_code)
         )
 
         if (selectedTab == 1) {
             AppUploadBox(
-                title = "Course Material",
-                primaryText = "Upload course material",
-                secondaryText = "PDF or DOC, up to 10 MB",
+                title = stringResource(R.string.course_material_title),
+                primaryText = stringResource(R.string.upload_course_material),
+                secondaryText = stringResource(R.string.upload_course_material_hint),
                 onClick = {},
                 iconContent = { Text("📚") }
             )
@@ -88,8 +89,8 @@ fun AddCourseSheetContent(
         AppTextField(
             value = startDateUi,
             onValueChange = {},
-            label = "Start Date",
-            placeholder = "14/07/2026",
+            label = stringResource(R.string.label_start_date),
+            placeholder = stringResource(R.string.hint_start_date),
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { showStartDatePicker = true }) {
@@ -105,14 +106,14 @@ fun AddCourseSheetContent(
         AppTextField(
             value = examDateUi,
             onValueChange = {},
-            label = "Exam Date",
-            placeholder = "15/08/2026",
+            label = stringResource(R.string.label_exam_date),
+            placeholder = stringResource(R.string.hint_exam_date),
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { showExamDatePicker = true }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select exam date",
+                        contentDescription = stringResource(R.string.cd_select_exam_date),
                         tint = Theme.colorScheme.input.icon
                     )
                 }
@@ -122,7 +123,7 @@ fun AddCourseSheetContent(
         Spacer(modifier = Modifier.height(Theme.spacing.sm))
 
         AppButton(
-            text = "Add Course",
+            text = stringResource(R.string.button_add_course),
             onClick = {
                 onAddCourse(
                     courseName,
@@ -163,7 +164,7 @@ fun AddCourseSheetContent(
                         showExamDatePicker = false
                     }
                 ) {
-                    Text("OK", color = Theme.colorScheme.brand.primary)
+                    Text(stringResource(R.string.action_ok), color = Theme.colorScheme.brand.primary)
                 }
             },
             dismissButton = {
@@ -171,7 +172,7 @@ fun AddCourseSheetContent(
                     showStartDatePicker = false
                     showExamDatePicker = false
                 }) {
-                    Text("Cancel", color = Theme.colorScheme.text.secondary)
+                    Text(stringResource(R.string.action_cancel), color = Theme.colorScheme.text.secondary)
                 }
             }
         ) {

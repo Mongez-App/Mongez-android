@@ -40,12 +40,15 @@ import com.iti.mongez.designsystem.theme.Theme
 @Composable
 fun CourseCard(
     title: String,
-    progress: Float, // Values between 0.0f and 1.0f
+    progress: Float,
     imagePainter: Painter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Semantic mappings directly from AppColorScheme tokens
+    val spacing = Theme.spacing
+    val radius = Theme.radius
+    val elevation = Theme.elevation
+
     val backgroundColor = Theme.colorScheme.card.background
     val borderColor = Theme.colorScheme.card.border
     val titleColor = Theme.colorScheme.text.primary
@@ -53,52 +56,46 @@ fun CourseCard(
     val trackColor = Theme.colorScheme.surface.surfaceContainer
     val shadowColor = Theme.colorScheme.border.disabled
 
-    // Dynamic color logic: Success (Green) for >= 50%, Primary (Purple) for < 50%
-    val dynamicProgressColor = if (progress >= 0.5f) {
-        Theme.colorScheme.state.success
-    }else if (progress >= 0.3f){
-            Theme.colorScheme.brand.primary
-    }else
-    {
-        Theme.colorScheme.state.warning
+    val dynamicProgressColor = when {
+        progress >= 0.5f -> Theme.colorScheme.state.success
+        progress >= 0.3f -> Theme.colorScheme.brand.primary
+        else -> Theme.colorScheme.state.warning
     }
-
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(32.dp),
+                elevation = elevation.md,
+                shape = RoundedCornerShape(radius.dialog),
                 spotColor = shadowColor.copy(alpha = 0.05f),
                 ambientColor = shadowColor.copy(alpha = 0.05f)
             )
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(32.dp)
+                shape = RoundedCornerShape(radius.dialog)
             )
             .border(
                 width = 1.dp,
                 color = borderColor,
-                shape = RoundedCornerShape(32.dp)
+                shape = RoundedCornerShape(radius.dialog)
             )
-            .clip(RoundedCornerShape(32.dp))
-            .clickable { onClick() }
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .clip(RoundedCornerShape(radius.dialog))
+            .clickable(onClick = onClick)
+            .padding(spacing.lg),
+        horizontalArrangement = Arrangement.spacedBy(spacing.lg),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left Course Thumbnail
+
         Image(
             painter = imagePainter,
             contentDescription = "$title thumbnail",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(width = 128.dp, height = 144.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(radius.lg))
         )
 
-        // Right Content Area
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -106,9 +103,8 @@ fun CourseCard(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
 
-            // Top Section (Title & Subtitle)
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(spacing.xs)
             ) {
                 Text(
                     text = title,
@@ -119,6 +115,7 @@ fun CourseCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 Text(
                     text = "Progress",
                     color = hintColor,
@@ -127,9 +124,8 @@ fun CourseCard(
                 )
             }
 
-            // Bottom Section (Percentages & Progress Bar)
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(spacing.xs)
             ) {
                 val percentageText = "${(progress * 100).toInt()}%"
 
@@ -144,6 +140,7 @@ fun CourseCard(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
+
                     Text(
                         text = percentageText,
                         color = hintColor,
@@ -152,7 +149,6 @@ fun CourseCard(
                     )
                 }
 
-                // Custom Linear Progress Track
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -162,7 +158,7 @@ fun CourseCard(
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(fraction = progress.coerceIn(0f, 1f))
+                            .fillMaxWidth(progress.coerceIn(0f, 1f))
                             .fillMaxHeight()
                             .clip(CircleShape)
                             .background(dynamicProgressColor)
@@ -173,18 +169,16 @@ fun CourseCard(
     }
 }
 
-// ──────────────────────────────────────────────────────────────
-// Previews
-// ──────────────────────────────────────────────────────────────
-
 @Preview(showBackground = true, name = "Course Card - High Progress (Light)")
 @Composable
 private fun CourseCardHighProgressPreview() {
     MongezTheme(darkTheme = false) {
-        Box(modifier = Modifier.padding(24.dp)) {
+        Box(
+            modifier = Modifier.padding(Theme.spacing.xl)
+        ) {
             CourseCard(
                 title = "Operating Systems",
-                progress = 0.1f, // Will automatically render Green
+                progress = 0.1f,
                 imagePainter = ColorPainter(Color(0xFF0F172A)),
                 onClick = {}
             )
@@ -196,10 +190,14 @@ private fun CourseCardHighProgressPreview() {
 @Composable
 private fun CourseCardLowProgressPreview() {
     MongezTheme(darkTheme = true) {
-        Box(modifier = Modifier.padding(24.dp).background(Color(0xFF111317))) {
+        Box(
+            modifier = Modifier
+                .padding(Theme.spacing.xl)
+                .background(Color(0xFF111317))
+        ) {
             CourseCard(
                 title = "Algorithms",
-                progress = 0.34f, // Will automatically render Purple
+                progress = 0.34f,
                 imagePainter = ColorPainter(Color(0xFF1E293B)),
                 onClick = {}
             )

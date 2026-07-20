@@ -3,6 +3,7 @@ package com.iti.mongez.data.repositories.courses
 import com.iti.mongez.data.dtos.CreateCourseRequestDto
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.data.dtos.toDomain
+import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.remote.services.CoursesApiService
 import com.iti.mongez.domain.courses.model.Course

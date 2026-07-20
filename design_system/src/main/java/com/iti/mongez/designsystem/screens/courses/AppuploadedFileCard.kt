@@ -44,7 +44,9 @@ fun AppUploadedFileCard(
     onRemoveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 1. Map component colors using the Theme
+    val spacing = Theme.spacing
+    val radius = Theme.radius
+
     val cardBackgroundColor = Theme.colorScheme.surface.surfaceVariant
     val cardBorderColor = Theme.colorScheme.border.secondary
 
@@ -52,27 +54,43 @@ fun AppUploadedFileCard(
     val sizeColor = Theme.colorScheme.text.tertiary
     val closeIconColor = Theme.colorScheme.text.secondary
 
-    // Determine badge color based on file extension (Defaults to standard surface, overrides for PDF)
     val isPdf = fileExtension.equals("pdf", ignoreCase = true)
-    val badgeBackgroundColor = if (isPdf) Theme.colorScheme.state.errorContainer else Theme.colorScheme.surface.surfaceHigh
-    val badgeTextColor = if (isPdf) Theme.colorScheme.state.error else Theme.colorScheme.text.secondary
+    val badgeBackgroundColor =
+        if (isPdf) Theme.colorScheme.state.errorContainer
+        else Theme.colorScheme.surface.surfaceHigh
+
+    val badgeTextColor =
+        if (isPdf) Theme.colorScheme.state.error
+        else Theme.colorScheme.text.secondary
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(74.dp) // Fixed height from CSS
-            .background(cardBackgroundColor, RoundedCornerShape(16.dp))
-            .border(1.dp, cardBorderColor, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 12.dp),
+            .height(74.dp)
+            .background(cardBackgroundColor, RoundedCornerShape(radius.lg))
+            .border(
+                width = 1.dp,
+                color = cardBorderColor,
+                shape = RoundedCornerShape(radius.lg)
+            )
+            .clip(RoundedCornerShape(radius.lg))
+            .padding(
+                start = spacing.lg,
+                top = spacing.lg,
+                bottom = spacing.lg,
+                end = spacing.md
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 2. Dynamic File Extension Badge
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(40.dp)
-                .background(badgeBackgroundColor, RoundedCornerShape(12.dp))
+                .background(
+                    color = badgeBackgroundColor,
+                    shape = RoundedCornerShape(radius.md)
+                )
         ) {
             Text(
                 text = fileExtension.uppercase(),
@@ -84,9 +102,8 @@ fun AppUploadedFileCard(
             )
         }
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(spacing.md))
 
-        // 3. Truncated File Name
         Text(
             text = fileName,
             color = titleColor,
@@ -95,12 +112,11 @@ fun AppUploadedFileCard(
             lineHeight = 20.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f) // Takes up remaining space, pushing the size text to the end
+            modifier = Modifier.weight(1f)
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(spacing.sm))
 
-        // 4. File Size (Constrained width to force wrapping as seen in Figma)
         Text(
             text = fileSize,
             color = sizeColor,
@@ -108,12 +124,11 @@ fun AppUploadedFileCard(
             fontWeight = FontWeight.Medium,
             lineHeight = 15.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(18.dp) // Narrow width forces "2.4" and "MB" to stack
+            modifier = Modifier.width(18.dp)
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(spacing.md))
 
-        // 5. Remove Button
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = "Remove uploaded file",
@@ -121,14 +136,10 @@ fun AppUploadedFileCard(
             modifier = Modifier
                 .size(20.dp)
                 .clip(CircleShape)
-                .clickable { onRemoveClick() }
+                .clickable(onClick = onRemoveClick)
         )
     }
 }
-
-// ──────────────────────────────────────────────────────────────
-// Previews
-// ──────────────────────────────────────────────────────────────
 
 @Preview(showBackground = true, name = "File Card - Light Theme (PDF)")
 @Composable
@@ -137,13 +148,13 @@ private fun AppUploadedFileCardLightPreview() {
         Box(
             modifier = Modifier
                 .background(Theme.colorScheme.surface.background)
-                .padding(24.dp)
+                .padding(Theme.spacing.xl)
         ) {
             AppUploadedFileCard(
                 fileName = "Chapter 1 - Introduction.pdf",
                 fileSize = "2.4 MB",
                 fileExtension = "pdf",
-                onRemoveClick = { /* Handle remove logic */ },
+                onRemoveClick = {},
                 modifier = Modifier.width(300.dp)
             )
         }
@@ -157,13 +168,13 @@ private fun AppUploadedFileCardDarkPreview() {
         Box(
             modifier = Modifier
                 .background(Theme.colorScheme.surface.background)
-                .padding(24.dp)
+                .padding(Theme.spacing.xl)
         ) {
             AppUploadedFileCard(
                 fileName = "Course Syllabus.docx",
                 fileSize = "500 KB",
                 fileExtension = "doc",
-                onRemoveClick = { /* Handle remove logic */ },
+                onRemoveClick = {},
                 modifier = Modifier.width(300.dp)
             )
         }

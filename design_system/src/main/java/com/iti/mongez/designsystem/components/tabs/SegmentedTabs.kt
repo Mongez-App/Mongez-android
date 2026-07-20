@@ -36,10 +36,6 @@ import com.iti.mongez.designsystem.theme.Theme
 /**
  * Data class representing a single tab item in the Segmented Control.
  */
-data class SegmentedTabItem(
-    val title: String,
-    val iconPainter: Painter
-)
 
 /**
  * A reusable segmented control component for switching between parallel views.
