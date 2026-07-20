@@ -1,10 +1,30 @@
+import java.util.Properties
+
 plugins {
     id("mongez.android.library.compose")
     id("mongez.android.hilt")
 }
 
+// Read local.properties from the root project
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) load(file.inputStream())
+}
+
 android {
     namespace = "com.iti.mongez.presentation"
+
+    defaultConfig {
+        buildConfigField(
+            "String",
+            "GOOGLE_WEB_CLIENT_ID",
+            "\"${localProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "")}\""
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -18,4 +38,3 @@ dependencies {
     implementation(libs.androidx.credentials.play)
     implementation(libs.google.id)
 }
-

@@ -1,5 +1,6 @@
 package com.iti.mongez.presentation.main
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -23,54 +24,58 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
-private val navigationItems = listOf(
-    AppNavigationBarItem(
-        label = "Home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home,
-    ),
-    AppNavigationBarItem(
-        label = "Courses",
-        selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
-        unselectedIcon = Icons.AutoMirrored.Outlined.MenuBook,
-    ),
-    AppNavigationBarItem(
-        label = "Roadmap",
-        selectedIcon = Icons.Filled.CalendarMonth,
-        unselectedIcon = Icons.Outlined.CalendarMonth,
-    ),
-    AppNavigationBarItem(
-        label = "Profile",
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person,
-    ),
-)
+/**
+ * Represents the tabs available in the main bottom navigation.
+ */
+private enum class MainTab(
+    val labelResId: Int,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector
+) {
+    Home(R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home),
+    Courses(R.string.nav_courses, Icons.AutoMirrored.Filled.MenuBook, Icons.AutoMirrored.Outlined.MenuBook),
+    Roadmap(R.string.nav_roadmap, Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
+    Profile(R.string.nav_profile, Icons.Filled.Person, Icons.Outlined.Person);
+
+    companion object {
+        fun fromIndex(index: Int): MainTab = entries.getOrElse(index) { Home }
+    }
+}
 
 @Composable
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showDefaultAlert: Boolean = false
 ) {
-    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    // State for bottom navigation
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
+    val selectedTab = MainTab.fromIndex(selectedTabIndex)
+
+    // Snackbar type state to allow custom styling of snackbars shown via Scaffold's host
     var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
-    var isDefaultScheduleDialogOpen by remember { mutableStateOf(showDefaultAlert) }
+
+    // Dialog state - using rememberSaveable to handle configuration changes
+    var isDefaultScheduleDialogOpen by rememberSaveable { mutableStateOf(showDefaultAlert) }
 
     if (isDefaultScheduleDialogOpen) {
         DefaultScheduleDialog(
             onDismiss = { isDefaultScheduleDialogOpen = false },
             onGoToSettings = {
                 isDefaultScheduleDialogOpen = false
-                // Logic to go to settings
+                // TODO: Wire up navigation to settings when available
             }
         )
     }
@@ -89,29 +94,63 @@ fun MainScreen(
         },
         bottomBar = {
             AppNavigationBar(
-                items = navigationItems,
-                selectedIndex = selectedTab,
-                onItemSelected = { selectedTab = it },
+                items = MainTab.entries.map { tab ->
+                    AppNavigationBarItem(
+                        label = stringResource(tab.labelResId),
+                        selectedIcon = tab.selectedIcon,
+                        unselectedIcon = tab.unselectedIcon,
+                    )
+                },
+                selectedIndex = selectedTabIndex,
+                onItemSelected = { selectedTabIndex = it },
             )
         },
     ) { innerPadding ->
-        when (selectedTab) {
-            0 -> {
-                DashboardScreen(
-                    innerPadding = innerPadding,
-                    onNavigateToFocus = {},
-                    onViewAllTasks = {},
-                    onViewAllDeadlines = {},
-                )
-            }
-            1 -> {
-                CoursesScreen(
-                    innerPadding = innerPadding,
-                    viewModel = hiltViewModel()
-                )
-            }
-            2 -> Text("Roadmap Content", modifier = Modifier.padding(innerPadding))
-            3 -> Text("Profile Content", modifier = Modifier.padding(innerPadding))
+        MainScreenContent(
+            tab = selectedTab,
+            innerPadding = innerPadding
+        )
+    }
+}
+
+@Composable
+private fun MainScreenContent(
+    tab: MainTab,
+    innerPadding: PaddingValues
+) {
+    when (tab) {
+        MainTab.Home -> {
+            DashboardScreen(
+                innerPadding = innerPadding,
+                onNavigateToFocus = { /* TODO: Implement navigation */ },
+                onViewAllTasks = { /* TODO: Implement navigation */ },
+                onViewAllDeadlines = { /* TODO: Implement navigation */ },
+            )
+        }
+
+        MainTab.Courses -> {
+            CoursesScreen(
+                innerPadding = innerPadding,
+                viewModel = hiltViewModel()
+            )
+        }
+
+        MainTab.Roadmap -> {
+            Text(
+                text = stringResource(R.string.nav_roadmap) + " Content",
+                modifier = Modifier.padding(innerPadding),
+                color = Theme.colorScheme.text.primary,
+                style = Theme.typography.title.medium
+            )
+        }
+
+        MainTab.Profile -> {
+            Text(
+                text = stringResource(R.string.nav_profile) + " Content",
+                modifier = Modifier.padding(innerPadding),
+                color = Theme.colorScheme.text.primary,
+                style = Theme.typography.title.medium
+            )
         }
     }
 }
