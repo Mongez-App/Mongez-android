@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.domain.auth.usecase.RegisterUseCase
 import com.iti.mongez.domain.auth.usecase.LoginWithGoogleUseCase
-import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.core.exceptions.AppException
 import com.iti.mongez.presentation.auth.register.contract.RegisterIntent
 import com.iti.mongez.presentation.auth.register.uiState.RegisterEffect
@@ -42,6 +41,8 @@ class RegisterViewModel @Inject constructor(
             is RegisterIntent.OnConfirmPasswordChanged -> _state.update { it.copy(confirmPassword = intent.password, confirmPasswordError = null) }
             is RegisterIntent.OnGoogleIdTokenReceived -> loginWithGoogle(intent.idToken)
             RegisterIntent.OnRegisterClicked -> register()
+            // ViewModel tells the UI to launch the picker — the UI calls GoogleSignInManager
+            // and returns the token via OnGoogleIdTokenReceived.
             RegisterIntent.OnGoogleSignUpClicked -> emitEffect(RegisterEffect.LaunchGoogleSignUp)
             RegisterIntent.OnLoginClicked -> emitEffect(RegisterEffect.NavigateToLogin)
         }
@@ -50,7 +51,7 @@ class RegisterViewModel @Inject constructor(
     private fun register() {
         val currentState = state.value
         var hasError = false
-        
+
         if (currentState.firstName.isBlank()) {
             _state.update { it.copy(firstNameError = "First name is required") }
             hasError = true

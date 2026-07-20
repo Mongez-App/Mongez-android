@@ -7,4 +7,5 @@ sealed interface AppRoute {
     object Preferences : AppRoute
     data class Dashboard(val showDefaultAlert: Boolean = false) : AppRoute
     object Roadmap : AppRoute
+    data class CourseDetails(val courseId: String) : AppRoute
 }

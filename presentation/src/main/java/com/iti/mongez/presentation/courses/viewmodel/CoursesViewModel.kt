@@ -1,12 +1,17 @@
-package com.iti.mongez.presentation.courses
+package com.iti.mongez.presentation.courses.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
+import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.courses.model.Course
+import com.iti.mongez.domain.courses.model.CourseCreationResult
 import com.iti.mongez.domain.courses.usecase.CreateCourseUseCase
 import com.iti.mongez.domain.courses.usecase.GetCoursesUseCase
+import com.iti.mongez.presentation.courses.contract.CoursesEffect
+import com.iti.mongez.presentation.courses.contract.CoursesIntent
+import com.iti.mongez.presentation.courses.uiState.CoursesState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject // Swapped from jakarta to javax
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,9 +20,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.iti.mongez.domain.core.Result
-import com.iti.mongez.domain.courses.model.Course
-import com.iti.mongez.domain.courses.model.CourseCreationResult
+import javax.inject.Inject
 
 @HiltViewModel
 class CoursesViewModel @Inject constructor(

@@ -13,7 +13,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.NavEntry
 import com.iti.mongez.domain.core.usecase.GetInitialRouteUseCase
 import com.iti.mongez.domain.utils.StartDestination
-import com.iti.mongez.presentation.courses.CoursesScreen
+import com.iti.mongez.feature.coursedetails.view.CourseDetailsScreen
 import com.iti.mongez.presentation.auth.login.view.LoginScreen
 import com.iti.mongez.presentation.auth.register.view.RegisterScreen
 import com.iti.mongez.presentation.main.MainScreen
@@ -108,6 +108,16 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
                     onNavigateToPreferences = {
                         //To-Do go to the profile
+                    onNavigateToCourseDetails = { courseId ->
+                        backStack.add(AppRoute.CourseDetails(courseId))
+                    }
+                )
+            }
+            is AppRoute.CourseDetails -> NavEntry(key) {
+                val route = key as AppRoute.CourseDetails
+                CourseDetailsScreen(
+                    onNavigateBack = {
+                        backStack.remove(key)
                     }
                 )
             }

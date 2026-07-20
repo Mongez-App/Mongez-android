@@ -1,4 +1,4 @@
-package com.iti.mongez.presentation.courses
+package com.iti.mongez.presentation.courses.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
