@@ -174,11 +174,10 @@ private fun MainScreenContent(
         }
 
         MainTab.Roadmap -> {
-            Text(
-                text = stringResource(R.string.nav_roadmap) + " Content",
-                modifier = Modifier.padding(innerPadding),
-                color = Theme.colorScheme.text.primary,
-                style = Theme.typography.title.medium
+            RoadmapScreen(
+                innerPadding = innerPadding,
+                onNavigateToBlockDetails = { /* TODO */ },
+                onNavigateToAddEvent = { /* TODO */ }
             )
         }
 

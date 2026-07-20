@@ -22,6 +22,7 @@ import com.iti.mongez.designsystem.components.chip.AppChip
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.roadmap.components.AddEventDialog
 import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
@@ -42,12 +43,28 @@ fun RoadmapScreen(
     onNavigateToAddEvent: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
+    var showAddEventSheet by remember { mutableStateOf(false) }
 
     RoadmapContent(
         state = state,
         innerPadding = innerPadding,
-        onEvent = viewModel::onEvent
+        onEvent = { event ->
+            when (event) {
+                is RoadmapEvent.OnAddEventClicked -> showAddEventSheet = true
+                is RoadmapEvent.OnBlockClicked -> onNavigateToBlockDetails(event.blockId)
+                else -> viewModel.onEvent(event)
+            }
+        }
     )
+
+    if (showAddEventSheet) {
+        AddEventDialog(
+            onDismiss = { showAddEventSheet = false },
+            onEventTypeSelected = { _ ->
+                onNavigateToAddEvent()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
