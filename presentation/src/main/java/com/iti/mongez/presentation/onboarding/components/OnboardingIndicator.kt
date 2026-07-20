@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.lerp
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import kotlin.math.absoluteValue
 
@@ -42,3 +45,13 @@ fun OnboardingIndicator(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingIndicatorPreview() {
+    MongezTheme {
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        OnboardingIndicator(pagerState = pagerState)
+    }
+}
+

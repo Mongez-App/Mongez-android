@@ -9,6 +9,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
+import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.onboarding.uiState.OnboardingPage
 import com.iti.mongez.designsystem.components.button.AppSkipButton
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.onboarding.components.OnboardingActions
@@ -137,3 +141,32 @@ private fun OnboardingContent(
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingContentPreview() {
+    MongezTheme {
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        OnboardingContent(
+            state = OnboardingUiState(
+                onboardingPages = listOf(
+                    OnboardingPage(
+                        titleRes = R.string.onboarding_page1_title,
+                        descriptionRes = R.string.onboarding_page1_description
+                    ),
+                    OnboardingPage(
+                        titleRes = R.string.onboarding_page2_title,
+                        descriptionRes = R.string.onboarding_page2_description
+                    ),
+                    OnboardingPage(
+                        titleRes = R.string.onboarding_page3_title,
+                        descriptionRes = R.string.onboarding_page3_description
+                    )
+                )
+            ),
+            pagerState = pagerState,
+            onIntent = {}
+        )
+    }
+}
+
