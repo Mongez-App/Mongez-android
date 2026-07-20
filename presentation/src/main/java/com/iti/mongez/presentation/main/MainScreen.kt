@@ -29,7 +29,7 @@ import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
-import com.iti.mongez.presentation.courses.CoursesScreen
+import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
@@ -59,7 +59,8 @@ private val navigationItems = listOf(
 @Composable
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    showDefaultAlert: Boolean = false
+    showDefaultAlert: Boolean = false,
+    onNavigateToCourseDetails: (String) -> Unit
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
@@ -107,7 +108,8 @@ fun MainScreen(
             1 -> {
                 CoursesScreen(
                     innerPadding = innerPadding,
-                    viewModel = hiltViewModel()
+                    viewModel = hiltViewModel(),
+                    onCourseClick = onNavigateToCourseDetails // <-- PASS HERE
                 )
             }
             2 -> Text("Roadmap Content", modifier = Modifier.padding(innerPadding))

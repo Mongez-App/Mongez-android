@@ -110,4 +110,10 @@
     <string name="button_add_course">إضافة المقرر</string>
     <string name="action_ok">موافق</string>
     <string name="action_cancel">إلغاء</string>
+    <string name="back">الرجوع</string>
+    <string name="course_options">خيارات المقرر</string>
+    <string name="edit_course">تعديل المقرر</string>
+    <string name="delete_course">حذف المقرر</string>
+    <string name="delete">حذف</string>
+    <string name="no_tasks_available_right_now">لا توجد مهام متاحة الآن</string>
 </resources>

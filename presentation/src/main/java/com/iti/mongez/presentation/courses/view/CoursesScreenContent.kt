@@ -1,4 +1,4 @@
-package com.iti.mongez.presentation.courses
+package com.iti.mongez.presentation.courses.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -22,6 +22,9 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.courses.CourseCard
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.courses.contract.CoursesIntent
+import com.iti.mongez.presentation.courses.components.AddCourseSheetContent
+import com.iti.mongez.presentation.courses.uiState.CoursesState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +33,8 @@ fun CoursesScreenContent(
     innerPadding: PaddingValues,
     topSnackbarMessage: String?,
     topSnackbarType: AppSnackbarType,
-    onIntent: (CoursesIntent) -> Unit // Unified callback for all actions
+    onIntent: (CoursesIntent) -> Unit, // Unified callback for all actions
+    onCourseClick: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -77,11 +81,17 @@ fun CoursesScreenContent(
 
                 if (state.isLoading && state.allCourses.isEmpty()) {
 
-                    CircularProgressIndicator(
-                        modifier = Modifier.padding(Theme.spacing.lg)
-                    )
+                    // Fix 1: Center the circular indicator vertically and horizontally
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
 
-                } else {
+                }else {
 
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -98,16 +108,23 @@ fun CoursesScreenContent(
                             key = { it.id }
                         ) { course ->
 
-                            CourseCard(
-                                title = course.name,
-                                progress = course.completionPercentage / 100f,
-                                onClick = {
-                                    // Navigate to course details
-                                },
-                                imagePainter = rememberAsyncImagePainter(
-                                    "https://www.atmajaya.ac.id/en/media/coursera.png"
+                            // Fix 2: Smooth out search filtering, additions, and removals animations
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                            ) {
+                                CourseCard(
+                                    title = course.name,
+                                    progress = course.completionPercentage / 100f,
+                                    onClick = {
+                                        onCourseClick(course.id) // <-- TRIGGER NAVIGATION
+                                    },
+                                    imagePainter = rememberAsyncImagePainter(
+                                        "https://www.atmajaya.ac.id/en/media/coursera.png"
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }

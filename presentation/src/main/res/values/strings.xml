@@ -110,6 +110,14 @@
     <string name="button_add_course">Add Course</string>
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
+    <string name="back">back</string>
+    <string name="course_options">course options</string>
+    <string name="edit_course">Edit Course</string>
+    <string name="delete_course">Delete Course</string>
+    <string name="delete">Delete</string>
+    <string name="no_tasks_available_right_now">No Tasks Available Right Now</string>
+    <!-- Course Details -->
+
 </resources>
 
 

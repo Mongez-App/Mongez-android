@@ -1,16 +1,9 @@
-package com.iti.mongez.presentation.courses
+package com.iti.mongez.presentation.courses.contract
 
 import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 
-data class CoursesState(
-    val isLoading: Boolean = false,
-    val searchQuery: String = "",
-    val allCourses: List<Course> = emptyList(),
-    val filteredCourses: List<Course> = emptyList(),
-    val isAddCourseSheetVisible: Boolean = false,
-    val isCreatingCourse: Boolean = false
-)
+
 
 sealed interface CoursesIntent {
     object LoadCourses : CoursesIntent
