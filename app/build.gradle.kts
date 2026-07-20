@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     id("mongez.android.application")
     id("mongez.compose")
     id("mongez.android.hilt")
     alias(libs.plugins.google.services)
+}
+
+// Read local.properties
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) load(file.inputStream())
 }
 
 android {
@@ -22,6 +30,16 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "GOOGLE_WEB_CLIENT_ID",
+            "\"${localProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "")}\""
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -33,6 +51,7 @@ android {
         }
     }
 }
+
 
 dependencies {
     implementation(project(":design_system"))

@@ -110,4 +110,10 @@
     <string name="button_add_course">إضافة المقرر</string>
     <string name="action_ok">موافق</string>
     <string name="action_cancel">إلغاء</string>
+
+    <!-- Navigation Labels -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_courses">المواد</string>
+    <string name="nav_roadmap">الخارطة</string>
+    <string name="nav_profile">الملف</string>
 </resources>
