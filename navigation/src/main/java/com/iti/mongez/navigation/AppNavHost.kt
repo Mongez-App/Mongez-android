@@ -103,7 +103,12 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 )
             }
             is AppRoute.Dashboard -> NavEntry(AppRoute.Dashboard()) {
-                MainScreen(showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert)
+                MainScreen(
+                    showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
+                    onNavigateToPreferences = {
+                        //To-Do go to the profile
+                    }
+                )
             }
             else -> NavEntry(key) {
                 Text("Unknown Route")

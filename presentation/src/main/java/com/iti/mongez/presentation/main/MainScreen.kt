@@ -29,6 +29,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.dashboard.DashboardScreen
+import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
 private val navigationItems = listOf(
@@ -57,7 +58,8 @@ private val navigationItems = listOf(
 @Composable
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    showDefaultAlert: Boolean = false
+    showDefaultAlert: Boolean = false,
+    onNavigateToPreferences: () -> Unit
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     var activeSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
@@ -68,7 +70,7 @@ fun MainScreen(
             onDismiss = { isDefaultScheduleDialogOpen = false },
             onGoToSettings = {
                 isDefaultScheduleDialogOpen = false
-                // Logic to go to settings
+                onNavigateToPreferences()
             }
         )
     }
@@ -103,7 +105,13 @@ fun MainScreen(
                 )
             }
             1 -> Text("Courses Content", modifier = Modifier.padding(innerPadding))
-            2 -> Text("Roadmap Content", modifier = Modifier.padding(innerPadding))
+            2 -> {
+                RoadmapScreen(
+                    innerPadding = innerPadding,
+                    onNavigateToBlockDetails = {},
+                    onNavigateToAddEvent = {}
+                )
+            }
             3 -> Text("Profile Content", modifier = Modifier.padding(innerPadding))
         }
     }

@@ -78,6 +78,22 @@
     <string name="change_settings_hint">Want to change this? Head to Settings to customize your study hours and days.</string>
     <string name="got_it">Got It</string>
     <string name="go_to_settings">Go to Settings</string>
+
+    <!-- Roadmap -->
+    <string name="roadmap_week_number">Week %1$d</string>
+    <string name="roadmap_os">Operating Systems</string>
+    <string name="roadmap_process_mgmt">Process Management</string>
+    <string name="roadmap_algorithms">Algorithms</string>
+    <string name="roadmap_dp">Dynamic Programming</string>
+    <string name="roadmap_networks">Networks</string>
+    <string name="roadmap_tcp_ip">TCP/IP Stack</string>
+    <string name="roadmap_db">Database Systems</string>
+    <string name="roadmap_sql">SQL Queries</string>
+    <string name="roadmap_quiz">Quiz</string>
+    <string name="roadmap_midterm">Midterm</string>
+    <string name="roadmap_title">Semester Roadmap</string>
+    <string name="roadmap_add_event">Add Event</string>
+    <string name="roadmap_filter_label">Filter: %1$s - %2$s</string>
 </resources>
 
 

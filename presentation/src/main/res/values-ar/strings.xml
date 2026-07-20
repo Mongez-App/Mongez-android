@@ -77,4 +77,20 @@
     <string name="change_settings_hint">هل تريد تغيير هذا؟ توجه إلى الإعدادات لتخصيص ساعات وأيام الدراسة الخاصة بك.</string>
     <string name="got_it">فهمت</string>
     <string name="go_to_settings">الذهاب للإعدادات</string>
+
+    <!-- Roadmap -->
+    <string name="roadmap_week_number">الأسبوع %1$d</string>
+    <string name="roadmap_os">نظم التشغيل</string>
+    <string name="roadmap_process_mgmt">إدارة العمليات</string>
+    <string name="roadmap_algorithms">خوارزميات</string>
+    <string name="roadmap_dp">البرمجة الديناميكية</string>
+    <string name="roadmap_networks">شبكات</string>
+    <string name="roadmap_tcp_ip">مكدس TCP/IP</string>
+    <string name="roadmap_db">نظم قواعد البيانات</string>
+    <string name="roadmap_sql">استعلامات SQL</string>
+    <string name="roadmap_quiz">اختبار قصير</string>
+    <string name="roadmap_midterm">امتحان نصف الفصل</string>
+    <string name="roadmap_title">خارطة طريق الفصل الدراسي</string>
+    <string name="roadmap_add_event">إضافة حدث</string>
+    <string name="roadmap_filter_label">تصفية: %1$s - %2$s</string>
 </resources>
