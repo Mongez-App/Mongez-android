@@ -189,14 +189,14 @@ private fun PreferencesContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun PreferencesContentPreview() {
+fun PreferencesContentPreview() {
     MongezTheme {
         val pagerState = rememberPagerState(pageCount = { 3 })
         PreferencesContent(
             state = PreferencesUiState(
                 currentStep = PreferencesStep.StudyHours,
-                dailyStudyHours = 4,
-                availableDays = listOf("Mon", "Wed", "Fri")
+                studyHours = 4,
+                selectedDays = setOf("Mon", "Wed", "Fri")
             ),
             pagerState = pagerState,
             onIntent = {}
