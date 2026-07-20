@@ -74,9 +74,9 @@
     <string name="study_time_label">وقت الدراسة</string>
     <string name="default_study_hours_value">8 ساعات / يوم</string>
     <string name="study_days_label">أيام الدراسة</string>
-    <string name="change_settings_hint">هل تريد تغيير هذا؟ توجه إلى الإعدادات لتخصيص ساعات وأيام الدراسة الخاصة بك.</string>
+    <string name="change_settings_hint">هل تريد تغيير هذا؟ توجه إلى الملف الشخصي لتخصيص ساعات وأيام الدراسة الخاصة بك.</string>
     <string name="got_it">فهمت</string>
-    <string name="go_to_settings">الذهاب للإعدادات</string>
+    <string name="go_to_profile">الذهاب للملف الشخصي</string>
 
     <!-- Roadmap -->
     <string name="roadmap_week_number">الأسبوع %1$d</string>
@@ -148,4 +148,13 @@
     <string name="nav_courses">المواد</string>
     <string name="nav_roadmap">الخارطة</string>
     <string name="nav_profile">الملف</string>
+
+    <!-- Profile -->
+    <string name="profile_studying_hours">ساعات الدراسة</string>
+    <string name="profile_completed_tasks">المهام المكتملة</string>
+    <string name="profile_streak_days">أيام المتتابعة</string>
+    <string name="profile_calendar_sync">مزامنة التقويم</string>
+    <string name="profile_dark_mode">الوضع الليلي</string>
+    <string name="profile_language">اللغة</string>
+    <string name="profile_logout">تسجيل الخروج</string>
 </resources>

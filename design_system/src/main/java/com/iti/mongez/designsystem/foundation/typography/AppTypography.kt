@@ -5,6 +5,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.iti.mongez.designsystem.foundation.typography.MongezFontFamily
+import com.iti.mongez.designsystem.foundation.typography.PoppinsFontFamily
 
 @Immutable
 data class DisplayTypography(
@@ -51,7 +53,7 @@ data class AppTypography(
     val label: LabelTypography,
 )
 
-fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = PoppinsFontFamily): AppTypography {
+fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = MongezFontFamily): AppTypography {
     return AppTypography(
         display = DisplayTypography(
             large = TextStyle(

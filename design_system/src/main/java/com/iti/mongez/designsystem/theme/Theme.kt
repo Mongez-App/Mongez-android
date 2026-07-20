@@ -22,6 +22,7 @@ import com.iti.mongez.designsystem.foundation.radius.AppRadius
 import com.iti.mongez.designsystem.foundation.spacing.AppSpacing
 import com.iti.mongez.designsystem.foundation.typography.AppTypography
 import com.iti.mongez.designsystem.foundation.typography.IbmPlexArabicFontFamily
+import com.iti.mongez.designsystem.foundation.typography.MongezFontFamily
 import com.iti.mongez.designsystem.foundation.typography.PoppinsFontFamily
 import com.iti.mongez.designsystem.foundation.typography.asMaterialTypography
 import com.iti.mongez.designsystem.foundation.typography.defaultAppTypography
@@ -52,9 +53,7 @@ fun MongezTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val configuration = LocalConfiguration.current
-    val isArabic = configuration.locales[0].language == "ar"
-    val fontFamily = if (isArabic) IbmPlexArabicFontFamily else PoppinsFontFamily
+    val fontFamily = MongezFontFamily
 
     val appColorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val appTypography = defaultAppTypography(fontFamily)

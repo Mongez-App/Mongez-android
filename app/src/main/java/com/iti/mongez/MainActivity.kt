@@ -15,6 +15,20 @@ import dagger.hilt.android.AndroidEntryPoint
  * Root Activity — applies [MongezTheme] and sets up the main scaffold
  * with navigation.
  */
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.res.Configuration
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import com.iti.mongez.domain.settings.model.Language
+import java.util.Locale
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -24,16 +38,52 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Keep the splash screen visible until the initial route is resolved
-        // from DataStore. The condition is checked on every frame draw.
         splashScreen.setKeepOnScreenCondition {
             navViewModel.startDestination.value == null
         }
 
         enableEdgeToEdge()
         setContent {
-            MongezTheme {
-                AppNavHost()
+            val settings by navViewModel.appSettings.collectAsState()
+            
+            val context = LocalContext.current
+            val configuration = LocalConfiguration.current
+            
+            val locale = when (settings.language) {
+                Language.SYSTEM -> Locale.getDefault()
+                Language.EN -> Locale.forLanguageTag("en")
+                Language.AR -> Locale.forLanguageTag("ar")
+            }
+            
+            val updatedConfiguration = Configuration(configuration).apply {
+                setLocale(locale)
+                setLayoutDirection(locale)
+            }
+            
+            val layoutDirection = if (updatedConfiguration.layoutDirection == android.view.View.LAYOUT_DIRECTION_RTL) {
+                LayoutDirection.Rtl
+            } else {
+                LayoutDirection.Ltr
+            }
+
+            val localeContext = remember(updatedConfiguration) {
+                context.createConfigurationContext(updatedConfiguration)
+            }
+
+            val wrappedContext = remember(localeContext) {
+                object : ContextWrapper(localeContext) {
+                    override fun getBaseContext(): Context = context
+                }
+            }
+
+            CompositionLocalProvider(
+                LocalConfiguration provides updatedConfiguration,
+                LocalContext provides wrappedContext,
+                LocalLayoutDirection provides layoutDirection
+            ) {
+                MongezTheme(darkTheme = settings.isDarkModeEnabled) {
+                    AppNavHost()
+                }
             }
         }
     }

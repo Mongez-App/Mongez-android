@@ -20,21 +20,30 @@ import com.iti.mongez.presentation.main.MainScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
 import androidx.compose.foundation.layout.PaddingValues
 import com.iti.mongez.presentation.preferences.view.PreferencesScreen
+import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
+import com.iti.mongez.domain.settings.model.AppSettings
+import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NavViewModel @Inject constructor(
-    private val getInitialRouteUseCase: GetInitialRouteUseCase
+    private val getInitialRouteUseCase: GetInitialRouteUseCase,
+    private val getAppSettingsUseCase: GetAppSettingsUseCase
 ) : ViewModel() {
 
     private val _startDestination = MutableStateFlow<AppRoute?>(null)
     val startDestination: StateFlow<AppRoute?> = _startDestination.asStateFlow()
+
+    private val _appSettings = MutableStateFlow(AppSettings())
+    val appSettings: StateFlow<AppSettings> = _appSettings.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -45,6 +54,11 @@ class NavViewModel @Inject constructor(
                 StartDestination.DASHBOARD -> AppRoute.Dashboard()
             }
         }
+        
+        getAppSettingsUseCase()
+            .onEach { settings ->
+                _appSettings.value = settings
+            }.launchIn(viewModelScope)
     }
 }
 
@@ -109,10 +123,14 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 MainScreen(
                     showDefaultAlert = (key).showDefaultAlert,
                     onNavigateToPreferences = {
-                        //To-Do go to the profile
+                        // In the future, this could navigate specifically to the Profile tab
                     },
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
+                    },
+                    onNavigateToLogin = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Login)
                     }
                 )
             }
@@ -125,6 +143,17 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToAddEvent = {
                         //To-Do
                     }
+                )
+            }
+            is AppRoute.Profile -> NavEntry(AppRoute.Profile) {
+                ProfileScreen(
+                    innerPadding = PaddingValues(),
+                    viewModel = hiltViewModel(),
+                    onNavigateToLogin = {
+                        backStack.clear()
+                        backStack.add(AppRoute.Login)
+                    },
+                    onShowSnackBar = { /* Handle */ }
                 )
             }
             is AppRoute.CourseDetails -> NavEntry(key) {
