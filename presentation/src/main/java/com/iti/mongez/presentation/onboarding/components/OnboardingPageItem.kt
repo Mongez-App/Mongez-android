@@ -12,6 +12,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.onboarding.uiState.OnboardingPage
 import com.iti.mongez.presentation.R
@@ -69,3 +71,18 @@ fun OnboardingPageItem(
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingPageItemPreview() {
+    MongezTheme {
+        OnboardingPageItem(
+            page = OnboardingPage(
+                titleRes = R.string.onboarding_page1_title,
+                descriptionRes = R.string.onboarding_page1_description,
+                imageRes = null
+            )
+        )
+    }
+}
+

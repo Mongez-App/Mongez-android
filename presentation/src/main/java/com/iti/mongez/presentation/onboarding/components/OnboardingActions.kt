@@ -9,6 +9,9 @@ import com.iti.mongez.designsystem.components.button.AppButtonVariant
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
+
 @Composable
 fun OnboardingActions(
     isFirstPage: Boolean,
@@ -49,3 +52,46 @@ fun OnboardingActions(
         }
     }
 }
+
+@Preview(showBackground = true, name = "First Page Actions")
+@Composable
+private fun OnboardingActionsFirstPagePreview() {
+    MongezTheme {
+        OnboardingActions(
+            isFirstPage = true,
+            isLastPage = false,
+            onNextClick = {},
+            onBackClick = {},
+            onGetStartedClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Middle Page Actions")
+@Composable
+private fun OnboardingActionsMiddlePagePreview() {
+    MongezTheme {
+        OnboardingActions(
+            isFirstPage = false,
+            isLastPage = false,
+            onNextClick = {},
+            onBackClick = {},
+            onGetStartedClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Last Page Actions")
+@Composable
+private fun OnboardingActionsLastPagePreview() {
+    MongezTheme {
+        OnboardingActions(
+            isFirstPage = false,
+            isLastPage = true,
+            onNextClick = {},
+            onBackClick = {},
+            onGetStartedClick = {}
+        )
+    }
+}
+
