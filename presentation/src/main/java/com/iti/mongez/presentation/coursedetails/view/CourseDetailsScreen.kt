@@ -126,9 +126,9 @@ fun CourseDetailsScreen(
                             PopupMenuItem(
                                 title = stringResource(R.string.edit_course),
                                 icon = Icons.Outlined.Edit,
-                                color = Color(0xFF374151),
-                                height = 45.dp,
-                                padding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                                color = Theme.colorScheme.text.primary,
+                                height = 48.dp,
+                                padding = PaddingValues(horizontal = Theme.spacing.lg, vertical = Theme.spacing.md),
                                 onClick = {
                                     viewModel.processIntent(CourseDetailsIntent.EditCourse)
                                 }
@@ -136,9 +136,9 @@ fun CourseDetailsScreen(
                             PopupMenuItem(
                                 title = stringResource(R.string.delete_course),
                                 icon = Icons.Outlined.Delete,
-                                color = Color(0xFFEF4444),
-                                height = 49.dp,
-                                padding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp),
+                                color = Theme.colorScheme.state.error,
+                                height = 48.dp,
+                                padding = PaddingValues(start = Theme.spacing.lg, end = Theme.spacing.lg, top = Theme.spacing.lg, bottom = Theme.spacing.md),
                                 onClick = {
                                     viewModel.processIntent(CourseDetailsIntent.DeleteCourse)
                                 }
@@ -212,13 +212,13 @@ fun CourseDetailsScreen(
                                     PopupMenuItem(
                                         title = stringResource(R.string.delete),
                                         icon = Icons.Outlined.Delete,
-                                        color = Color(0xFFEF4444),
-                                        height = 49.dp,
+                                        color = Theme.colorScheme.state.error,
+                                        height = 48.dp,
                                         padding = PaddingValues(
-                                            start = 16.dp,
-                                            end = 16.dp,
-                                            top = 16.dp,
-                                            bottom = 12.dp
+                                            start = Theme.spacing.lg,
+                                            end = Theme.spacing.lg,
+                                            top = Theme.spacing.lg,
+                                            bottom = Theme.spacing.md
                                         ),
                                         onClick = {
                                             viewModel.processIntent(
@@ -243,11 +243,11 @@ fun CourseDetailsScreen(
                         )
                     }
                     
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                    item { Spacer(modifier = Modifier.height(Theme.spacing.lg)) }
                     
                     item {
                         LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sm),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             items(state.taskFilters.size) { index ->
@@ -266,12 +266,12 @@ fun CourseDetailsScreen(
                     val todayTasks = state.tasks.filter { it.isToday }
                     if (todayTasks.isNotEmpty()) {
                         item {
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(Theme.spacing.lg))
                             Text(
                                 text = "Today Tasks",
                                 style = Theme.typography.title.medium.copy(fontWeight = FontWeight.Bold),
                                 color = Theme.colorScheme.text.primary,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier.padding(bottom = Theme.spacing.sm)
                             )
                         }
                         items(todayTasks, key = { it.id }) { task ->
@@ -290,12 +290,12 @@ fun CourseDetailsScreen(
                     val upcomingTasks = state.tasks.filter { !it.isToday }
                     if (upcomingTasks.isNotEmpty()) {
                         item {
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(Theme.spacing.lg))
                             Text(
                                 text = "Upcoming Tasks",
                                 style = Theme.typography.title.medium.copy(fontWeight = FontWeight.Bold),
                                 color = Theme.colorScheme.text.primary,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier.padding(bottom = Theme.spacing.sm)
                             )
                         }
                         items(upcomingTasks, key = { it.id }) { task ->

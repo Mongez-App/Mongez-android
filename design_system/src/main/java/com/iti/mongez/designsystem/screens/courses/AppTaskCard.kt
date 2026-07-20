@@ -33,9 +33,9 @@ fun AppTaskCard(
     onClick: () -> Unit = {}
 ) {
     val priorityColor = when (priority.uppercase()) {
-        "HIGH" -> Color(0xFFEF4444) // Red
-        "MEDIUM" -> Color(0xFFF59E0B) // Orange
-        "LOW" -> Color(0xFF10B981) // Green
+        "HIGH" -> Theme.colorScheme.state.error
+        "MEDIUM" -> Theme.colorScheme.state.warning
+        "LOW" -> Theme.colorScheme.state.success
         else -> Theme.colorScheme.text.secondary
     }
 
@@ -43,7 +43,7 @@ fun AppTaskCard(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(Theme.radius.lg),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colorScheme.surface.background
         ),
@@ -53,7 +53,7 @@ fun AppTaskCard(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Theme.spacing.lg),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Checkbox Circle
@@ -62,7 +62,7 @@ fun AppTaskCard(
                     .size(28.dp)
                     .clip(CircleShape)
                     .background(
-                        if (isCompleted) Color(0xFF10B981) else Color.Transparent
+                        if (isCompleted) Theme.colorScheme.state.success else Color.Transparent
                     )
                     .then(
                         if (!isCompleted) Modifier.border(2.dp, Theme.colorScheme.surface.surfaceHigh, CircleShape)
@@ -74,13 +74,13 @@ fun AppTaskCard(
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Completed",
-                        tint = Color.White,
+                        tint = Theme.colorScheme.brand.onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Theme.spacing.lg))
 
             // Task Info
             Column(
@@ -94,7 +94,7 @@ fun AppTaskCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Theme.spacing.xs))
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {

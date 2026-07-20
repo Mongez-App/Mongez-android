@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,15 +27,15 @@ fun CourseProgressCard(
         modifier = modifier
             .fillMaxWidth()
             .height(110.dp),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(Theme.radius.xxl),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF6366F1) // Indigo/Purple color matching the design
+            containerColor = Theme.colorScheme.brand.primary
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(Theme.spacing.xl),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -46,18 +45,18 @@ fun CourseProgressCard(
             ) {
                 Text(
                     text = "Course Progress",
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = Theme.colorScheme.brand.onPrimary.copy(alpha = 0.8f),
                     style = Theme.typography.label.medium
                 )
                 Box(
                     modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                        .background(Theme.colorScheme.brand.onPrimary.copy(alpha = 0.2f), RoundedCornerShape(Theme.radius.md))
+                        .padding(horizontal = Theme.spacing.md, vertical = Theme.spacing.xs),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "$percentage%",
-                        color = Color.White,
+                        color = Theme.colorScheme.brand.onPrimary,
                         style = Theme.typography.label.small,
                         fontSize = 11.sp
                     )
@@ -66,7 +65,7 @@ fun CourseProgressCard(
             
             Text(
                 text = "$completedTasks of $totalTasks tasks done",
-                color = Color.White,
+                color = Theme.colorScheme.brand.onPrimary,
                 style = Theme.typography.title.large.copy(fontWeight = FontWeight.Bold)
             )
 
@@ -76,8 +75,8 @@ fun CourseProgressCard(
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = Color.White,
-                trackColor = Color.White.copy(alpha = 0.3f)
+                color = Theme.colorScheme.brand.onPrimary,
+                trackColor = Theme.colorScheme.brand.onPrimary.copy(alpha = 0.3f)
             )
         }
     }
