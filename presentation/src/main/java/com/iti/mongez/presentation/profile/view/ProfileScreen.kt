@@ -41,6 +41,10 @@ import com.iti.mongez.presentation.profile.contract.ProfileIntent
 import com.iti.mongez.presentation.profile.uiState.ProfileViewState
 import com.iti.mongez.presentation.profile.viewmodel.ProfileViewModel
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.iti.mongez.domain.settings.model.Language
+
 @Composable
 fun ProfileScreen(
     innerPadding: PaddingValues,
@@ -129,8 +133,9 @@ private fun ProfileScreenContent(
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = Theme.colorScheme.brand.primary,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Theme.colorScheme.surface.surfaceLow
+                        uncheckedThumbColor = Theme.colorScheme.brand.primary,
+                        uncheckedTrackColor = Theme.colorScheme.brand.primary.copy(alpha = 0.12f),
+                        uncheckedBorderColor = Theme.colorScheme.brand.primary
                     )
                 )
             }
@@ -150,8 +155,9 @@ private fun ProfileScreenContent(
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = Theme.colorScheme.brand.primary,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Theme.colorScheme.surface.surfaceLow
+                        uncheckedThumbColor = Theme.colorScheme.brand.primary,
+                        uncheckedTrackColor = Theme.colorScheme.brand.primary.copy(alpha = 0.12f),
+                        uncheckedBorderColor = Theme.colorScheme.brand.primary
                     )
                 )
             }
@@ -165,26 +171,44 @@ private fun ProfileScreenContent(
             iconTint = Theme.colorScheme.brand.primary,
             title = stringResource(R.string.profile_language),
             action = {
-                OutlinedCard(
-                    shape = RoundedCornerShape(Theme.radius.md),
-                    border = BorderStroke(1.dp, Theme.colorScheme.border.secondary),
-                    colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = Theme.spacing.sm, vertical = Theme.spacing.xs),
-                        verticalAlignment = Alignment.CenterVertically
+                var expanded by remember { mutableStateOf(false) }
+                Box {
+                    OutlinedCard(
+                        onClick = { expanded = true },
+                        shape = RoundedCornerShape(Theme.radius.md),
+                        border = BorderStroke(1.dp, Theme.colorScheme.border.secondary),
+                        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
                     ) {
-                        Text(
-                            text = viewState.language,
-                            style = Theme.typography.body.small,
-                            color = Theme.colorScheme.text.secondary
-                        )
-                        Icon(
-                            imageVector = Icons.Rounded.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = Theme.colorScheme.text.secondary,
-                            modifier = Modifier.size(Theme.spacing.md)
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = Theme.spacing.sm, vertical = Theme.spacing.xs),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = viewState.language.name,
+                                style = Theme.typography.body.small,
+                                color = Theme.colorScheme.text.secondary
+                            )
+                            Icon(
+                                imageVector = Icons.Rounded.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = Theme.colorScheme.text.secondary,
+                                modifier = Modifier.size(Theme.spacing.md)
+                            )
+                        }
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        Language.entries.forEach { language ->
+                            DropdownMenuItem(
+                                text = { Text(language.name) },
+                                onClick = {
+                                    onIntent(ProfileIntent.ChangeLanguage(language))
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -352,7 +376,7 @@ private fun ProfileScreenPreview() {
                 streakDays = 14,
                 isCalendarSyncEnabled = true,
                 isDarkModeEnabled = false,
-                language = "EN"
+                language = Language.EN
             ),
             onIntent = {}
         )

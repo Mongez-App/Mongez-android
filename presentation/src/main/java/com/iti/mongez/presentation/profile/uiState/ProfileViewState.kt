@@ -1,5 +1,7 @@
 package com.iti.mongez.presentation.profile.uiState
 
+import com.iti.mongez.domain.settings.model.Language
+
 data class ProfileViewState(
     val name: String = "",
     val email: String = "",
@@ -9,6 +11,6 @@ data class ProfileViewState(
     val streakDays: Int = 0,
     val isCalendarSyncEnabled: Boolean = false,
     val isDarkModeEnabled: Boolean = false,
-    val language: String = "EN",
+    val language: Language = Language.EN,
     val isLoading: Boolean = false
 )
