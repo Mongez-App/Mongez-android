@@ -18,7 +18,9 @@ import com.iti.mongez.presentation.auth.login.view.LoginScreen
 import com.iti.mongez.presentation.auth.register.view.RegisterScreen
 import com.iti.mongez.presentation.main.MainScreen
 import com.iti.mongez.presentation.onboarding.view.OnboardingScreen
+import androidx.compose.foundation.layout.PaddingValues
 import com.iti.mongez.presentation.preferences.view.PreferencesScreen
+import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -103,11 +105,25 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onShowSnackBar = { /* Handle */ }
                 )
             }
-            is AppRoute.Dashboard -> NavEntry(AppRoute.Dashboard()) {
+            is AppRoute.Dashboard -> NavEntry(key) {
                 MainScreen(
                     showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
+                    onNavigateToPreferences = {
+                        //To-Do go to the profile
+                    },
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
+                    }
+                )
+            }
+            is AppRoute.Roadmap -> NavEntry(AppRoute.Roadmap) {
+                RoadmapScreen(
+                    innerPadding = PaddingValues(),
+                    onNavigateToBlockDetails = {
+                        //To-Do
+                    },
+                    onNavigateToAddEvent = {
+                        //To-Do
                     }
                 )
             }
@@ -118,9 +134,6 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                         backStack.remove(key)
                     }
                 )
-            }
-            else -> NavEntry(key) {
-                Text("Unknown Route")
             }
         }
     }

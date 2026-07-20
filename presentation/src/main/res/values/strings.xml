@@ -79,6 +79,32 @@
     <string name="change_settings_hint">Want to change this? Head to Settings to customize your study hours and days.</string>
     <string name="got_it">Got It</string>
     <string name="go_to_settings">Go to Settings</string>
+
+    <!-- Roadmap -->
+    <string name="roadmap_week_number">Week %1$d</string>
+    <string name="roadmap_os">Operating Systems</string>
+    <string name="roadmap_process_mgmt">Process Management</string>
+    <string name="roadmap_algorithms">Algorithms</string>
+    <string name="roadmap_dp">Dynamic Programming</string>
+    <string name="roadmap_networks">Networks</string>
+    <string name="roadmap_tcp_ip">TCP/IP Stack</string>
+    <string name="roadmap_db">Database Systems</string>
+    <string name="roadmap_sql">SQL Queries</string>
+    <string name="roadmap_quiz">Quiz</string>
+    <string name="roadmap_midterm">Midterm</string>
+    <string name="roadmap_title">Semester Roadmap</string>
+    <string name="roadmap_add_event">Add Event</string>
+    <string name="roadmap_filter_label">Filter: %1$s - %2$s</string>
+
+    <string name="add_new_event_title">Add New Event</string>
+    <string name="event_quiz_title">Quiz</string>
+    <string name="event_quiz_desc">A short assessment</string>
+    <string name="event_assignment_title">Assignment</string>
+    <string name="event_assignment_desc">Homework or project</string>
+    <string name="event_midterm_title">Midterm</string>
+    <string name="event_midterm_desc">Important exam</string>
+    <string name="event_project_title">Project</string>
+    <string name="event_project_desc">Large project or final work</string>
     <!-- Tabs -->
     <string name="tab_online_course">Online Course</string>
     <string name="tab_upload_material">Upload Material</string>

@@ -35,6 +35,7 @@ import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
+import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 
 /**
@@ -79,6 +80,7 @@ private enum class MainTab(
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showDefaultAlert: Boolean = false,
+    onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit
 ) {
     var selectedTabIndex by rememberSaveable {
@@ -102,7 +104,7 @@ fun MainScreen(
             },
             onGoToSettings = {
                 isDefaultScheduleDialogOpen = false
-                // TODO: Navigate to Settings
+                onNavigateToPreferences()
             }
         )
     }
@@ -172,11 +174,10 @@ private fun MainScreenContent(
         }
 
         MainTab.Roadmap -> {
-            Text(
-                text = stringResource(R.string.nav_roadmap) + " Content",
-                modifier = Modifier.padding(innerPadding),
-                color = Theme.colorScheme.text.primary,
-                style = Theme.typography.title.medium
+            RoadmapScreen(
+                innerPadding = innerPadding,
+                onNavigateToBlockDetails = { /* TODO */ },
+                onNavigateToAddEvent = { /* TODO */ }
             )
         }
 
