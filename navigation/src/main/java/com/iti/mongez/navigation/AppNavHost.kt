@@ -1,6 +1,6 @@
 package com.iti.mongez.navigation
 
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -105,22 +105,18 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.Dashboard -> NavEntry(AppRoute.Dashboard()) {
                 MainScreen(
-                    showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
+                    showDefaultAlert = (key).showDefaultAlert,
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
                     }
                 )
             }
             is AppRoute.CourseDetails -> NavEntry(key) {
-                val route = key as AppRoute.CourseDetails
                 CourseDetailsScreen(
                     onNavigateBack = {
                         backStack.remove(key)
                     }
                 )
-            }
-            else -> NavEntry(key) {
-                Text("Unknown Route")
             }
         }
     }
