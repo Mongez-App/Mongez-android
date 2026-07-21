@@ -47,10 +47,12 @@ This active learning agent operates within the Study Room to provide grounded ex
 When adding a new dependency, it must be added to the version catalog file (`gradle/libs.versions.toml`) first, and then referenced in the appropriate `build.gradle.kts` file.
 
 ### Coding Conventions
-- **No Fully Qualified Names (FQNs):** When using a class, do not use its fully qualified name inline. Always import the class and use its simple name.
-  *   **Do:** `private fun navigateToHome(user: User)`
-  *   **Don't:** `private fun navigateToHome(user: com.iti.mongez.domain.auth.model.User)`
+- **No Fully Qualified Names (FQNs):** When using a class or function, do not use its fully qualified name inline. Always import it and use its simple name.
+  *   **Do:** `private fun navigateToHome(user: User)` or `delay(1000L)`
+  *   **Don't:** `private fun navigateToHome(user: com.iti.mongez.domain.auth.model.User)` or `kotlinx.coroutines.delay(1000L)`
 - **Modern UI Components:** Always use the most up-to-date and modern Jetpack Compose APIs. Avoid using deprecated or obsolete composables.
   *   **Do:** `HorizontalDivider(...)`
   *   **Don't:** `Divider(...)` (Deprecated)
 - **Component Reusability:** When creating generic UI elements (like `SocialButton`), place them directly in the `design_system` module rather than duplicating them locally inside presentation screens.
+- **No Hardcoded Values:** Do not use hardcoded dimensions (dp/sp), colors, or alpha values in the UI. Always use `Theme.spacing.*`, `Theme.colorScheme.*`, `Theme.typography.*`, and `Theme.radius.*` from the design system to ensure consistency.
+- **Compose Previews:** Every screen must include a `@Preview` function to visualize its layout and state easily during development. Provide dummy data that reflects a realistic state.

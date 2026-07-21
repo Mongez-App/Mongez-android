@@ -3,10 +3,13 @@ package com.iti.mongez.data.repositories.courses
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.domain.courses.model.CourseCreationResult
+import com.iti.mongez.domain.courses.model.CourseActionResponse
+import com.iti.mongez.domain.courses.model.CourseMaterial
 import com.iti.mongez.domain.courses.repository.CoursesRepository
 import kotlinx.coroutines.delay
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 class FakeCoursesRepositoryImpl @Inject constructor() : CoursesRepository {
 
@@ -36,7 +39,7 @@ class FakeCoursesRepositoryImpl @Inject constructor() : CoursesRepository {
 
     override suspend fun getCourses(): Result<List<Course>> {
         // Simulate a 1-second network delay so you can see your loading spinner
-        delay(1000)
+        delay(1000.milliseconds)
 
         // Return a fresh list copy so StateFlow recognizes the state change
         return Result.Success(fakeCourses.toList())
@@ -50,7 +53,7 @@ class FakeCoursesRepositoryImpl @Inject constructor() : CoursesRepository {
         hasMaterials: Boolean
     ): Result<CourseCreationResult> {
         // Simulate network delay for creating a course
-        delay(1500)
+        delay(1500.milliseconds)
 
         // Create the new domain model
         val newCourse = Course(
@@ -75,4 +78,12 @@ class FakeCoursesRepositoryImpl @Inject constructor() : CoursesRepository {
 
         return Result.Success(creationResult)
     }
+
+    override suspend fun getCourseDetails(courseId: String): Result<Course> = Result.Failure(NotImplementedError())
+    override suspend fun updateCourse(courseId: String, name: String, isHidden: Boolean): Result<CourseActionResponse<Course>> = Result.Failure(NotImplementedError())
+    override suspend fun deleteCourse(courseId: String): Result<CourseActionResponse<Unit>> = Result.Failure(NotImplementedError())
+    
+    override suspend fun getCourseMaterials(courseId: String): Result<List<CourseMaterial>> = Result.Failure(NotImplementedError())
+    override suspend fun uploadCourseMaterial(courseId: String, fileName: String, contentType: String, fileSizeBytes: Long): Result<CourseActionResponse<String>> = Result.Failure(NotImplementedError())
+    override suspend fun deleteCourseMaterial(courseId: String, materialId: String): Result<CourseActionResponse<Unit>> = Result.Failure(NotImplementedError())
 }

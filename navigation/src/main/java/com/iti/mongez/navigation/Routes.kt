@@ -9,4 +9,5 @@ sealed interface AppRoute {
     object Roadmap : AppRoute
     data class CourseDetails(val courseId: String) : AppRoute
     object Profile : AppRoute
+    data class StudyRoom(val taskId: String, val title: String) : AppRoute
 }

@@ -1,6 +1,6 @@
 package com.iti.mongez.navigation
 
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import com.iti.mongez.presentation.preferences.view.PreferencesScreen
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
+import com.iti.mongez.presentation.studyroom.view.StudyRoomScreen
 import com.iti.mongez.domain.settings.model.AppSettings
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -121,12 +122,15 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.Dashboard -> NavEntry(key) {
                 MainScreen(
-                    showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
+                    showDefaultAlert = (key).showDefaultAlert,
                     onNavigateToPreferences = {
                         backStack.add(AppRoute.Preferences)
                     },
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
+                    },
+                    onNavigateToStudyRoom = { taskId, title ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title))
                     },
                     onNavigateToLogin = {
                         backStack.clear()
@@ -160,8 +164,19 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 )
             }
             is AppRoute.CourseDetails -> NavEntry(key) {
-                val route = key as AppRoute.CourseDetails
                 CourseDetailsScreen(
+                    onNavigateBack = {
+                        backStack.remove(key)
+                    },
+                    onNavigateToStudyRoom = { taskId, title ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                    }
+                )
+            }
+            is AppRoute.StudyRoom -> NavEntry(key) {
+                StudyRoomScreen(
+                    taskId = key.taskId,
+                    title = key.title,
                     onNavigateBack = {
                         backStack.remove(key)
                     }

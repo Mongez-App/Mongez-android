@@ -21,10 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iti.mongez.designsystem.R
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
@@ -35,6 +37,7 @@ enum class TaskPriority {
     HIGH, MEDIUM, LOW
 }
 
+
 /**
  * A reusable daily task card component with toggleable completion states.
  *
@@ -42,7 +45,6 @@ enum class TaskPriority {
  * @param duration The estimated time to complete the task.
  * @param priority The urgency level, which dictates the tag color.
  * @param isCompleted Whether the task checkmark is filled.
- * @param onToggle Callback triggered when the entire card or checkmark is clicked.
  * @param modifier Modifier to be applied to the layout.
  */
 @Composable
@@ -51,7 +53,7 @@ fun AppTaskCard(
     duration: String,
     priority: TaskPriority,
     isCompleted: Boolean,
-    onToggle: (Boolean) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Dynamically map priority to your design system's state tokens
@@ -59,6 +61,13 @@ fun AppTaskCard(
         TaskPriority.HIGH -> Theme.colorScheme.state.error
         TaskPriority.MEDIUM -> Theme.colorScheme.state.warning
         TaskPriority.LOW -> Theme.colorScheme.state.success
+    }
+
+// Map Enum to String Resource
+    val priorityTextRes = when (priority) {
+        TaskPriority.HIGH -> R.string.priority_high
+        TaskPriority.MEDIUM -> R.string.priority_medium
+        TaskPriority.LOW -> R.string.priority_low
     }
 
     Row(
@@ -77,7 +86,7 @@ fun AppTaskCard(
                 color = Theme.colorScheme.text.disabled,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable { onToggle(!isCompleted) }
+            .clickable { onClick() }
             .padding(16.dp), // 16px padding inside the card
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp) // 16px gap between check and text
@@ -142,7 +151,7 @@ fun AppTaskCard(
 
                 // Priority Tag
                 Text(
-                    text = priority.name,
+                    text = stringResource(id = priorityTextRes),
                     color = priorityColor,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -172,7 +181,7 @@ private fun AppTaskCardsListPreview() {
                 duration = "45 min",
                 priority = TaskPriority.HIGH,
                 isCompleted = true,
-                onToggle = {}
+                onClick = {}
             )
 
             AppTaskCard(
@@ -180,7 +189,7 @@ private fun AppTaskCardsListPreview() {
                 duration = "30 min",
                 priority = TaskPriority.MEDIUM,
                 isCompleted = false,
-                onToggle = {}
+                onClick = {}
             )
 
             AppTaskCard(
@@ -188,7 +197,7 @@ private fun AppTaskCardsListPreview() {
                 duration = "20 min",
                 priority = TaskPriority.LOW,
                 isCompleted = false,
-                onToggle = {}
+                onClick = {}
             )
         }
     }

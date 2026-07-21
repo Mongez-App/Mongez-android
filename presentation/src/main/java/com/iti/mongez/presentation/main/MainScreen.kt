@@ -3,19 +3,9 @@ package com.iti.mongez.presentation.main
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -24,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
@@ -32,51 +21,16 @@ import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
-import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
-import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
-import com.iti.mongez.presentation.preferences.view.PreferencesScreen
-import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
+import com.iti.mongez.presentation.profile.view.ProfileScreen
+import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 
 /**
  * Represents the tabs available in the main bottom navigation.
  */
-private enum class MainTab(
-    val labelResId: Int,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-) {
-    Home(
-        R.string.nav_home,
-        Icons.Filled.Home,
-        Icons.Outlined.Home
-    ),
 
-    Courses(
-        R.string.nav_courses,
-        Icons.AutoMirrored.Filled.MenuBook,
-        Icons.AutoMirrored.Outlined.MenuBook
-    ),
-
-    Roadmap(
-        R.string.nav_roadmap,
-        Icons.Filled.CalendarMonth,
-        Icons.Outlined.CalendarMonth
-    ),
-
-    Profile(
-        R.string.nav_profile,
-        Icons.Filled.Person,
-        Icons.Outlined.Person
-    );
-
-    companion object {
-        fun fromIndex(index: Int): MainTab =
-            entries.getOrElse(index) { Home }
-    }
-}
 
 @Composable
 fun MainScreen(
@@ -84,6 +38,7 @@ fun MainScreen(
     showDefaultAlert: Boolean = false,
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     var selectedTabIndex by rememberSaveable {
@@ -148,6 +103,7 @@ fun MainScreen(
             innerPadding = innerPadding,
             onNavigateToPreferences = onNavigateToPreferences,
             onNavigateToCourseDetails = onNavigateToCourseDetails,
+            onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
             onShowSnackBar = { message ->
                 // Use the snackbarHostState to show a snackbar
@@ -162,6 +118,7 @@ private fun MainScreenContent(
     innerPadding: PaddingValues,
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
@@ -172,7 +129,8 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 onNavigateToFocus = {},
                 onViewAllTasks = {},
-                onViewAllDeadlines = {}
+                onViewAllDeadlines = {},
+                onNavigateToStudyRoom = onNavigateToStudyRoom
             )
         }
 

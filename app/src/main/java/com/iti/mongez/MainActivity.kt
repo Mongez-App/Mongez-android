@@ -89,5 +89,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Cleaned up MainScreen and items
-

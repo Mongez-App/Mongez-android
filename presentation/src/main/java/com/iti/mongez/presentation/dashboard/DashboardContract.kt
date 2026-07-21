@@ -1,7 +1,9 @@
 package com.iti.mongez.presentation.dashboard
 
+import androidx.annotation.StringRes
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
+import com.iti.mongez.presentation.R
 
 // Represent individual domain models inline for presentation state driving
 data class TaskItem(
@@ -21,10 +23,10 @@ data class DeadlineItem(
 )
 
 data class GoalItem(
-    val title: String,
+    @StringRes val titleRes: Int,
     val currentValue: Int,
     val totalValue: Int,
-    val unit: String,
+    @StringRes val unitRes: Int,
     val goalType: GoalType
 )
 
@@ -39,17 +41,17 @@ enum class GoalType {
 data class DashboardUiState(
     val isLoading: Boolean = false,
     val userName: String = "Abdullah",
-    val greetingSubtext: String = "Let's hit today's tasks",
+    @StringRes val greetingSubtext: Int = R.string.dashboard_greeting_subtext,
     val streakCount: Int = 12,
     val isStreakActive: Boolean = true,
-    val focusTitle: String = "Today's Focus",
-    val focusTopic: String = "Operating\nSystems",
-    val focusDuration: String = "2h 15m",
+    @StringRes val focusTitle: Int = R.string.dashboard_todays_focus,
+    @StringRes val focusTopic: Int = R.string.dashboard_focus_topic,
+    @StringRes val focusDuration: Int = R.string.dashboard_focus_duration,
     val goals: List<GoalItem> = emptyList(),
     val tasks: List<TaskItem> = emptyList(),
     val deadlines: List<DeadlineItem> = emptyList(),
-    val aiSuggestionHeader: String = "AI Suggestion",
-    val aiSuggestionBody: String = "You're most productive around 7 PM. Start Networking before Algorithms today."
+    @StringRes val aiSuggestionHeader: Int = R.string.dashboard_ai_suggestion,
+    @StringRes val aiSuggestionBody: Int = R.string.dashboard_ai_suggestion_body
 )
 
 sealed class DashboardEvent {
@@ -60,7 +62,8 @@ sealed class DashboardEvent {
 }
 
 sealed class DashboardEffect {
-    data class ShowSnackbar(val message: String, val type: AppSnackbarType) : DashboardEffect()    object NavigateToFocusSession : DashboardEffect()
+    data class ShowSnackbar(@StringRes val messageRes: Int, val type: AppSnackbarType) : DashboardEffect()
+    object NavigateToFocusSession : DashboardEffect()
     object NavigateToAllTasks : DashboardEffect()
     object NavigateToAllDeadlines : DashboardEffect()
 }

@@ -91,7 +91,7 @@ fun CoursesScreenContent(
                         CircularProgressIndicator()
                     }
 
-                }else {
+                } else {
 
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -139,19 +139,34 @@ fun CoursesScreenContent(
                     title = stringResource(R.string.add_new_course)
                 ) {
 
+                    // 1. Resolve the localized error string here
+                    val emptyFieldsError = stringResource(R.string.error_empty_fields)
+
                     AddCourseSheetContent(
                         isLoading = state.isCreatingCourse,
                         onAddCourse = { name, code, startDate, examDate, hasMaterials ->
 
-                            onIntent(
-                                CoursesIntent.CreateCourse(
-                                    name = name,
-                                    courseCode = code,
-                                    startDate = startDate,
-                                    examDate = examDate,
-                                    hasMaterials = hasMaterials,
+                            // 2. Validate the fields
+                            if (name.isBlank() || code.isBlank() || startDate.isBlank() || examDate.isBlank()) {
+                                // 3. Fire error intent if validation fails
+                                onIntent(
+                                    CoursesIntent.ShowSnackbar(
+                                        message = emptyFieldsError,
+                                        type = AppSnackbarType.Error
+                                    )
                                 )
-                            )
+                            } else {
+                                // 4. Proceed normally if validation passes
+                                onIntent(
+                                    CoursesIntent.CreateCourse(
+                                        name = name,
+                                        courseCode = code,
+                                        startDate = startDate,
+                                        examDate = examDate,
+                                        hasMaterials = hasMaterials,
+                                    )
+                                )
+                            }
                         }
                     )
                 }
