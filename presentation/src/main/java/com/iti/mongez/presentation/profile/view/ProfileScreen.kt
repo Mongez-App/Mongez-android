@@ -44,6 +44,9 @@ import com.iti.mongez.presentation.profile.viewmodel.ProfileViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.iti.mongez.domain.settings.model.Language
+import com.iti.mongez.presentation.profile.components.ProfileHeader
+import com.iti.mongez.presentation.profile.components.SettingItem
+import com.iti.mongez.presentation.profile.components.StatCard
 
 @Composable
 fun ProfileScreen(
@@ -180,7 +183,10 @@ private fun ProfileScreenContent(
                         colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = Theme.spacing.sm, vertical = Theme.spacing.xs),
+                            modifier = Modifier.padding(
+                                horizontal = Theme.spacing.sm,
+                                vertical = Theme.spacing.xs
+                            ),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -227,158 +233,53 @@ private fun ProfileScreenContent(
     }
 }
 
-@Composable
-private fun ProfileHeader(
-    name: String,
-    email: String,
-    profilePictureUrl: String?
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(Theme.colorScheme.surface.surfaceLow),
-            contentAlignment = Alignment.Center
-        ) {
-            if (profilePictureUrl != null) {
-                AsyncImage(
-                    model = profilePictureUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Rounded.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = Theme.colorScheme.text.secondary
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(Theme.spacing.lg))
-
-        Text(
-            text = name,
-            style = Theme.typography.title.large,
-            color = Theme.colorScheme.text.primary,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = email,
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.text.secondary
-        )
-    }
-}
-
-@Composable
-private fun StatCard(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-    valueColor: Color
-) {
-    AppCard(
-        modifier = modifier,
-        containerColor = Color.Transparent,
-        borderWidth = 1.dp,
-        elevation = 0.dp
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = label,
-                style = Theme.typography.label.small,
-                color = Theme.colorScheme.text.primary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.height(32.dp)
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.xs))
-            Text(
-                text = value,
-                style = Theme.typography.title.large,
-                color = valueColor,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
-
-@Composable
-private fun SettingItem(
-    icon: ImageVector,
-    iconContainerColor: Color,
-    iconTint: Color,
-    title: String,
-    titleColor: Color = Theme.colorScheme.text.primary,
-    action: @Composable (() -> Unit)? = null,
-    onClick: (() -> Unit)? = null
-) {
-    val modifier = if (onClick != null) {
-        Modifier.clickable(onClick = onClick)
-    } else Modifier
-    
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = Theme.spacing.xs),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(Theme.spacing.huge)
-                .background(iconContainerColor, RoundedCornerShape(Theme.radius.md)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier.size(Theme.spacing.lg)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(Theme.spacing.lg))
-
-        Text(
-            text = title,
-            style = Theme.typography.body.large,
-            color = titleColor,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f)
-        )
-
-        if (action != null) {
-            action()
-        }
-    }
-}
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun ProfileScreenPreview() {
+    val sampleState = ProfileViewState(
+        name = "Abdullh Mohamed",
+        email = "abdullh@example.com",
+        studyingHours = 145,
+        completedTasks = 382,
+        streakDays = 14,
+        isCalendarSyncEnabled = true,
+        isDarkModeEnabled = false,
+        language = Language.EN
+    )
+
     MongezTheme {
-        ProfileScreenContent(
-            innerPadding = PaddingValues(),
-            viewState = ProfileViewState(
-                name = "Abdullah Mohamed",
-                email = "abdullah@example.com",
-                studyingHours = 145,
-                completedTasks = 382,
-                streakDays = 14,
-                isCalendarSyncEnabled = true,
-                isDarkModeEnabled = false,
-                language = Language.EN
-            ),
-            onIntent = {}
-        )
+        Surface(color = Theme.colorScheme.surface.background) {
+            ProfileScreenContent(
+                innerPadding = PaddingValues(),
+                viewState = sampleState,
+                onIntent = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, locale = "ar", name = "Arabic Preview")
+@Composable
+private fun ProfileScreenArabicPreview() {
+    val sampleState = ProfileViewState(
+        name = "عبدالله محمد",
+        email = "abdullh@example.com",
+        studyingHours = 145,
+        completedTasks = 382,
+        streakDays = 14,
+        isCalendarSyncEnabled = true,
+        isDarkModeEnabled = false,
+        language = Language.AR
+    )
+
+    MongezTheme {
+        Surface(color = Theme.colorScheme.surface.background) {
+            ProfileScreenContent(
+                innerPadding = PaddingValues(),
+                viewState = sampleState,
+                onIntent = {}
+            )
+        }
     }
 }

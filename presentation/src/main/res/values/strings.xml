@@ -105,6 +105,7 @@
     <string name="event_midterm_desc">Important exam</string>
     <string name="event_project_title">Project</string>
     <string name="event_project_desc">Large project or final work</string>
+
     <!-- Tabs -->
     <string name="tab_online_course">Online Course</string>
     <string name="tab_upload_material">Upload Material</string>
