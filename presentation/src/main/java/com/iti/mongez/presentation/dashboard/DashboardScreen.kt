@@ -34,6 +34,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.iti.mongez.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -46,17 +48,17 @@ fun DashboardScreen(
     onViewAllDeadlines: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
-    var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
+    var topSnackbarMessageRes by remember { mutableStateOf<Int?>(null) }
     var topSnackbarType by remember { mutableStateOf<AppSnackbarType?>(null) }
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 is DashboardEffect.ShowSnackbar -> {
-                    topSnackbarMessage = effect.message
+                    topSnackbarMessageRes = effect.messageRes
                     topSnackbarType = effect.type
                     delay(3000)
-                    topSnackbarMessage = null
+                    topSnackbarMessageRes = null
                 }
 
                 is DashboardEffect.NavigateToFocusSession -> onNavigateToFocus()
@@ -96,13 +98,17 @@ fun DashboardScreen(
 
                         Column {
                             Text(
-                                text = "Hi, ${state.userName}",
+                                text = stringResource(
+                                    R.string.dashboard_greeting,
+                                    state.userName
+                                ),
                                 style = Theme.typography.title.large,
                                 fontWeight = FontWeight.Bold,
                                 color = Theme.colorScheme.text.primary
                             )
+                            // 2. Wrap greetingSubtext
                             Text(
-                                text = state.greetingSubtext,
+                                text = stringResource(state.greetingSubtext),
                                 style = Theme.typography.body.medium,
                                 color = Theme.colorScheme.text.secondary
                             )
@@ -120,9 +126,9 @@ fun DashboardScreen(
             item {
                 Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
                     AppFocusCard(
-                        title = state.focusTitle,
-                        topic = state.focusTopic,
-                        duration = state.focusDuration,
+                        title = stringResource(state.focusTitle),
+                        topic = stringResource(state.focusTopic),
+                        duration = stringResource(state.focusDuration),
                         imagePainter = ColorPainter(Color(0xFF1E1E1E)),
                         onStartClick = { viewModel.onEvent(DashboardEvent.OnStartFocusClicked) }
                     )
@@ -145,10 +151,10 @@ fun DashboardScreen(
                             GoalType.MONTHLY -> Theme.colorScheme.brand.primary
                         }
                         AppProgressGoalCard(
-                            title = goal.title,
+                            title = stringResource(goal.titleRes),
                             currentValue = goal.currentValue,
                             totalValue = goal.totalValue,
-                            unit = goal.unit,
+                            unit = stringResource(goal.unitRes),
                             tintColor = tintColor
                         )
                     }
@@ -158,8 +164,8 @@ fun DashboardScreen(
             // 4. Today's Tasks Section Header + List Column (Updated to use AppSectionHeader)
             item {
                 AppSectionHeader(
-                    title = "Today's Tasks",
-                    actionText = "View all",
+                    title = stringResource(R.string.dashboard_todays_tasks),
+                    actionText = stringResource(R.string.dashboard_view_all),
                     onAction = { viewModel.onEvent(DashboardEvent.OnViewAllTasksClicked) },
                     modifier = Modifier.padding(horizontal = Theme.spacing.xl)
                 )
@@ -187,8 +193,8 @@ fun DashboardScreen(
             // 5. Upcoming Deadlines Section Header + Horizontal Row Block (Updated to use AppSectionHeader)
             item {
                 AppSectionHeader(
-                    title = "Upcoming Deadlines",
-                    actionText = "View all",
+                    title = stringResource(R.string.dashboard_upcoming_deadlines),
+                    actionText = stringResource(R.string.dashboard_view_all),
                     onAction = { viewModel.onEvent(DashboardEvent.OnViewAllDeadlinesClicked) },
                     modifier = Modifier.padding(horizontal = Theme.spacing.xl)
                 )
@@ -215,8 +221,8 @@ fun DashboardScreen(
             item {
                 Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
                     AppInfoCard(
-                        header = state.aiSuggestionHeader,
-                        body = state.aiSuggestionBody,
+                        header = stringResource(state.aiSuggestionHeader),
+                        body = stringResource(state.aiSuggestionBody),
                         icon = Icons.Default.WbSunny,
                         tintColor = Theme.colorScheme.state.success
                     )
@@ -225,7 +231,7 @@ fun DashboardScreen(
         }
 
         AnimatedVisibility(
-            visible = topSnackbarMessage != null,
+            visible = topSnackbarMessageRes != null,
             enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
             modifier = Modifier
@@ -233,9 +239,10 @@ fun DashboardScreen(
                 .padding(Theme.spacing.md)
                 .padding(top = 32.dp)
         ) {
-            topSnackbarMessage?.let { message ->
+            // 5. Resolve Snackbar string resource here
+            topSnackbarMessageRes?.let { messageRes ->
                 AppSnackbarContent(
-                    message = message,
+                    message = stringResource(id = messageRes),
                     type = topSnackbarType ?: AppSnackbarType.Error
                 )
             }

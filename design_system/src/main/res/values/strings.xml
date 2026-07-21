@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Mongez</string>
     <string name="app_skip">Skip</string>
+    <!-- Focus Card -->
+    <string name="focus_card_lets_start">Let\'s Start</string>
+    <string name="cd_duration">Duration</string>
+
+    <!-- Streak Badge -->
+    <string name="streak_day">Day</string>
+    <string name="streak_title">Streak</string>
+
+    <!-- Task Priority & Checkbox -->
+    <string name="priority_high">HIGH</string>
+    <string name="priority_medium">MEDIUM</string>
+    <string name="priority_low">LOW</string>
+    <string name="cd_completed">Completed</string>
 </resources>

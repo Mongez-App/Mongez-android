@@ -10,10 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iti.mongez.designsystem.R
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
@@ -51,7 +53,7 @@ fun AppStreakBadge(
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = "Day",
+                    text = stringResource(id = R.string.streak_day),
                     style = Theme.typography.title.medium, // Downscaled from headline.medium
                     color = Theme.colorScheme.text.primary,
                     fontWeight = FontWeight.Bold,
@@ -61,7 +63,7 @@ fun AppStreakBadge(
 
             // Bottom Line: "Streak"
             Text(
-                text = "Streak",
+                text = stringResource(id = R.string.streak_title),
                 style = Theme.typography.label.large, // Downscaled from headline.medium
                 color = Theme.colorScheme.text.primary,
                 fontWeight = FontWeight.Bold

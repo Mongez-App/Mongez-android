@@ -160,6 +160,42 @@
     <string name="profile_dark_mode">Dark Mode</string>
     <string name="profile_language">Language</string>
     <string name="profile_logout">Logout</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_greeting">Hi, %1$s</string>
+    <string name="dashboard_greeting_subtext">Let\'s hit today\'s tasks</string>
+
+    <!-- Focus -->
+    <string name="dashboard_todays_focus">Today\'s Focus</string>
+    <string name="dashboard_focus_topic">Operating\nSystems</string>
+    <string name="dashboard_focus_duration">2h 15m</string>
+
+    <!-- Goals -->
+    <!-- Add goal-specific strings here when goals are created -->
+
+    <!-- Tasks -->
+    <string name="dashboard_todays_tasks">Todays\' Tasks</string>
+    <string name="dashboard_view_all">View all</string>
+
+    <!-- Deadlines -->
+    <string name="dashboard_upcoming_deadlines">Upcoming Deadlines</string>
+
+    <!-- AI Suggestion -->
+    <string name="dashboard_ai_suggestion">AI Suggestion</string>
+    <string name="dashboard_ai_suggestion_body">
+        You\'re most productive around 7 PM. Start Networking before Algorithms today.
+    </string>
+
+    <!-- Dashboard Goals -->
+    <string name="dashboard_daily_goal">Daily Goal</string>
+    <string name="dashboard_weekly_goal">Weekly Goal</string>
+    <string name="dashboard_monthly_goal">Monthly Goal</string>
+
+    <string name="tasks">Tasks</string>
+    <string name="hours">Hours</string>
+    <string name="task_marked_completed">Task marked completed!</string>
+    <string name="error_loading_dashboard">Failed to load dashboard data.</string>
+
 </resources>
 
 
