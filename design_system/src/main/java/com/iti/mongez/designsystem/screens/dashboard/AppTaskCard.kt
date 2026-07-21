@@ -45,7 +45,6 @@ enum class TaskPriority {
  * @param duration The estimated time to complete the task.
  * @param priority The urgency level, which dictates the tag color.
  * @param isCompleted Whether the task checkmark is filled.
- * @param onToggle Callback triggered when the entire card or checkmark is clicked.
  * @param modifier Modifier to be applied to the layout.
  */
 @Composable
@@ -54,7 +53,7 @@ fun AppTaskCard(
     duration: String,
     priority: TaskPriority,
     isCompleted: Boolean,
-    onToggle: (Boolean) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Dynamically map priority to your design system's state tokens
@@ -87,7 +86,7 @@ fun AppTaskCard(
                 color = Theme.colorScheme.text.disabled,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable { onToggle(!isCompleted) }
+            .clickable { onClick() }
             .padding(16.dp), // 16px padding inside the card
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp) // 16px gap between check and text
@@ -182,7 +181,7 @@ private fun AppTaskCardsListPreview() {
                 duration = "45 min",
                 priority = TaskPriority.HIGH,
                 isCompleted = true,
-                onToggle = {}
+                onClick = {}
             )
 
             AppTaskCard(
@@ -190,7 +189,7 @@ private fun AppTaskCardsListPreview() {
                 duration = "30 min",
                 priority = TaskPriority.MEDIUM,
                 isCompleted = false,
-                onToggle = {}
+                onClick = {}
             )
 
             AppTaskCard(
@@ -198,7 +197,7 @@ private fun AppTaskCardsListPreview() {
                 duration = "20 min",
                 priority = TaskPriority.LOW,
                 isCompleted = false,
-                onToggle = {}
+                onClick = {}
             )
         }
     }

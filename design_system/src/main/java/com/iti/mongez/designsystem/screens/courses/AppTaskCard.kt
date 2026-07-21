@@ -19,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
 @Composable
@@ -116,6 +118,36 @@ fun AppTaskCard(
                     )
                 }
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AppTaskCardPreview() {
+    MongezTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            AppTaskCard(
+                title = "Read Chapter 4",
+                duration = "45 min",
+                priority = "HIGH",
+                isCompleted = true
+            )
+            AppTaskCard(
+                title = "Practice DFS Problems",
+                duration = "30 min",
+                priority = "MEDIUM",
+                isCompleted = false
+            )
+            AppTaskCard(
+                title = "Finish Quiz",
+                duration = "20 min",
+                priority = "LOW",
+                isCompleted = false
+            )
         }
     }
 }

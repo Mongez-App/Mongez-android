@@ -54,7 +54,8 @@ import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 @Composable
 fun CourseDetailsScreen(
     viewModel: CourseDetailsViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -281,7 +282,7 @@ fun CourseDetailsScreen(
                                 priority = task.priority,
                                 isCompleted = task.isCompleted,
                                 onClick = {
-                                    viewModel.processIntent(CourseDetailsIntent.ClickTask(task.id))
+                                    onNavigateToStudyRoom(task.id, task.title)
                                 }
                             )
                         }
@@ -305,7 +306,7 @@ fun CourseDetailsScreen(
                                 priority = task.priority,
                                 isCompleted = task.isCompleted,
                                 onClick = {
-                                    viewModel.processIntent(CourseDetailsIntent.ClickTask(task.id))
+                                    onNavigateToStudyRoom(task.id, task.title)
                                 }
                             )
                         }

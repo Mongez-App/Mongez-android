@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import com.iti.mongez.presentation.preferences.view.PreferencesScreen
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
+import com.iti.mongez.presentation.studyroom.view.StudyRoomScreen
 import com.iti.mongez.domain.settings.model.AppSettings
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -128,6 +129,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
                     },
+                    onNavigateToStudyRoom = { taskId, title ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                    },
                     onNavigateToLogin = {
                         backStack.clear()
                         backStack.add(AppRoute.Login)
@@ -158,6 +162,18 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.CourseDetails -> NavEntry(key) {
                 CourseDetailsScreen(
+                    onNavigateBack = {
+                        backStack.remove(key)
+                    },
+                    onNavigateToStudyRoom = { taskId, title ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                    }
+                )
+            }
+            is AppRoute.StudyRoom -> NavEntry(key) {
+                StudyRoomScreen(
+                    taskId = key.taskId,
+                    title = key.title,
                     onNavigateBack = {
                         backStack.remove(key)
                     }

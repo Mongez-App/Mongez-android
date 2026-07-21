@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import com.iti.mongez.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun DashboardScreen(
@@ -46,6 +47,7 @@ fun DashboardScreen(
     onNavigateToFocus: () -> Unit,
     onViewAllTasks: () -> Unit,
     onViewAllDeadlines: () -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     var topSnackbarMessageRes by remember { mutableStateOf<Int?>(null) }
@@ -57,7 +59,7 @@ fun DashboardScreen(
                 is DashboardEffect.ShowSnackbar -> {
                     topSnackbarMessageRes = effect.messageRes
                     topSnackbarType = effect.type
-                    delay(3000)
+                    delay(3000.milliseconds)
                     topSnackbarMessageRes = null
                 }
 
@@ -178,13 +180,8 @@ fun DashboardScreen(
                         duration = task.duration,
                         priority = task.priority,
                         isCompleted = task.isCompleted,
-                        onToggle = { isChecked ->
-                            viewModel.onEvent(
-                                DashboardEvent.OnTaskCheckedToggled(
-                                    task.id,
-                                    isChecked
-                                )
-                            )
+                        onClick = {
+                            onNavigateToStudyRoom(task.id, task.title)
                         }
                     )
                 }
