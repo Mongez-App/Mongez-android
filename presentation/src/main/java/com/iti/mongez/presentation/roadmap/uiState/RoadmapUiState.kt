@@ -36,7 +36,8 @@ data class StudyBlockUiModel(
 enum class StudyBlockColor {
     PURPLE,
     GREEN,
-    ORANGE
+    ORANGE,
+    BLUE
 }
 
 data class RoadmapEventUiModel(

@@ -92,7 +92,7 @@
     <string name="roadmap_sql">SQL Queries</string>
     <string name="roadmap_quiz">Quiz</string>
     <string name="roadmap_midterm">Midterm</string>
-    <string name="roadmap_title">Semester Roadmap</string>
+    <string name="roadmap_title">Roadmap</string>
     <string name="roadmap_add_event">Add Event</string>
     <string name="roadmap_filter_label">Filter: %1$s - %2$s</string>
 

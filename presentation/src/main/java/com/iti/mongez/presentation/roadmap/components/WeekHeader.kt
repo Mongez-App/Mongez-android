@@ -24,21 +24,20 @@ fun WeekHeader(week: RoadmapWeekUiModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = Theme.spacing.md),
+            .padding(top = Theme.spacing.lg, bottom = Theme.spacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Dot and Line start
         Box(
             modifier = Modifier
-                .width(24.dp)
-                .fillMaxHeight(),
-            contentAlignment = Alignment.TopCenter
+                .width(24.dp),
+            contentAlignment = Alignment.Center
         ) {
              Box(
                 modifier = Modifier
                     .size(10.dp)
                     .clip(CircleShape)
-                    .background(Theme.colorScheme.text.primary) // Avoided hardcoded Color(0xFF1E293B)
+                    .background(Theme.colorScheme.brand.primary)
             )
         }
         
@@ -48,12 +47,12 @@ fun WeekHeader(week: RoadmapWeekUiModel) {
             Text(
                 text = stringResource(R.string.roadmap_week_number, week.weekNumber),
                 style = Theme.typography.title.small,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 color = Theme.colorScheme.text.primary
             )
             Text(
                 text = week.dateRange.asString(),
-                style = Theme.typography.label.medium,
+                style = Theme.typography.label.small,
                 color = Theme.colorScheme.text.tertiary
             )
         }

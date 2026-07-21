@@ -1,9 +1,14 @@
 package com.iti.mongez.presentation.roadmap.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
@@ -28,62 +33,62 @@ fun TimelineBlockItem(
     isLast: Boolean,
     onClick: () -> Unit
 ) {
-    val lineColor = Theme.colorScheme.border.secondary
+    val lineColor = Theme.colorScheme.brand.roadmapTimeline
     val blockColor = when (block.color) {
-        StudyBlockColor.PURPLE -> Theme.colorScheme.brand.primary
-        StudyBlockColor.GREEN -> Theme.colorScheme.state.success
-        StudyBlockColor.ORANGE -> Theme.colorScheme.state.warning
+        StudyBlockColor.PURPLE -> Theme.colorScheme.brand.roadmapPurple
+        StudyBlockColor.GREEN -> Theme.colorScheme.brand.roadmapGreen
+        StudyBlockColor.ORANGE -> Theme.colorScheme.brand.roadmapOrange
+        StudyBlockColor.BLUE -> Theme.colorScheme.brand.roadmapBlue
     }
     
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .drawBehind {
-                if (!isLast) {
-                    drawLine(
-                        color = lineColor,
-                        start = Offset(12.dp.toPx(), 0f),
-                        end = Offset(12.dp.toPx(), size.height),
-                        strokeWidth = 2.dp.toPx()
-                    )
-                }
+                drawLine(
+                    color = lineColor,
+                    start = Offset(12.dp.toPx(), 0f),
+                    end = Offset(12.dp.toPx(), size.height),
+                    strokeWidth = 2.dp.toPx()
+                )
             }
-            .padding(bottom = Theme.spacing.lg),
-        verticalAlignment = Alignment.Top
+            .clickable { onClick() }
+            .padding(vertical = Theme.spacing.sm),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Timeline Line
-        Box(
-            modifier = Modifier
-                .width(24.dp)
-                .fillMaxHeight()
-        )
+        Box(modifier = Modifier.width(24.dp))
         
         Spacer(modifier = Modifier.width(Theme.spacing.md))
 
         RoadmapBlockCard(
             courseName = block.courseName.asString(),
-            topic = block.topic.asString(),
             color = blockColor,
-            isCompleted = block.isCompleted,
-            eventTitle = block.event?.title?.asString(),
-            eventIcon = block.event?.let { event ->
-                {
-                    val icon = when (event.type) {
-                        "Quiz" -> Icons.Default.Description
-                        "Midterm" -> Icons.AutoMirrored.Filled.Assignment
-                        else -> null
-                    }
-                    if (icon != null) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = blockColor
-                        )
-                    }
-                }
-            }
+            modifier = Modifier.weight(1f)
         )
+
+        Spacer(modifier = Modifier.width(Theme.spacing.md))
+
+        if (block.isCompleted) {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .background(Theme.colorScheme.state.success, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = Theme.colorScheme.brand.onPrimary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .border(2.dp, lineColor, CircleShape)
+            )
+        }
     }
 }
 

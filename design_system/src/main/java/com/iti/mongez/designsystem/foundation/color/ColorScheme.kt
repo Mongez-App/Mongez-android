@@ -11,6 +11,11 @@ data class BrandColors(
     val onPrimary: Color,
     val onPrimaryContainer: Color,
     val indicatorUnselected: Color,
+    val roadmapPurple: Color,
+    val roadmapGreen: Color,
+    val roadmapOrange: Color,
+    val roadmapBlue: Color,
+    val roadmapTimeline: Color,
 )
 
 @Immutable
@@ -128,6 +133,11 @@ val LightColorScheme = AppColorScheme(
         onPrimary = PrimitiveColors.White,
         onPrimaryContainer = PrimitiveColors.Purple900,
         indicatorUnselected = PrimitiveColors.Gray250,
+        roadmapPurple = PrimitiveColors.Purple400,
+        roadmapGreen = PrimitiveColors.Green400,
+        roadmapOrange = PrimitiveColors.Orange400,
+        roadmapBlue = PrimitiveColors.Blue400,
+        roadmapTimeline = PrimitiveColors.Gray350,
     ),
     text = TextColors(
         primary = PrimitiveColors.Gray900,
@@ -218,6 +228,11 @@ val DarkColorScheme = AppColorScheme(
         onPrimary = PrimitiveColors.White,
         onPrimaryContainer = PrimitiveColors.Purple200,
         indicatorUnselected = PrimitiveColors.Gray700,
+        roadmapPurple = PrimitiveColors.Purple400,
+        roadmapGreen = PrimitiveColors.Green400,
+        roadmapOrange = PrimitiveColors.Orange400,
+        roadmapBlue = PrimitiveColors.Blue400,
+        roadmapTimeline = PrimitiveColors.Gray700,
     ),
     text = TextColors(
         primary = PrimitiveColors.White,

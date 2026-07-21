@@ -21,71 +21,25 @@ import com.iti.mongez.designsystem.theme.Theme
 @Composable
 fun RoadmapBlockCard(
     courseName: String,
-    topic: String,
     color: Color,
-    isCompleted: Boolean,
     modifier: Modifier = Modifier,
-    eventTitle: String? = null,
-    eventIcon: @Composable (() -> Unit)? = null,
 ) {
-    Row(
+    Card(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        shape = RoundedCornerShape(Theme.radius.lg),
+        colors = CardDefaults.cardColors(containerColor = color)
     ) {
-        Card(
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(Theme.radius.xl),
-            colors = CardDefaults.cardColors(containerColor = color)
+        Box(
+            modifier = Modifier
+                .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.md),
+            contentAlignment = Alignment.CenterStart
         ) {
-            Box(modifier = Modifier.padding(Theme.spacing.lg)) {
-                Text(
-                    text = courseName,
-                    style = Theme.typography.label.medium,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(Theme.spacing.md))
-
-        if (isCompleted) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(Theme.colorScheme.state.success.copy(alpha = 0.1f), CircleShape)
-                    .padding(4.dp)
-                    .background(Color.White, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = Theme.colorScheme.state.success,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        } else if (eventTitle != null) {
-            Card(
-                shape = RoundedCornerShape(Theme.radius.xl),
-                colors = CardDefaults.cardColors(containerColor = Theme.colorScheme.surface.surfaceVariant),
-                modifier = Modifier.height(32.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(horizontal = Theme.spacing.md),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    eventIcon?.invoke()
-                    Text(
-                        text = eventTitle,
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.text.primary
-                    )
-                }
-            }
+            Text(
+                text = courseName,
+                style = Theme.typography.label.medium,
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }
