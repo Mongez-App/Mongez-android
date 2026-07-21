@@ -1,44 +1,34 @@
 package com.iti.mongez.presentation.main
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.iti.mongez.presentation.R
 
 enum class MainTab(
     val labelResId: Int,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
+    val selectedIcon: Int,
+    val unselectedIcon: Int
 ) {
     Home(
         R.string.nav_home,
-        Icons.Filled.Home,
-        Icons.Outlined.Home
+        R.drawable.ic_home_filled,
+        R.drawable.ic_home_unfilled
     ),
 
     Courses(
         R.string.nav_courses,
-        Icons.AutoMirrored.Filled.MenuBook,
-        Icons.AutoMirrored.Outlined.MenuBook
+        R.drawable.ic_courses_filled,
+        R.drawable.ic_courses_unfilled
     ),
 
     Roadmap(
         R.string.nav_roadmap,
-        Icons.Filled.CalendarMonth,
-        Icons.Outlined.CalendarMonth
+        R.drawable.ic_roadmap_filled,
+        R.drawable.ic_roadmap_unfilled
     ),
 
     Profile(
         R.string.nav_profile,
-        Icons.Filled.Person,
-        Icons.Outlined.Person
+        R.drawable.ic_profile_filled,
+        R.drawable.ic_profile_unfilled
     );
 
     companion object {

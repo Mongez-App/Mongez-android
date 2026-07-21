@@ -1,26 +1,33 @@
 package com.iti.mongez.designsystem.components.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.iti.mongez.designsystem.R
+import com.iti.mongez.designsystem.foundation.modifier.mongezShadow
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
@@ -30,18 +37,17 @@ import com.iti.mongez.designsystem.theme.Theme
 @Immutable
 data class AppNavigationBarItem(
     val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
+    val selectedIcon: Int,
+    val unselectedIcon: Int,
     val contentDescription: String = label,
 )
 
 /**
- * Bottom navigation bar for the Mongez application.
+ * Floating bottom navigation bar matching custom pill design.
  *
- * - 80dp height
- * - Purple active state, Gray inactive
- * - Labels always visible
- * - No shifting animation
+ * - Floating with horizontal and bottom padding
+ * - Pill-shaped (fully rounded corners)
+ * - Dot indicator for active state (no labels)
  *
  * @param items List of navigation items.
  * @param selectedIndex Currently selected index.
@@ -55,38 +61,63 @@ fun AppNavigationBar(
     onItemSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    NavigationBar(
-        modifier = modifier.height(80.dp),
-        containerColor = Theme.colorScheme.navigation.background,
-        tonalElevation = Theme.elevation.none,
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing.xl, vertical = Theme.radius.xxl)
+            .mongezShadow(
+                color = Theme.colorScheme.brand.primary.copy(alpha = 0.58f),
+                borderRadius = Theme.radius.xxl,
+                blurRadius = 10.dp
+            ),
+        shape = RoundedCornerShape(Theme.radius.xxl),
+        color = Theme.colorScheme.navigation.background,
     ) {
-        items.forEachIndexed { index, item ->
-            val isSelected = index == selectedIndex
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .padding(horizontal = Theme.spacing.lg),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEachIndexed { index, item ->
+                val isSelected = index == selectedIndex
 
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = { onItemSelected(index) },
-                icon = {
+                // Interaction source to remove the default ripple effect for a cleaner tap
+                val interactionSource = remember { MutableInteractionSource() }
+
+                Column(
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null, // Removes ripple. Add custom ripple here if desired.
+                            onClick = { onItemSelected(index) }
+                        )
+                        .padding(horizontal = Theme.spacing.md, vertical = Theme.spacing.sm),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Icon(
-                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
+                        painter = painterResource(id = if (isSelected) item.selectedIcon else item.unselectedIcon),
                         contentDescription = item.contentDescription,
+                        tint = if (isSelected) Theme.colorScheme.navigation.activeIcon else Theme.colorScheme.navigation.inactiveIcon,
+                        modifier = Modifier.size(Theme.spacing.xl)
                     )
-                },
-                label = {
-                    Text(
-                        text = item.label,
-                        style = Theme.typography.label.small,
+
+                    Spacer(modifier = Modifier.height(Theme.spacing.xs))
+
+                    // The custom dot indicator below the icon
+                    Box(
+                        modifier = Modifier
+                            .size(Theme.spacing.xs)
+                            .clip(CircleShape)
+                            .background(
+                                color = if (isSelected) Theme.colorScheme.navigation.activeIcon else Color.Transparent
+                            )
                     )
-                },
-                alwaysShowLabel = true,
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Theme.colorScheme.navigation.activeIcon,
-                    selectedTextColor = Theme.colorScheme.navigation.activeLabel,
-                    unselectedIconColor = Theme.colorScheme.navigation.inactiveIcon,
-                    unselectedTextColor = Theme.colorScheme.navigation.inactiveLabel,
-                    indicatorColor = Theme.colorScheme.navigation.indicator,
-                ),
-            )
+                }
+            }
         }
     }
 }
@@ -98,23 +129,23 @@ fun AppNavigationBar(
 private val previewItems = listOf(
     AppNavigationBarItem(
         label = "Home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home,
+        selectedIcon = R.drawable.ic_sparkle,
+        unselectedIcon = R.drawable.ic_sparkle,
     ),
     AppNavigationBarItem(
         label = "Courses",
-        selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
-        unselectedIcon = Icons.AutoMirrored.Outlined.MenuBook,
+        selectedIcon = R.drawable.ic_sparkle,
+        unselectedIcon = R.drawable.ic_sparkle,
     ),
     AppNavigationBarItem(
         label = "Roadmap",
-        selectedIcon = Icons.Filled.CalendarMonth,
-        unselectedIcon = Icons.Outlined.CalendarMonth,
+        selectedIcon = R.drawable.ic_sparkle,
+        unselectedIcon = R.drawable.ic_sparkle,
     ),
     AppNavigationBarItem(
         label = "Profile",
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person,
+        selectedIcon = R.drawable.ic_sparkle,
+        unselectedIcon = R.drawable.ic_sparkle,
     ),
 )
 
