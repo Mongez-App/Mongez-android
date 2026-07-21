@@ -60,7 +60,7 @@ fun DashboardScreen(
                     topSnackbarMessageRes = effect.messageRes
                     topSnackbarType = effect.type
                     delay(3000.milliseconds)
-                    topSnackbarMessage = null
+                    topSnackbarMessageRes = null
                 }
 
                 is DashboardEffect.NavigateToFocusSession -> onNavigateToFocus()
