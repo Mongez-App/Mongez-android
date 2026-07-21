@@ -58,6 +58,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ToggleDarkMode -> toggleDarkMode(intent.enabled)
             is ProfileIntent.ChangeLanguage -> changeLanguage(intent.language)
             is ProfileIntent.Logout -> logout()
+            is ProfileIntent.EditPreferences -> editPreferences()
         }
     }
 
@@ -99,6 +100,12 @@ class ProfileViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             _effect.emit(ProfileEffect.NavigateToLogin)
+        }
+    }
+
+    private fun editPreferences() {
+        viewModelScope.launch {
+            _effect.emit(ProfileEffect.NavigateToPreferences)
         }
     }
 }

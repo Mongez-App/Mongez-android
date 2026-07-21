@@ -146,6 +146,7 @@ fun MainScreen(
         MainScreenContent(
             tab = selectedTab,
             innerPadding = innerPadding,
+            onNavigateToPreferences = onNavigateToPreferences,
             onNavigateToCourseDetails = onNavigateToCourseDetails,
             onNavigateToLogin = onNavigateToLogin,
             onShowSnackBar = { message ->
@@ -159,6 +160,7 @@ fun MainScreen(
 private fun MainScreenContent(
     tab: MainTab,
     innerPadding: PaddingValues,
+    onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onShowSnackBar: (String) -> Unit
@@ -195,6 +197,7 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 viewModel = hiltViewModel(),
                 onNavigateToLogin = onNavigateToLogin,
+                onNavigateToPreferences = onNavigateToPreferences,
                 onShowSnackBar = onShowSnackBar
             )
         }

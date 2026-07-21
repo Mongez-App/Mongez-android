@@ -123,7 +123,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 MainScreen(
                     showDefaultAlert = (key as AppRoute.Dashboard).showDefaultAlert,
                     onNavigateToPreferences = {
-                        // In the future, this could navigate specifically to the Profile tab
+                        backStack.add(AppRoute.Preferences)
                     },
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
@@ -152,6 +152,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToLogin = {
                         backStack.clear()
                         backStack.add(AppRoute.Login)
+                    },
+                    onNavigateToPreferences = {
+                        backStack.add(AppRoute.Preferences)
                     },
                     onShowSnackBar = { /* Handle */ }
                 )

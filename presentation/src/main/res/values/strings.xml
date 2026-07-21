@@ -160,6 +160,8 @@
     <string name="profile_dark_mode">Dark Mode</string>
     <string name="profile_language">Language</string>
     <string name="profile_logout">Logout</string>
+    <string name="profile_studying_preferences">Studying Preferences</string>
+    <string name="profile_edit">Edit</string>
 </resources>
 
 

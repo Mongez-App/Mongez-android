@@ -53,6 +53,7 @@ fun ProfileScreen(
     innerPadding: PaddingValues,
     viewModel: ProfileViewModel,
     onNavigateToLogin: () -> Unit,
+    onNavigateToPreferences: () -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
     val viewState by viewModel.viewState.collectAsState()
@@ -61,6 +62,7 @@ fun ProfileScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ProfileEffect.NavigateToLogin -> onNavigateToLogin()
+                is ProfileEffect.NavigateToPreferences -> onNavigateToPreferences()
                 is ProfileEffect.ShowError -> onShowSnackBar(effect.message)
             }
         }
@@ -217,6 +219,23 @@ private fun ProfileScreenContent(
                         }
                     }
                 }
+            }
+        )
+
+        AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
+
+        SettingItem(
+            icon = Icons.Rounded.Tune,
+            iconContainerColor = Theme.colorScheme.state.warningContainer,
+            iconTint = Theme.colorScheme.state.warning,
+            title = stringResource(R.string.profile_studying_preferences),
+            onClick = { onIntent(ProfileIntent.EditPreferences) },
+            action = {
+                Text(
+                    text = stringResource(R.string.profile_edit),
+                    style = Theme.typography.body.medium,
+                    color = Theme.colorScheme.text.secondary
+                )
             }
         )
 

@@ -157,4 +157,6 @@
     <string name="profile_dark_mode">الوضع الليلي</string>
     <string name="profile_language">اللغة</string>
     <string name="profile_logout">تسجيل الخروج</string>
+    <string name="profile_studying_preferences">تفضيلات الدراسة</string>
+    <string name="profile_edit">تعديل</string>
 </resources>

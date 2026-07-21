@@ -8,4 +8,5 @@ sealed interface ProfileIntent {
     data class ToggleDarkMode(val enabled: Boolean) : ProfileIntent
     data class ChangeLanguage(val language: Language) : ProfileIntent
     data object Logout : ProfileIntent
+    data object EditPreferences : ProfileIntent
 }
