@@ -69,7 +69,12 @@ class RoadmapViewModel @Inject constructor(
                                     topic = UiText.DynamicString("Graph Theory"),
                                     durationMinutes = 60,
                                     isCompleted = true,
-                                    color = StudyBlockColor.PURPLE
+                                    color = StudyBlockColor.PURPLE,
+                                    event = RoadmapEventUiModel(
+                                        title = UiText.DynamicString("Algorithms Exam"),
+                                        type = "Exam",
+                                        dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                    )
                                 )
                             )
                         )

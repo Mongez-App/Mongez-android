@@ -8,7 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,28 +22,37 @@ import com.iti.mongez.presentation.utils.UiText
 
 @Composable
 fun WeekHeader(week: RoadmapWeekUiModel) {
+    val lineColor = Theme.colorScheme.brand.roadmapTimeline
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .drawBehind {
+                drawLine(
+                    color = lineColor,
+                    start = Offset(12.dp.toPx(), 0f),
+                    end = Offset(12.dp.toPx(), size.height),
+                    strokeWidth = 2.dp.toPx()
+                )
+            }
             .padding(top = Theme.spacing.lg, bottom = Theme.spacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Dot and Line start
         Box(
             modifier = Modifier
-                .width(24.dp),
+                .width(Theme.spacing.xl),
             contentAlignment = Alignment.Center
         ) {
              Box(
                 modifier = Modifier
-                    .size(10.dp)
+                    .size(Theme.spacing.md)
                     .clip(CircleShape)
                     .background(Theme.colorScheme.brand.primary)
             )
         }
         
         Spacer(modifier = Modifier.width(Theme.spacing.md))
-        
+
         Column {
             Text(
                 text = stringResource(R.string.roadmap_week_number, week.weekNumber),

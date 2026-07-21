@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -15,15 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.res.stringResource
-import com.iti.mongez.designsystem.components.button.AppButton
-import com.iti.mongez.designsystem.components.button.AppButtonVariant
-import com.iti.mongez.designsystem.components.chip.AppChip
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
@@ -32,7 +27,6 @@ import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
-import com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockColor
@@ -45,12 +39,11 @@ private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehi
     
     drawIntoCanvas { canvas ->
         val paint = android.graphics.Paint()
-        val frameworkPaint = paint
-        frameworkPaint.color = android.graphics.Color.WHITE
+        paint.color = android.graphics.Color.WHITE
         
         val blurRadius = 5.dp.toPx()
-        
-        frameworkPaint.setShadowLayer(
+
+        paint.setShadowLayer(
             blurRadius,
             0f,
             0f,
@@ -61,7 +54,7 @@ private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehi
             size.width / 2,
             size.height / 2,
             size.width / 2,
-            frameworkPaint
+            paint
         )
     }
 }
@@ -163,21 +156,16 @@ fun RoadmapContent(
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 32.dp)
+                contentPadding = PaddingValues(bottom = Theme.spacing.xxl)
             ) {
                 state.weeks.forEach { week ->
                     item {
                         WeekHeader(week)
                     }
                     week.days.forEach { day ->
-                        itemsIndexed(day.blocks) { blockIndex, block ->
-                            val isLastBlock = blockIndex == day.blocks.size - 1 && 
-                                            day == week.days.last() && 
-                                            week == state.weeks.last()
-                            
+                        itemsIndexed(day.blocks) { _, block ->
                             TimelineBlockItem(
                                 block = block,
-                                isLast = isLastBlock,
                                 onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
                             )
                         }

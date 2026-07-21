@@ -42,5 +42,6 @@ enum class StudyBlockColor {
 
 data class RoadmapEventUiModel(
     val title: UiText,
-    val type: String
+    val type: String,
+    val dateTime: UiText? = null
 )
