@@ -9,26 +9,26 @@ enum class MainTab(
 ) {
     Home(
         R.string.nav_home,
-        R.drawable.home,
-        R.drawable.home
+        R.drawable.ic_home_filled,
+        R.drawable.ic_home_unfilled
     ),
 
     Courses(
         R.string.nav_courses,
-        R.drawable.courses,
-        R.drawable.courses
+        R.drawable.ic_courses_filled,
+        R.drawable.ic_courses_unfilled
     ),
 
     Roadmap(
         R.string.nav_roadmap,
-        R.drawable.roadmap,
-        R.drawable.roadmap
+        R.drawable.ic_roadmap_filled,
+        R.drawable.ic_roadmap_unfilled
     ),
 
     Profile(
         R.string.nav_profile,
-        R.drawable.profile,
-        R.drawable.profile
+        R.drawable.ic_profile_filled,
+        R.drawable.ic_profile_unfilled
     );
 
     companion object {
