@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,13 +21,11 @@ import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
-import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
-import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
-import com.iti.mongez.presentation.preferences.view.PreferencesScreen
-import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
+import com.iti.mongez.presentation.profile.view.ProfileScreen
+import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 
 /**
  * Represents the tabs available in the main bottom navigation.
@@ -41,6 +38,7 @@ fun MainScreen(
     showDefaultAlert: Boolean = false,
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     var selectedTabIndex by rememberSaveable {
@@ -104,6 +102,7 @@ fun MainScreen(
             tab = selectedTab,
             innerPadding = innerPadding,
             onNavigateToCourseDetails = onNavigateToCourseDetails,
+            onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
             onShowSnackBar = { message ->
                 // Use the snackbarHostState to show a snackbar
@@ -117,6 +116,7 @@ private fun MainScreenContent(
     tab: MainTab,
     innerPadding: PaddingValues,
     onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
@@ -127,7 +127,8 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 onNavigateToFocus = {},
                 onViewAllTasks = {},
-                onViewAllDeadlines = {}
+                onViewAllDeadlines = {},
+                onNavigateToStudyRoom = onNavigateToStudyRoom
             )
         }
 
