@@ -6,6 +6,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.dashboard.usecase.GetDashboardDataUseCase
+import com.iti.mongez.presentation.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,13 +41,14 @@ class DashboardViewModel @Inject constructor(
                 isLoading = false,
                 streakCount = 5,
                 isStreakActive = true,
-                focusTopic = "Algorithms",
-                focusDuration = "90 min",
+                focusTopic = R.string.dashboard_focus_topic,
+                focusDuration = R.string.dashboard_focus_duration,
                 goals = listOf(
-                    GoalItem("Today's Goal", 3, 5, "tasks", GoalType.DAILY),
-                    GoalItem("Weekly Progress", 12, 20, "hours", GoalType.WEEKLY),
-                    GoalItem("Monthly", 45, 80, "hours", GoalType.MONTHLY)
+                    GoalItem(R.string.dashboard_daily_goal, 3, 5, R.string.tasks, GoalType.DAILY),
+                    GoalItem(R.string.dashboard_weekly_goal, 12, 20, R.string.hours, GoalType.WEEKLY),
+                    GoalItem(R.string.dashboard_monthly_goal, 45, 80, R.string.hours, GoalType.MONTHLY)
                 ),
+                // Keep tasks and deadlines as mock String data since they mirror backend responses
                 tasks = listOf(
                     TaskItem("1", "Process Management", "60 min", TaskPriority.HIGH, true),
                     TaskItem("2", "Dynamic Programming", "90 min", TaskPriority.MEDIUM, false),
@@ -111,10 +113,10 @@ class DashboardViewModel @Inject constructor(
                 }
                 _state.value = _state.value.copy(tasks = updatedTasks)
 
-                // Example of raising side-effects via MVI Effect architecture
                 viewModelScope.launch {
                     if (event.isCompleted) {
-                        _effect.emit(DashboardEffect.ShowSnackbar("Task marked completed!", AppSnackbarType.Success))                    }
+                        _effect.emit(DashboardEffect.ShowSnackbar(R.string.task_marked_completed, AppSnackbarType.Success))
+                    }
                 }
             }
             is DashboardEvent.OnStartFocusClicked -> {

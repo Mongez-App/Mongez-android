@@ -17,6 +17,11 @@ sealed interface CoursesIntent {
         val examDate: String,
         val hasMaterials: Boolean
     ) : CoursesIntent
+
+    data class ShowSnackbar(
+        val message: String,
+        val type: AppSnackbarType = AppSnackbarType.Error
+    ) : CoursesIntent
 }
 
 sealed interface CoursesEffect {

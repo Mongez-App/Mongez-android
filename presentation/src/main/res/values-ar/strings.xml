@@ -106,6 +106,7 @@
     <!-- Tabs -->
     <string name="tab_online_course">مقرر إلكتروني</string>
     <string name="tab_upload_material">رفع المادة الدراسية</string>
+    <string name="error_empty_fields">يرجى ملء جميع الحقول</string>
 
     <!-- Course -->
     <string name="label_course_name">اسم المقرر</string>
@@ -157,4 +158,35 @@
     <string name="profile_dark_mode">الوضع الليلي</string>
     <string name="profile_language">اللغة</string>
     <string name="profile_logout">تسجيل الخروج</string>
+    <!-- Dashboard -->
+    <string name="dashboard_greeting">مرحبًا، %1$s</string>
+    <string name="dashboard_greeting_subtext">لننجز مهام اليوم</string>
+
+    <!-- Focus -->
+    <string name="dashboard_todays_focus">تركيز اليوم</string>
+    <string name="dashboard_focus_topic">أنظمة التشغيل</string>
+    <string name="dashboard_focus_duration">ساعتان و15 دقيقة</string>
+
+    <!-- Tasks -->
+    <string name="dashboard_todays_tasks">مهام اليوم</string>
+    <string name="dashboard_view_all">عرض الكل</string>
+
+    <!-- Deadlines -->
+    <string name="dashboard_upcoming_deadlines">المواعيد النهائية القادمة</string>
+
+    <!-- AI Suggestion -->
+    <string name="dashboard_ai_suggestion">اقتراح الذكاء الاصطناعي</string>
+    <string name="dashboard_ai_suggestion_body">
+        تكون أكثر إنتاجية في حوالي الساعة 7 مساءً. ابدأ بمادة الشبكات قبل الخوارزميات اليوم.
+    </string>
+
+    <!-- أهداف لوحة التحكم -->
+    <string name="dashboard_daily_goal">الهدف اليومي</string>
+    <string name="dashboard_weekly_goal">الهدف الأسبوعي</string>
+    <string name="dashboard_monthly_goal">الهدف الشهري</string>
+
+    <string name="tasks">مهام</string>
+    <string name="hours">ساعات</string>
+    <string name="task_marked_completed">تم وضع علامة على المهمة كمكتملة!</string>
+    <string name="error_loading_dashboard">فشل تحميل بيانات لوحة التحكم.</string>
 </resources>

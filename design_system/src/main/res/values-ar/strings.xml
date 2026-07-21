@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Mongez</string>
     <string name="app_skip">تخطي</string>
+    <!-- Focus Card -->
+    <string name="focus_card_lets_start">لنبدأ</string>
+    <string name="cd_duration">المدة</string>
+
+    <!-- Streak Badge -->
+    <string name="streak_day">يوم</string>
+    <string name="streak_title">تتابع</string>
+
+    <!-- Task Priority & Checkbox -->
+    <string name="priority_high">عالي</string>
+    <string name="priority_medium">متوسط</string>
+    <string name="priority_low">منخفض</string>
+    <string name="cd_completed">مكتمل</string>
 </resources>
