@@ -106,6 +106,7 @@
     <!-- Tabs -->
     <string name="tab_online_course">مقرر إلكتروني</string>
     <string name="tab_upload_material">رفع المادة الدراسية</string>
+    <string name="error_empty_fields">يرجى ملء جميع الحقول</string>
 
     <!-- Course -->
     <string name="label_course_name">اسم المقرر</string>

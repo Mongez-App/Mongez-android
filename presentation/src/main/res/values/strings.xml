@@ -144,6 +144,7 @@
     <string name="delete_course">Delete Course</string>
     <string name="delete">Delete</string>
     <string name="no_tasks_available_right_now">No Tasks Available Right Now</string>
+    <string name="error_empty_fields">Please fill in all fields</string>
     <!-- Course Details -->
 
     <!-- Navigation Labels -->

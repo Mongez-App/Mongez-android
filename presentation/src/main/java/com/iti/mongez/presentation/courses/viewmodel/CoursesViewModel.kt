@@ -47,6 +47,18 @@ class CoursesViewModel @Inject constructor(
                 _state.update { it.copy(isAddCourseSheetVisible = !it.isAddCourseSheetVisible) }
             }
             CoursesIntent.FilterClicked -> { /* Filter logic */ }
+
+            // Add this case to handle the manual snackbar trigger
+            is CoursesIntent.ShowSnackbar -> {
+                viewModelScope.launch {
+                    _effect.emit(
+                        CoursesEffect.ShowSnackbar(
+                            message = intent.message,
+                            type = intent.type
+                        )
+                    )
+                }
+            }
         }
     }
 
