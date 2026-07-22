@@ -14,6 +14,7 @@ import com.iti.mongez.presentation.roadmap.uiState.StudyBlockUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockColor
 import com.iti.mongez.presentation.utils.UiText
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -157,39 +158,75 @@ class RoadmapViewModel @Inject constructor(
                 is RoadmapEvent.OnAddEventClicked -> {
                     _effect.emit(RoadmapEffect.NavigateToAddEvent)
                 }
-                is RoadmapEvent.OnDateRangeChanged -> {
-                    updateDateRangeFilter(event.range)
+                is RoadmapEvent.ToggleFilterSheet -> {
+                    _state.value = _state.value.copy(isFilterSheetVisible = event.isVisible)
+                }
+                is RoadmapEvent.ApplyFilter -> {
+                    _state.value = _state.value.copy(
+                        isFilterSheetVisible = false,
+                        activeFilterState = event.filterState
+                    )
+                    applyFilters(event.filterState)
+                }
+                is RoadmapEvent.ClearAllFilters -> {
+                    val clearedState = RoadmapFilterState()
+                    _state.value = _state.value.copy(activeFilterState = clearedState)
+                    applyFilters(clearedState)
+                }
+                is RoadmapEvent.RemoveDateFilter -> {
+                    val newState = _state.value.activeFilterState.copy(startDate = null, endDate = null)
+                    _state.value = _state.value.copy(activeFilterState = newState)
+                    applyFilters(newState)
+                }
+                is RoadmapEvent.RemoveCourseFilter -> {
+                    val newState = _state.value.activeFilterState.copy(
+                        selectedCourses = _state.value.activeFilterState.selectedCourses - event.course
+                    )
+                    _state.value = _state.value.copy(activeFilterState = newState)
+                    applyFilters(newState)
+                }
+                is RoadmapEvent.RemoveEventTypeFilter -> {
+                    val newState = _state.value.activeFilterState.copy(
+                        selectedEventTypes = _state.value.activeFilterState.selectedEventTypes - event.eventType
+                    )
+                    _state.value = _state.value.copy(activeFilterState = newState)
+                    applyFilters(newState)
                 }
             }
         }
     }
 
-    private fun updateDateRangeFilter(range: ClosedFloatingPointRange<Float>) {
-        val startDate = LocalDate.parse(_state.value.roadmapStartDate, dateFormatter)
-        val totalDays = (fullRoadmapWeeks.size * 7).toLong()
-
-        val startOffset = (range.start / 100f * totalDays).toLong()
-        val endOffset = (range.endInclusive / 100f * totalDays).toLong()
-
-        val filteredStartDate = startDate.plusDays(startOffset)
-        val filteredEndDate = startDate.plusDays(endOffset)
-
-        val displayFormatter = DateTimeFormatter.ofPattern("MMM dd", Locale.getDefault())
-
-        _state.value = _state.value.copy(
-            dateRangeSliderValue = range,
-            filterStartDateDisplay = filteredStartDate.format(displayFormatter),
-            filterEndDateDisplay = filteredEndDate.format(displayFormatter)
-        )
-
-        filterRoadmapData(filteredStartDate, filteredEndDate)
-    }
-
-    private fun filterRoadmapData(start: LocalDate, end: LocalDate) {
+    private fun applyFilters(filterState: RoadmapFilterState) {
         val filteredWeeks = fullRoadmapWeeks.mapNotNull { week ->
-            val filteredDays = week.days.filter { day ->
-                val dayDate = LocalDate.parse(day.date, dateFormatter)
-                !dayDate.isBefore(start) && !dayDate.isAfter(end)
+            val filteredDays = week.days.mapNotNull { day ->
+                val dayDate = java.time.LocalDate.parse(day.date, dateFormatter)
+
+                // 1. Date Filter Check
+                val matchesDate = if (filterState.startDate != null && filterState.endDate != null) {
+                    !dayDate.isBefore(filterState.startDate) && !dayDate.isAfter(filterState.endDate)
+                } else {
+                    true
+                }
+
+                if (!matchesDate) return@mapNotNull null
+
+                // 2 & 3. Course and Event Type Checks
+                val filteredBlocks = day.blocks.filter { block ->
+                    val matchesCourse = filterState.selectedCourses.isEmpty() ||
+                            filterState.selectedCourses.contains(block.courseName.asRawString())
+
+                    val blockEventType = block.event?.type ?: "Study" // Defaulting non-events to "Study" for filtering
+                    val matchesEventType = filterState.selectedEventTypes.isEmpty() ||
+                            filterState.selectedEventTypes.contains(blockEventType)
+
+                    matchesCourse && matchesEventType
+                }
+
+                if (filteredBlocks.isNotEmpty()) {
+                    day.copy(blocks = filteredBlocks)
+                } else {
+                    null
+                }
             }
 
             if (filteredDays.isNotEmpty()) {

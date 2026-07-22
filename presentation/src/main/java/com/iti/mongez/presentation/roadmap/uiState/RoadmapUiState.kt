@@ -7,9 +7,12 @@ data class RoadmapUiState(
     val roadmapStartDate: String = "",
     val weeks: List<RoadmapWeekUiModel> = emptyList(),
 
-    val dateRangeSliderValue: ClosedFloatingPointRange<Float> = 0f..100f,
-    val filterStartDateDisplay: String = "Mar 12",
-    val filterEndDateDisplay: String = "May 30"
+    val isFilterSheetVisible: Boolean = false,
+
+    val activeFilterState: RoadmapFilterState = RoadmapFilterState(),
+
+    val availableCourses: List<String> = listOf("Algorithms", "Database Systems", "Networks", "Operating Systems", "Math", "Physics"),
+    val availableEventTypes: List<String> = listOf("Study", "Assignment", "Quiz", "Exam", "Reminder")
 )
 data class RoadmapWeekUiModel(
     val weekNumber: Int,

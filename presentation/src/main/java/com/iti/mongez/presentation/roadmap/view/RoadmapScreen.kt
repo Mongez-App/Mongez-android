@@ -19,14 +19,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.res.stringResource
+import java.time.LocalDate
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.roadmap.components.ActiveFiltersRow
 import com.iti.mongez.presentation.roadmap.components.AddEventDialog
+import com.iti.mongez.presentation.roadmap.components.FilterBottomSheet
 import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockColor
@@ -89,6 +93,19 @@ fun RoadmapScreen(
             }
         )
     }
+
+    if (state.isFilterSheetVisible) {
+        FilterBottomSheet(
+            initialState = state.activeFilterState,
+            availableCourses = state.availableCourses,
+            availableEventTypes = state.availableEventTypes,
+            onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleFilterSheet(false)) },
+            onApply = { 
+                viewModel.onEvent(RoadmapEvent.ApplyFilter(it))
+                viewModel.onEvent(RoadmapEvent.ToggleFilterSheet(false))
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +130,7 @@ fun RoadmapContent(
                 },
                 actions = {
                     IconButton(
-                        onClick = { /* TODO */ },
+                        onClick = { onEvent(RoadmapEvent.ToggleFilterSheet(true)) },
                         modifier = Modifier
                             .padding(end = Theme.spacing.lg)
                             .size(Theme.spacing.xxxl)
@@ -154,6 +171,15 @@ fun RoadmapContent(
                 .padding(padding)
                 .padding(horizontal = Theme.spacing.lg)
         ) {
+
+            if (state.activeFilterState.hasActiveFilters) {
+                ActiveFiltersRow(
+                    filterState = state.activeFilterState,
+                    onEvent = onEvent,
+                modifier = Modifier.padding(start = Theme.spacing.lg, end = Theme.spacing.lg, bottom = Theme.spacing.sm)
+                )
+            }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = Theme.spacing.xxl)
@@ -235,8 +261,10 @@ fun RoadmapScreenPreview() {
             state = RoadmapUiState(
                 isLoading = false,
                 weeks = mockWeeks,
-                filterStartDateDisplay = "May 6",
-                filterEndDateDisplay = "May 30"
+                activeFilterState = RoadmapFilterState(
+                    startDate = LocalDate.of(2024, 5, 6),
+                    endDate = LocalDate.of(2024, 5, 30)
+                )
             ),
             innerPadding = PaddingValues(0.dp),
             onEvent = {}
