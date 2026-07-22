@@ -1,6 +1,7 @@
 plugins {
     id("mongez.android.library")
     id("mongez.android.hilt")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -21,6 +22,11 @@ dependencies {
     implementation(libs.androidx.credentials.play)
     implementation(libs.google.id)
     implementation(libs.kotlinx.coroutines.play.services)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 }
 
 

@@ -7,13 +7,13 @@ import com.iti.mongez.domain.auth.model.User
 // Map Network DTO -> Domain Model
 fun AuthResponseDto.toDomain(): User {
     return User(
-        id = this.userId,
-        email = this.email,
-        name = this.name,
+        id = this.userId ?: "",
+        email = this.email ?: "",
+        name = this.name ?: "",
         avatarUrl = this.avatarUrl,
-        totalStudyHours = this.stats.totalStudyHours,
-        completedTasksCount = this.stats.completedTasksCount,
-        currentStreakDays = this.stats.currentStreakDays
+        totalStudyHours = this.stats?.totalStudyHours ?: 0,
+        completedTasksCount = this.stats?.completedTasksCount ?: 0,
+        currentStreakDays = this.stats?.currentStreakDays ?: 0
     )
 }
 
