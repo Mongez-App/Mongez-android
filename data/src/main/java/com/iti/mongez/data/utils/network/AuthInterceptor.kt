@@ -1,8 +1,8 @@
 package com.iti.mongez.data.core.network
 
 
-import com.iti.mongez.data.sources.local.TokenManager
-import kotlinx.coroutines.flow.first
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -10,16 +10,20 @@ import java.util.Locale
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
-    private val tokenManager: TokenManager
+    private val firebaseAuth: FirebaseAuth
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
-        // 1. Fetch token from DataStore synchronously on this background thread
+        // 1. Fetch token directly from Firebase (handles refresh automatically)
         val token = runBlocking {
-            tokenManager.tokenFlow.first()
+            try {
+                firebaseAuth.currentUser?.getIdToken(false)?.await()?.token
+            } catch (e: Exception) {
+                null
+            }
         }
 
         if (!token.isNullOrEmpty()) {

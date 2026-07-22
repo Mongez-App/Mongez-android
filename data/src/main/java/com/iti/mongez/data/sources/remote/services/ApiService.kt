@@ -2,8 +2,6 @@ package com.iti.mongez.data.sources.remote.services
 
 import com.iti.mongez.data.dtos.DashboardResponseDto
 import com.iti.mongez.data.dtos.ProfileResponseDto
-import com.iti.mongez.data.dtos.RegisterRequestDto
-import com.iti.mongez.data.dtos.LoginRequestDto
 import com.iti.mongez.data.dtos.AuthResponseDto
 import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
@@ -26,11 +24,8 @@ interface ApiService {
     @PUT("users/me/preferences")
     suspend fun updatePreferences(@Body preferences: UserPreferencesDto): Unit
 
-    @POST("auth/register")
-    suspend fun register(@Body request: RegisterRequestDto): AuthResponseDto
-
-    @POST("auth/login")
-    suspend fun login(@Body request: LoginRequestDto): AuthResponseDto
+    @POST("auth/handshake")
+    suspend fun handshake(@Body request: Any): AuthResponseDto
 
     @POST("auth/calendar/connect")
     suspend fun connectCalendar(): Unit

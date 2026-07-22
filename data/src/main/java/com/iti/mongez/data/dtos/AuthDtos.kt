@@ -3,23 +3,17 @@ package com.iti.mongez.data.dtos
 import com.google.gson.annotations.SerializedName
 
 // Requests
-data class RegisterRequestDto(
-    @SerializedName("user_token") val userToken: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("avatar_url") val avatarUrl: String = ""
-)
-
-data class LoginRequestDto(
-    @SerializedName("user_token") val userToken: String
+data class HandshakeRequestDto(
+    @SerializedName("is_guest") val isGuest: Boolean = false
 )
 
 // Responses
 data class AuthResponseDto(
-    @SerializedName("user_id") val userId: String,
-    @SerializedName("email") val email: String,
-    @SerializedName("name") val name: String,
+    @SerializedName("user_id") val userId: String?,
+    @SerializedName("email") val email: String?,
+    @SerializedName("name") val name: String?,
     @SerializedName("avatar_url") val avatarUrl: String?,
-    @SerializedName("stats") val stats: UserStatsDto
+    @SerializedName("stats") val stats: UserStatsDto?
 )
 
 data class UserStatsDto(
