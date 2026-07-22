@@ -182,10 +182,13 @@ class RoadmapViewModel @Inject constructor(
                     _effect.emit(RoadmapEffect.NavigateToBlockDetails(event.blockId))
                 }
                 is RoadmapEvent.OnAddEventClicked -> {
-                    _effect.emit(RoadmapEffect.NavigateToAddEvent)
+                    _state.value = _state.value.copy(isAddEventDialogVisible = true)
                 }
                 is RoadmapEvent.ToggleFilterSheet -> {
                     _state.value = _state.value.copy(isFilterSheetVisible = event.isVisible)
+                }
+                is RoadmapEvent.ToggleAddEventDialog -> {
+                    _state.value = _state.value.copy(isAddEventDialogVisible = event.isVisible)
                 }
                 is RoadmapEvent.ApplyFilter -> {
                     _state.value = _state.value.copy(
@@ -217,6 +220,16 @@ class RoadmapViewModel @Inject constructor(
                     )
                     _state.value = _state.value.copy(activeFilterState = newState)
                     applyFilters(newState)
+                }
+                is RoadmapEvent.AddEvent -> {
+                    _effect.emit(
+                        RoadmapEffect.ShowSnackBar(
+                            message = "Event \"${event.name}\" created successfully!",
+                            type = AppSnackbarType.Success
+                        )
+                    )
+                    _state.value = _state.value.copy(isAddEventDialogVisible = false)
+                     loadRoadmap()
                 }
             }
         }

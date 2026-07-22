@@ -8,6 +8,7 @@ data class RoadmapUiState(
     val weeks: List<RoadmapWeekUiModel> = emptyList(),
 
     val isFilterSheetVisible: Boolean = false,
+    val isAddEventDialogVisible: Boolean = false,
 
     val activeFilterState: RoadmapFilterState = RoadmapFilterState(),
 

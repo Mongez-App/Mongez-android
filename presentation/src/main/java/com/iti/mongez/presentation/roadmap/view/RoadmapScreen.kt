@@ -67,29 +67,35 @@ private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehi
 fun RoadmapScreen(
     innerPadding: PaddingValues,
     viewModel: RoadmapViewModel = hiltViewModel(),
-    onNavigateToBlockDetails: (String) -> Unit,
-    onNavigateToAddEvent: () -> Unit,
+    onNavigateToBlockDetails: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    var showAddEventSheet by remember { mutableStateOf(false) }
 
     RoadmapContent(
         state = state,
         innerPadding = innerPadding,
         onEvent = { event ->
             when (event) {
-                is RoadmapEvent.OnAddEventClicked -> showAddEventSheet = true
                 is RoadmapEvent.OnBlockClicked -> onNavigateToBlockDetails(event.blockId)
                 else -> viewModel.onEvent(event)
             }
         }
     )
 
-    if (showAddEventSheet) {
+    if (state.isAddEventDialogVisible) {
         AddEventDialog(
-            onDismiss = { showAddEventSheet = false },
-            onEventTypeSelected = { _ ->
-                onNavigateToAddEvent()
+            onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleAddEventDialog(false)) },
+            onEventCreated = { type, course, name, date, time, notes ->
+                viewModel.onEvent(
+                    RoadmapEvent.AddEvent(
+                        type = type,
+                        course = course,
+                        name = name,
+                        date = date,
+                        time = time,
+                        notes = notes
+                    )
+                )
             }
         )
     }
