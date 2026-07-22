@@ -5,7 +5,12 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
 import com.iti.mongez.presentation.R
 
-// Represent individual domain models inline for presentation state driving
+data class FocusItem(
+    val courseId: String,
+    val courseName: String,
+    val durationText: String
+)
+
 data class TaskItem(
     val id: String,
     val title: String,
@@ -34,24 +39,18 @@ enum class GoalType {
     DAILY, WEEKLY, MONTHLY
 }
 
-// ────────────────────────────────────────────────────────────────
-// MVI Contract Definitons
-// ────────────────────────────────────────────────────────────────
-
 data class DashboardUiState(
     val isLoading: Boolean = false,
     val userName: String = "Abdullah",
+    val welcomeMessage: String = "",
     @StringRes val greetingSubtext: Int = R.string.dashboard_greeting_subtext,
-    val streakCount: Int = 12,
-    val isStreakActive: Boolean = true,
-    @StringRes val focusTitle: Int = R.string.dashboard_todays_focus,
-    @StringRes val focusTopic: Int = R.string.dashboard_focus_topic,
-    @StringRes val focusDuration: Int = R.string.dashboard_focus_duration,
+    val streakCount: Int = 0,
+    val isStreakActive: Boolean = false,
+    val todayFocus: FocusItem? = null, // Nullable to control visibility
     val goals: List<GoalItem> = emptyList(),
     val tasks: List<TaskItem> = emptyList(),
     val deadlines: List<DeadlineItem> = emptyList(),
-    @StringRes val aiSuggestionHeader: Int = R.string.dashboard_ai_suggestion,
-    @StringRes val aiSuggestionBody: Int = R.string.dashboard_ai_suggestion_body
+    val aiSuggestionText: String? = null
 )
 
 sealed class DashboardEvent {
@@ -63,6 +62,7 @@ sealed class DashboardEvent {
 
 sealed class DashboardEffect {
     data class ShowSnackbar(@StringRes val messageRes: Int, val type: AppSnackbarType) : DashboardEffect()
+    data class ShowErrorSnackbar(val message: String) : DashboardEffect()
     object NavigateToFocusSession : DashboardEffect()
     object NavigateToAllTasks : DashboardEffect()
     object NavigateToAllDeadlines : DashboardEffect()

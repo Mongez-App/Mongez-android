@@ -20,14 +20,27 @@ fun ProfileResponseDto.toDomain(): UserProfile {
 
 // --- Dashboard DTOs ---
 data class DashboardResponseDto(
+    @SerializedName("welcome_message") val welcomeMessage: String?,
     @SerializedName("today_focus") val todayFocus: TodayFocusDto?,
     @SerializedName("progress_metrics") val progressMetrics: ProgressMetricsDto?,
     @SerializedName("today_tasks") val todayTasks: List<TodayTaskDto>?,
-    @SerializedName("upcoming_deadlines") val upcomingDeadlines: List<UpcomingDeadlineDto>?
+    @SerializedName("upcoming_deadlines") val upcomingDeadlines: List<UpcomingDeadlineDto>?,
+    @SerializedName("streak") val streak: StreakDto?,
+    @SerializedName("ai_suggestion") val aiSuggestion: AiSuggestionDto?
+)
+
+data class StreakDto(
+    @SerializedName("current_streak_days") val currentStreakDays: Int?
+)
+
+data class AiSuggestionDto(
+    @SerializedName("text") val text: String?
 )
 
 data class TodayFocusDto(
+    @SerializedName("course_id") val courseId: String?,
     @SerializedName("course_name") val courseName: String?,
+    @SerializedName("allocated_duration") val allocatedDuration: String?,
     @SerializedName("duration_minutes") val durationMinutes: Int?
 )
 
@@ -58,9 +71,13 @@ data class UpcomingDeadlineDto(
 // --- Domain Mappers ---
 fun DashboardResponseDto.toDomain(): DashboardSummary {
     return DashboardSummary(
-        focus = this.todayFocus?.let {
+        welcomeMessage = this.welcomeMessage.orEmpty(),
+        // Only map focus if courseName actually contains a valid name
+        focus = this.todayFocus?.takeIf { !it.courseName.isNullOrBlank() }?.let {
             DashboardFocus(
+                courseId = it.courseId.orEmpty(),
                 courseName = it.courseName.orEmpty(),
+                allocatedDuration = it.allocatedDuration.orEmpty(),
                 durationMinutes = it.durationMinutes ?: 0
             )
         },
@@ -73,7 +90,9 @@ fun DashboardResponseDto.toDomain(): DashboardSummary {
             monthlyHoursGoal = this.progressMetrics?.monthlyHoursGoal ?: 0
         ),
         tasks = this.todayTasks?.map { it.toDomain() }.orEmpty(),
-        deadlines = this.upcomingDeadlines?.map { it.toDomain() }.orEmpty()
+        deadlines = this.upcomingDeadlines?.map { it.toDomain() }.orEmpty(),
+        streakDays = this.streak?.currentStreakDays ?: 0,
+        aiSuggestion = this.aiSuggestion?.text
     )
 }
 
