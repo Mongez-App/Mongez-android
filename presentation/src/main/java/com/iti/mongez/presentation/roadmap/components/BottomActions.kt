@@ -22,14 +22,11 @@ fun BottomActions(
     onReset: () -> Unit,
     onApply: () -> Unit
 ) {
-    Surface(
-        color = Theme.colorScheme.surface.background,
-        shadowElevation = 8.dp
-    ) {
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Theme.spacing.lg)
+                .padding(top = Theme.spacing.lg, start = Theme.spacing.lg, end = Theme.spacing.lg)
                 .navigationBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -53,5 +50,4 @@ fun BottomActions(
                 fullWidth = false
             )
         }
-    }
 }

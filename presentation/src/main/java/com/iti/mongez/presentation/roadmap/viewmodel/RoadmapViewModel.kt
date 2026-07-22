@@ -8,6 +8,7 @@ import com.iti.mongez.presentation.roadmap.contract.RoadmapEffect
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapTaskUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockUiModel
@@ -71,10 +72,22 @@ class RoadmapViewModel @Inject constructor(
                                     durationMinutes = 60,
                                     isCompleted = true,
                                     color = StudyBlockColor.PURPLE,
-                                    event = RoadmapEventUiModel(
-                                        title = UiText.DynamicString("Algorithms Exam"),
-                                        type = "Exam",
-                                        dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                    events = listOf(
+                                        RoadmapEventUiModel(
+                                            title = UiText.DynamicString("Algorithms Exam"),
+                                            type = "Exam",
+                                            dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                        )
+                                    ),
+                                    tasks = listOf(
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString("Finish Graph Assignment"),
+                                            dateTime = UiText.DynamicString("May 7 - 11:59 PM")
+                                        ),
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString("Review DFS/BFS"),
+                                            dateTime = UiText.DynamicString("May 6 - 8:00 PM")
+                                        )
                                     )
                                 )
                             )
@@ -95,7 +108,13 @@ class RoadmapViewModel @Inject constructor(
                                     topic = UiText.DynamicString("SQL Optimization"),
                                     durationMinutes = 90,
                                     isCompleted = true,
-                                    color = StudyBlockColor.BLUE
+                                    color = StudyBlockColor.BLUE,
+                                    tasks = listOf(
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString("Practice Complex Joins"),
+                                            dateTime = UiText.DynamicString("May 14 - 4:00 PM")
+                                        )
+                                    )
                                 ),
                                 StudyBlockUiModel(
                                     id = "3",
@@ -103,7 +122,14 @@ class RoadmapViewModel @Inject constructor(
                                     topic = UiText.DynamicString("OSI Model"),
                                     durationMinutes = 45,
                                     isCompleted = false,
-                                    color = StudyBlockColor.GREEN
+                                    color = StudyBlockColor.GREEN,
+                                    events = listOf(
+                                        RoadmapEventUiModel(
+                                            title = UiText.DynamicString("Networking Quiz"),
+                                            type = "Quiz",
+                                            dateTime = UiText.DynamicString("May 15 - 10:00 AM")
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -215,9 +241,9 @@ class RoadmapViewModel @Inject constructor(
                     val matchesCourse = filterState.selectedCourses.isEmpty() ||
                             filterState.selectedCourses.contains(block.courseName.asRawString())
 
-                    val blockEventType = block.event?.type ?: "Study" // Defaulting non-events to "Study" for filtering
+                    val blockEventTypes = block.events.map { it.type }.ifEmpty { listOf("Study") }
                     val matchesEventType = filterState.selectedEventTypes.isEmpty() ||
-                            filterState.selectedEventTypes.contains(blockEventType)
+                            blockEventTypes.any { it in filterState.selectedEventTypes }
 
                     matchesCourse && matchesEventType
                 }

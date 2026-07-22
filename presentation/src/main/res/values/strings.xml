@@ -118,6 +118,8 @@
     <!-- Tabs -->
     <string name="tab_online_course">Online Course</string>
     <string name="tab_upload_material">Upload Material</string>
+    <string name="tab_events">Events</string>
+    <string name="tab_tasks">Tasks</string>
 
     <!-- Course -->
     <string name="label_course_name">Course Name</string>

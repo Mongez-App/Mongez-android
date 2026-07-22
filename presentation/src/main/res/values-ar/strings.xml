@@ -115,6 +115,8 @@
     <!-- Tabs -->
     <string name="tab_online_course">مقرر إلكتروني</string>
     <string name="tab_upload_material">رفع المادة الدراسية</string>
+    <string name="tab_events">الأحداث</string>
+    <string name="tab_tasks">المهام</string>
     <string name="error_empty_fields">يرجى ملء جميع الحقول</string>
 
     <!-- Course -->
