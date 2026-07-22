@@ -145,8 +145,7 @@ private fun MainScreenContent(
         MainTab.Roadmap -> {
             RoadmapScreen(
                 innerPadding = innerPadding,
-                onNavigateToBlockDetails = { /* TODO */ },
-                onNavigateToAddEvent = { /* TODO */ }
+                onNavigateToBlockDetails = { /* TODO */ }
             )
         }
 

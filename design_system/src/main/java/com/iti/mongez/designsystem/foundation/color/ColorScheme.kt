@@ -109,6 +109,20 @@ data class CardColors(
 )
 
 @Immutable
+data class EventColors(
+    val studyContainer: Color,
+    val studyIcon: Color,
+    val assignmentContainer: Color,
+    val assignmentIcon: Color,
+    val quizContainer: Color,
+    val quizIcon: Color,
+    val examContainer: Color,
+    val examIcon: Color,
+    val projectContainer: Color,
+    val projectIcon: Color,
+)
+
+@Immutable
 data class AppColorScheme(
     val brand: BrandColors,
     val text: TextColors,
@@ -120,6 +134,7 @@ data class AppColorScheme(
     val chip: ChipColors,
     val navigation: NavigationColors,
     val card: CardColors,
+    val events: EventColors,
 )
 
 // ──────────────────────────────────────────────────────────────
@@ -210,6 +225,18 @@ val LightColorScheme = AppColorScheme(
     card = CardColors(
         background = PrimitiveColors.White,
         border = PrimitiveColors.Gray200,
+    ),
+    events = EventColors(
+        studyContainer = Color(0xFFE8DEF8),
+        studyIcon = Color(0xFF6750A4),
+        assignmentContainer = Color(0xFFFFDBCF),
+        assignmentIcon = Color(0xFFF96025),
+        quizContainer = Color(0xFFCCE8E4),
+        quizIcon = Color(0xFF00796B),
+        examContainer = Color(0xFFFFDAD6),
+        examIcon = Color(0xFFBA1A1A),
+        projectContainer = Color(0xFFD3E3FD),
+        projectIcon = Color(0xFF0B57D0),
     ),
 )
 
@@ -305,5 +332,17 @@ val DarkColorScheme = AppColorScheme(
     card = CardColors(
         background = DarkCard,
         border = PrimitiveColors.Gray700,
+    ),
+    events = EventColors(
+        studyContainer = Color(0xFF2B213A),
+        studyIcon = Color(0xFFD0BCFF),
+        assignmentContainer = Color(0xFF3E2D23),
+        assignmentIcon = Color(0xFFFFB48B),
+        quizContainer = Color(0xFF1E2D2B),
+        quizIcon = Color(0xFF80D4CA),
+        examContainer = Color(0xFF3D1F1F),
+        examIcon = Color(0xFFFFB4AB),
+        projectContainer = Color(0xFF1A263D),
+        projectIcon = Color(0xFFA8C7FF),
     ),
 )

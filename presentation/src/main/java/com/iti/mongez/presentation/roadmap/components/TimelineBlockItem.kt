@@ -2,7 +2,6 @@ package com.iti.mongez.presentation.roadmap.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -19,9 +18,16 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.res.stringResource
+import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
+import com.iti.mongez.designsystem.components.common.AppEmptyState
 import com.iti.mongez.designsystem.screens.roadmap.RoadmapBlockCard
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapTaskUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockColor
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockUiModel
 import com.iti.mongez.presentation.utils.UiText
@@ -40,7 +46,9 @@ fun TimelineBlockItem(
     }
 
     var isExpanded by remember { mutableStateOf(false) }
-    
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabs = listOf(stringResource(R.string.tab_events), stringResource(R.string.tab_tasks))
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -60,13 +68,15 @@ fun TimelineBlockItem(
         Spacer(modifier = Modifier.width(Theme.spacing.md))
 
         Column(modifier = Modifier.weight(1f)) {
+            val isExpandable = block.events.isNotEmpty() || block.tasks.isNotEmpty()
+
             RoadmapBlockCard(
                 courseName = block.courseName.asString(),
                 color = blockColor,
                 isExpanded = isExpanded,
-                isExpandable = block.event != null,
+                isExpandable = isExpandable,
                 onClick = {
-                    if (block.event != null) {
+                    if (isExpandable) {
                         isExpanded = !isExpanded
                     } else {
                         onClick()
@@ -75,13 +85,53 @@ fun TimelineBlockItem(
             )
 
             AnimatedVisibility(visible = isExpanded) {
-                block.event?.let { event ->
+                Column {
                     Spacer(modifier = Modifier.height(Theme.spacing.sm))
-                    RoadmapEventCard(
-                        title = event.title.asString(),
-                        type = event.type,
-                        dateTime = event.dateTime?.asString() ?: ""
+                    AppPrimaryTabs(
+                        tabs = tabs,
+                        selectedTabIndex = selectedTabIndex,
+                        onTabSelected = { selectedTabIndex = it }
                     )
+                    Spacer(modifier = Modifier.height(Theme.spacing.sm))
+                    
+                    if (selectedTabIndex == 0) {
+                        if (block.events.isEmpty()) {
+                            AppEmptyState(
+                                title = stringResource(id = R.string.no_events_title),
+                                description = stringResource(id = R.string.no_events_desc),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = Theme.spacing.xl)
+                            )
+                        } else {
+                            block.events.forEach { event ->
+                                RoadmapEventCard(
+                                    title = event.title.asString(),
+                                    type = event.type,
+                                    dateTime = event.dateTime?.asString() ?: ""
+                                )
+                                Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                            }
+                        }
+                    } else {
+                        if (block.tasks.isEmpty()) {
+                            AppEmptyState(
+                                title = stringResource(id = R.string.no_tasks_title),
+                                description = stringResource(id = R.string.no_tasks_desc),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = Theme.spacing.xl)
+                            )
+                        } else {
+                            block.tasks.forEach { task ->
+                                RoadmapEventCard(
+                                    title = task.title.asString(),
+                                    dateTime = task.dateTime?.asString() ?: ""
+                                )
+                                Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -108,12 +158,6 @@ fun TimelineBlockItem(
                         modifier = Modifier.size(Theme.spacing.lg)
                     )
                 }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .border(Theme.spacing.xxs, lineColor, CircleShape)
-                )
             }
         }
     }
@@ -132,10 +176,18 @@ fun TimelineBlockItemPreview() {
                     durationMinutes = 60,
                     isCompleted = true,
                     color = StudyBlockColor.PURPLE,
-                    event = com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel(
-                        title = UiText.DynamicString("Algorithms Exam"),
-                        type = "Exam",
-                        dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                    events = listOf(
+                        RoadmapEventUiModel(
+                            title = UiText.DynamicString("Algorithms Exam"),
+                            type = "Exam",
+                            dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                        )
+                    ),
+                    tasks = listOf(
+                        RoadmapTaskUiModel(
+                            title = UiText.DynamicString("Finish DP Exercises"),
+                            dateTime = UiText.DynamicString("May 7 - 10:00 PM")
+                        )
                     )
                 ),
                 onClick = {}

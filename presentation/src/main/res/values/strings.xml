@@ -95,8 +95,25 @@
     <string name="roadmap_title">Roadmap</string>
     <string name="roadmap_add_event">Add Event</string>
     <string name="roadmap_filter_label">Filter: %1$s - %2$s</string>
+    <string name="filter_roadmap_title">Filter Roadmap</string>
+    <string name="roadmap_empty_state_title">No Events or Tasks</string>
+    <string name="roadmap_empty_state_desc">Your roadmap is empty. Add an event to get started.</string>
+    <string name="no_events_title">No Events</string>
+    <string name="no_events_desc">There are no events for this block.</string>
+    <string name="no_tasks_title">No Tasks</string>
+    <string name="no_tasks_desc">There are no tasks for this block.</string>
+    <string name="filter_date_range">Date Range</string>
+    <string name="filter_no_date_selected">No date selected</string>
+    <string name="filter_selected_range">Selected:\n%1$s</string>
+    <string name="filter_courses">Courses</string>
+    <string name="filter_event_types">Event Types</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_apply_count">Apply (%1$d)</string>
 
     <string name="add_new_event_title">Add New Event</string>
+    <string name="event_study_title">Study Session</string>
+    <string name="event_study_desc">Focused time for reviewing materials</string>
     <string name="event_quiz_title">Quiz</string>
     <string name="event_quiz_desc">A short assessment</string>
     <string name="event_assignment_title">Assignment</string>
@@ -106,9 +123,29 @@
     <string name="event_project_title">Project</string>
     <string name="event_project_desc">Large project or final work</string>
 
+    <string name="add_event_choose_type">Choose Event Type</string>
+    <string name="add_event_choose_course">Choose Course</string>
+    <string name="add_event_details">Event Details</string>
+    <string name="add_event_name_label">Event Name</string>
+    <string name="add_event_name_hint">Enter event name</string>
+    <string name="add_event_date_label">Date</string>
+    <string name="add_event_date_hint">Select date</string>
+    <string name="add_event_time_label">Time</string>
+    <string name="add_event_time_hint">Select time</string>
+    <string name="add_event_notes_label">Optional Notes</string>
+    <string name="add_event_notes_hint">Add any extra details here...</string>
+    <string name="add_event_continue">Continue</string>
+    <string name="add_event_back">Back</string>
+    <string name="add_event_create">Create Event</string>
+    <string name="add_event_step_type">Type</string>
+    <string name="add_event_step_course">Course</string>
+    <string name="add_event_step_details">Details</string>
+
     <!-- Tabs -->
     <string name="tab_online_course">Online Course</string>
     <string name="tab_upload_material">Upload Material</string>
+    <string name="tab_events">Events</string>
+    <string name="tab_tasks">Tasks</string>
 
     <!-- Course -->
     <string name="label_course_name">Course Name</string>

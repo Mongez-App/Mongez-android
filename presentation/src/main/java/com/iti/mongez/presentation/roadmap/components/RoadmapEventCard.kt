@@ -21,7 +21,7 @@ import com.iti.mongez.designsystem.theme.Theme
 @Composable
 fun RoadmapEventCard(
     title: String,
-    type: String,
+    type: String = "",
     dateTime: String
 ) {
     Card(
@@ -43,11 +43,13 @@ fun RoadmapEventCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = type,
-                    style = Theme.typography.label.medium,
-                    color = Theme.colorScheme.text.tertiary
-                )
+                if (type.isNotEmpty()) {
+                    Text(
+                        text = type,
+                        style = Theme.typography.label.medium,
+                        color = Theme.colorScheme.text.tertiary
+                    )
+                }
                 Text(
                     text = dateTime,
                     style = Theme.typography.label.medium,

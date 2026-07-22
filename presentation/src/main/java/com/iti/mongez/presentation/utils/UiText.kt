@@ -26,4 +26,11 @@ sealed class UiText {
             is StringResource -> context.getString(resId, *args)
         }
     }
+
+    fun asRawString(): String {
+        return when (this) {
+            is DynamicString -> value
+            is StringResource -> ""
+        }
+    }
 }

@@ -8,12 +8,14 @@ import com.iti.mongez.presentation.roadmap.contract.RoadmapEffect
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapTaskUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockColor
 import com.iti.mongez.presentation.utils.UiText
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,10 +72,22 @@ class RoadmapViewModel @Inject constructor(
                                     durationMinutes = 60,
                                     isCompleted = true,
                                     color = StudyBlockColor.PURPLE,
-                                    event = RoadmapEventUiModel(
-                                        title = UiText.DynamicString("Algorithms Exam"),
-                                        type = "Exam",
-                                        dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                    events = listOf(
+                                        RoadmapEventUiModel(
+                                            title = UiText.DynamicString("Algorithms Exam"),
+                                            type = "Exam",
+                                            dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                        )
+                                    ),
+                                    tasks = listOf(
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString("Finish Graph Assignment"),
+                                            dateTime = UiText.DynamicString("May 7 - 11:59 PM")
+                                        ),
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString("Review DFS/BFS"),
+                                            dateTime = UiText.DynamicString("May 6 - 8:00 PM")
+                                        )
                                     )
                                 )
                             )
@@ -94,7 +108,13 @@ class RoadmapViewModel @Inject constructor(
                                     topic = UiText.DynamicString("SQL Optimization"),
                                     durationMinutes = 90,
                                     isCompleted = true,
-                                    color = StudyBlockColor.BLUE
+                                    color = StudyBlockColor.BLUE,
+                                    tasks = listOf(
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString("Practice Complex Joins"),
+                                            dateTime = UiText.DynamicString("May 14 - 4:00 PM")
+                                        )
+                                    )
                                 ),
                                 StudyBlockUiModel(
                                     id = "3",
@@ -102,7 +122,14 @@ class RoadmapViewModel @Inject constructor(
                                     topic = UiText.DynamicString("OSI Model"),
                                     durationMinutes = 45,
                                     isCompleted = false,
-                                    color = StudyBlockColor.GREEN
+                                    color = StudyBlockColor.GREEN,
+                                    events = listOf(
+                                        RoadmapEventUiModel(
+                                            title = UiText.DynamicString("Networking Quiz"),
+                                            type = "Quiz",
+                                            dateTime = UiText.DynamicString("May 15 - 10:00 AM")
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -155,41 +182,90 @@ class RoadmapViewModel @Inject constructor(
                     _effect.emit(RoadmapEffect.NavigateToBlockDetails(event.blockId))
                 }
                 is RoadmapEvent.OnAddEventClicked -> {
-                    _effect.emit(RoadmapEffect.NavigateToAddEvent)
+                    _state.value = _state.value.copy(isAddEventDialogVisible = true)
                 }
-                is RoadmapEvent.OnDateRangeChanged -> {
-                    updateDateRangeFilter(event.range)
+                is RoadmapEvent.ToggleFilterSheet -> {
+                    _state.value = _state.value.copy(isFilterSheetVisible = event.isVisible)
+                }
+                is RoadmapEvent.ToggleAddEventDialog -> {
+                    _state.value = _state.value.copy(isAddEventDialogVisible = event.isVisible)
+                }
+                is RoadmapEvent.ApplyFilter -> {
+                    _state.value = _state.value.copy(
+                        isFilterSheetVisible = false,
+                        activeFilterState = event.filterState
+                    )
+                    applyFilters(event.filterState)
+                }
+                is RoadmapEvent.ClearAllFilters -> {
+                    val clearedState = RoadmapFilterState()
+                    _state.value = _state.value.copy(activeFilterState = clearedState)
+                    applyFilters(clearedState)
+                }
+                is RoadmapEvent.RemoveDateFilter -> {
+                    val newState = _state.value.activeFilterState.copy(startDate = null, endDate = null)
+                    _state.value = _state.value.copy(activeFilterState = newState)
+                    applyFilters(newState)
+                }
+                is RoadmapEvent.RemoveCourseFilter -> {
+                    val newState = _state.value.activeFilterState.copy(
+                        selectedCourses = _state.value.activeFilterState.selectedCourses - event.course
+                    )
+                    _state.value = _state.value.copy(activeFilterState = newState)
+                    applyFilters(newState)
+                }
+                is RoadmapEvent.RemoveEventTypeFilter -> {
+                    val newState = _state.value.activeFilterState.copy(
+                        selectedEventTypes = _state.value.activeFilterState.selectedEventTypes - event.eventType
+                    )
+                    _state.value = _state.value.copy(activeFilterState = newState)
+                    applyFilters(newState)
+                }
+                is RoadmapEvent.AddEvent -> {
+                    _effect.emit(
+                        RoadmapEffect.ShowSnackBar(
+                            message = "Event \"${event.name}\" created successfully!",
+                            type = AppSnackbarType.Success
+                        )
+                    )
+                    _state.value = _state.value.copy(isAddEventDialogVisible = false)
+                     loadRoadmap()
                 }
             }
         }
     }
 
-    private fun updateDateRangeFilter(range: ClosedFloatingPointRange<Float>) {
-        val startDate = LocalDate.parse(_state.value.roadmapStartDate, dateFormatter)
-        val totalDays = (fullRoadmapWeeks.size * 7).toLong()
-
-        val startOffset = (range.start / 100f * totalDays).toLong()
-        val endOffset = (range.endInclusive / 100f * totalDays).toLong()
-
-        val filteredStartDate = startDate.plusDays(startOffset)
-        val filteredEndDate = startDate.plusDays(endOffset)
-
-        val displayFormatter = DateTimeFormatter.ofPattern("MMM dd", Locale.getDefault())
-
-        _state.value = _state.value.copy(
-            dateRangeSliderValue = range,
-            filterStartDateDisplay = filteredStartDate.format(displayFormatter),
-            filterEndDateDisplay = filteredEndDate.format(displayFormatter)
-        )
-
-        filterRoadmapData(filteredStartDate, filteredEndDate)
-    }
-
-    private fun filterRoadmapData(start: LocalDate, end: LocalDate) {
+    private fun applyFilters(filterState: RoadmapFilterState) {
         val filteredWeeks = fullRoadmapWeeks.mapNotNull { week ->
-            val filteredDays = week.days.filter { day ->
-                val dayDate = LocalDate.parse(day.date, dateFormatter)
-                !dayDate.isBefore(start) && !dayDate.isAfter(end)
+            val filteredDays = week.days.mapNotNull { day ->
+                val dayDate = java.time.LocalDate.parse(day.date, dateFormatter)
+
+                // 1. Date Filter Check
+                val matchesDate = if (filterState.startDate != null && filterState.endDate != null) {
+                    !dayDate.isBefore(filterState.startDate) && !dayDate.isAfter(filterState.endDate)
+                } else {
+                    true
+                }
+
+                if (!matchesDate) return@mapNotNull null
+
+                // 2 & 3. Course and Event Type Checks
+                val filteredBlocks = day.blocks.filter { block ->
+                    val matchesCourse = filterState.selectedCourses.isEmpty() ||
+                            filterState.selectedCourses.contains(block.courseName.asRawString())
+
+                    val blockEventTypes = block.events.map { it.type }.ifEmpty { listOf("Study") }
+                    val matchesEventType = filterState.selectedEventTypes.isEmpty() ||
+                            blockEventTypes.any { it in filterState.selectedEventTypes }
+
+                    matchesCourse && matchesEventType
+                }
+
+                if (filteredBlocks.isNotEmpty()) {
+                    day.copy(blocks = filteredBlocks)
+                } else {
+                    null
+                }
             }
 
             if (filteredDays.isNotEmpty()) {

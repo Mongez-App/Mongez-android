@@ -143,9 +143,6 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     innerPadding = PaddingValues(),
                     onNavigateToBlockDetails = {
                         //To-Do
-                    },
-                    onNavigateToAddEvent = {
-                        //To-Do
                     }
                 )
             }

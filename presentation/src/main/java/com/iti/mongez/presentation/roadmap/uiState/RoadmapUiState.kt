@@ -7,9 +7,13 @@ data class RoadmapUiState(
     val roadmapStartDate: String = "",
     val weeks: List<RoadmapWeekUiModel> = emptyList(),
 
-    val dateRangeSliderValue: ClosedFloatingPointRange<Float> = 0f..100f,
-    val filterStartDateDisplay: String = "Mar 12",
-    val filterEndDateDisplay: String = "May 30"
+    val isFilterSheetVisible: Boolean = false,
+    val isAddEventDialogVisible: Boolean = false,
+
+    val activeFilterState: RoadmapFilterState = RoadmapFilterState(),
+
+    val availableCourses: List<String> = listOf("Algorithms", "Database Systems", "Networks", "Operating Systems", "Math", "Physics"),
+    val availableEventTypes: List<String> = listOf("Study", "Assignment", "Quiz", "Exam", "Reminder")
 )
 data class RoadmapWeekUiModel(
     val weekNumber: Int,
@@ -29,7 +33,8 @@ data class StudyBlockUiModel(
     val topic: UiText,
     val durationMinutes: Int,
     val isCompleted: Boolean,
-    val event: RoadmapEventUiModel? = null,
+    val events: List<RoadmapEventUiModel> = emptyList(),
+    val tasks: List<RoadmapTaskUiModel> = emptyList(),
     val color: StudyBlockColor = StudyBlockColor.PURPLE
 )
 
@@ -43,5 +48,10 @@ enum class StudyBlockColor {
 data class RoadmapEventUiModel(
     val title: UiText,
     val type: String,
+    val dateTime: UiText? = null
+)
+
+data class RoadmapTaskUiModel(
+    val title: UiText,
     val dateTime: UiText? = null
 )
