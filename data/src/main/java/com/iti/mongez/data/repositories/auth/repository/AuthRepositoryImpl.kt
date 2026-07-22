@@ -60,4 +60,8 @@ class AuthRepositoryImpl @Inject constructor(
         val token = tokenManager.tokenFlow.firstOrNull()
         return !token.isNullOrEmpty()
     }
+
+    override suspend fun logout() {
+        tokenManager.clearToken()
+    }
 }
