@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.designsystem.components.common.AppEmptyState
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.components.ActiveFiltersRow
 import com.iti.mongez.presentation.roadmap.components.AddEventDialog
@@ -186,20 +187,29 @@ fun RoadmapContent(
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = Theme.spacing.xxl)
-            ) {
-                state.weeks.forEach { week ->
-                    item {
-                        WeekHeader(week)
-                    }
-                    week.days.forEach { day ->
-                        itemsIndexed(day.blocks) { _, block ->
-                            TimelineBlockItem(
-                                block = block,
-                                onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
-                            )
+            if (state.weeks.isEmpty()) {
+                AppEmptyState(
+                    title = stringResource(id = R.string.roadmap_empty_state_title),
+                    description = stringResource(id = R.string.roadmap_empty_state_desc),
+                    actionText = stringResource(id = R.string.roadmap_add_event),
+                    onAction = { onEvent(RoadmapEvent.OnAddEventClicked) }
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = Theme.spacing.xxl)
+                ) {
+                    state.weeks.forEach { week ->
+                        item {
+                            WeekHeader(week)
+                        }
+                        week.days.forEach { day ->
+                            itemsIndexed(day.blocks) { _, block ->
+                                TimelineBlockItem(
+                                    block = block,
+                                    onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
+                                )
+                            }
                         }
                     }
                 }

@@ -94,6 +94,12 @@
     <string name="roadmap_add_event">إضافة حدث</string>
     <string name="roadmap_filter_label">تصفية: %1$s - %2$s</string>
     <string name="filter_roadmap_title">تصفية خارطة الطريق</string>
+    <string name="roadmap_empty_state_title">لا توجد أحداث أو مهام</string>
+    <string name="roadmap_empty_state_desc">خارطة الطريق الخاصة بك فارغة. أضف حدثاً للبدء.</string>
+    <string name="no_events_title">لا توجد أحداث</string>
+    <string name="no_events_desc">لا توجد أحداث هنا.</string>
+    <string name="no_tasks_title">لا توجد مهام</string>
+    <string name="no_tasks_desc">لا توجد مهام هنا.</string>
     <string name="filter_date_range">نطاق التاريخ</string>
     <string name="filter_no_date_selected">لم يتم اختيار تاريخ</string>
     <string name="filter_selected_range">المختار:\n%1$s</string>

@@ -2,7 +2,6 @@ package com.iti.mongez.presentation.roadmap.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -22,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.res.stringResource
 import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
+import com.iti.mongez.designsystem.components.common.AppEmptyState
 import com.iti.mongez.designsystem.screens.roadmap.RoadmapBlockCard
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
@@ -95,21 +95,41 @@ fun TimelineBlockItem(
                     Spacer(modifier = Modifier.height(Theme.spacing.sm))
                     
                     if (selectedTabIndex == 0) {
-                        block.events.forEach { event ->
-                            RoadmapEventCard(
-                                title = event.title.asString(),
-                                type = event.type,
-                                dateTime = event.dateTime?.asString() ?: ""
+                        if (block.events.isEmpty()) {
+                            AppEmptyState(
+                                title = stringResource(id = R.string.no_events_title),
+                                description = stringResource(id = R.string.no_events_desc),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = Theme.spacing.xl)
                             )
-                            Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                        } else {
+                            block.events.forEach { event ->
+                                RoadmapEventCard(
+                                    title = event.title.asString(),
+                                    type = event.type,
+                                    dateTime = event.dateTime?.asString() ?: ""
+                                )
+                                Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                            }
                         }
                     } else {
-                        block.tasks.forEach { task ->
-                            RoadmapEventCard(
-                                title = task.title.asString(),
-                                dateTime = task.dateTime?.asString() ?: ""
+                        if (block.tasks.isEmpty()) {
+                            AppEmptyState(
+                                title = stringResource(id = R.string.no_tasks_title),
+                                description = stringResource(id = R.string.no_tasks_desc),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = Theme.spacing.xl)
                             )
-                            Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                        } else {
+                            block.tasks.forEach { task ->
+                                RoadmapEventCard(
+                                    title = task.title.asString(),
+                                    dateTime = task.dateTime?.asString() ?: ""
+                                )
+                                Spacer(modifier = Modifier.height(Theme.spacing.xs))
+                            }
                         }
                     }
                 }
