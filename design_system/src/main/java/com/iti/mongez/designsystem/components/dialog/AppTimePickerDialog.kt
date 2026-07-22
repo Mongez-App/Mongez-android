@@ -11,7 +11,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.res.stringResource
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.designsystem.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +45,7 @@ fun AppTimePickerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Select Time",
+                    text = stringResource(R.string.dialog_select_time),
                     style = Theme.typography.label.medium,
                     color = Theme.colorScheme.text.secondary,
                     modifier = Modifier
@@ -77,10 +79,10 @@ fun AppTimePickerDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismissRequest) {
-                        Text("Cancel", color = Theme.colorScheme.text.secondary)
+                        Text(stringResource(R.string.action_cancel), color = Theme.colorScheme.text.secondary)
                     }
                     TextButton(onClick = { onConfirm(state) }) {
-                        Text("OK", color = Theme.colorScheme.brand.primary)
+                        Text(stringResource(R.string.action_ok), color = Theme.colorScheme.brand.primary)
                     }
                 }
             }

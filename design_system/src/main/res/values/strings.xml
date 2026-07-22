@@ -14,4 +14,10 @@
     <string name="priority_medium">MEDIUM</string>
     <string name="priority_low">LOW</string>
     <string name="cd_completed">Completed</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_select_time">Select Time</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="cd_close">Close</string>
 </resources>

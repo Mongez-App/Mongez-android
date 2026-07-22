@@ -106,6 +106,8 @@
     <string name="filter_apply_count">Apply (%1$d)</string>
 
     <string name="add_new_event_title">Add New Event</string>
+    <string name="event_study_title">Study Session</string>
+    <string name="event_study_desc">Focused time for reviewing materials</string>
     <string name="event_quiz_title">Quiz</string>
     <string name="event_quiz_desc">A short assessment</string>
     <string name="event_assignment_title">Assignment</string>
@@ -114,6 +116,24 @@
     <string name="event_midterm_desc">Important exam</string>
     <string name="event_project_title">Project</string>
     <string name="event_project_desc">Large project or final work</string>
+
+    <string name="add_event_choose_type">Choose Event Type</string>
+    <string name="add_event_choose_course">Choose Course</string>
+    <string name="add_event_details">Event Details</string>
+    <string name="add_event_name_label">Event Name</string>
+    <string name="add_event_name_hint">Enter event name</string>
+    <string name="add_event_date_label">Date</string>
+    <string name="add_event_date_hint">Select date</string>
+    <string name="add_event_time_label">Time</string>
+    <string name="add_event_time_hint">Select time</string>
+    <string name="add_event_notes_label">Optional Notes</string>
+    <string name="add_event_notes_hint">Add any extra details here...</string>
+    <string name="add_event_continue">Continue</string>
+    <string name="add_event_back">Back</string>
+    <string name="add_event_create">Create Event</string>
+    <string name="add_event_step_type">Type</string>
+    <string name="add_event_step_course">Course</string>
+    <string name="add_event_step_details">Details</string>
 
     <!-- Tabs -->
     <string name="tab_online_course">Online Course</string>

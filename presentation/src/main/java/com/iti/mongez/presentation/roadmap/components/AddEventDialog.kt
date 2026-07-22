@@ -74,7 +74,7 @@ fun AddEventDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Add New Event",
+                        text = stringResource(R.string.add_new_event_title),
                         style = Theme.typography.headline.small,
                         color = Theme.colorScheme.text.primary,
                         fontWeight = FontWeight.Bold
@@ -82,7 +82,7 @@ fun AddEventDialog(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Rounded.Close,
-                            contentDescription = "Close",
+                            contentDescription = stringResource(com.iti.mongez.designsystem.R.string.cd_close),
                             tint = Theme.colorScheme.text.secondary
                         )
                     }
@@ -224,9 +224,9 @@ private fun WizardProgressIndicator(currentStep: AddEventStep) {
             .padding(top = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Type", style = Theme.typography.label.small, color = if (currentStep.ordinal >= 0) Theme.colorScheme.brand.primary else Theme.colorScheme.text.secondary)
-        Text("Course", style = Theme.typography.label.small, color = if (currentStep.ordinal >= 1) Theme.colorScheme.brand.primary else Theme.colorScheme.text.secondary)
-        Text("Details", style = Theme.typography.label.small, color = if (currentStep.ordinal >= 2) Theme.colorScheme.brand.primary else Theme.colorScheme.text.secondary)
+        Text(stringResource(R.string.add_event_step_type), style = Theme.typography.label.small, color = if (currentStep.ordinal >= 0) Theme.colorScheme.brand.primary else Theme.colorScheme.text.secondary)
+        Text(stringResource(R.string.add_event_step_course), style = Theme.typography.label.small, color = if (currentStep.ordinal >= 1) Theme.colorScheme.brand.primary else Theme.colorScheme.text.secondary)
+        Text(stringResource(R.string.add_event_step_details), style = Theme.typography.label.small, color = if (currentStep.ordinal >= 2) Theme.colorScheme.brand.primary else Theme.colorScheme.text.secondary)
     }
 }
 
@@ -236,17 +236,18 @@ private fun StepOneType(
     onTypeSelected: (String) -> Unit,
     onContinue: () -> Unit
 ) {
+    val eventColors = Theme.colorScheme.events
     val eventTypes = listOf(
-        EventTypeUiModel("study", "Study Session", "Focused time for reviewing materials", Icons.Rounded.MenuBook, Color(0xFFE8DEF8), Color(0xFF6750A4)), // Purple
-        EventTypeUiModel("assignment", "Assignment", "Homework, papers, or lab reports", Icons.AutoMirrored.Rounded.Assignment, Color(0xFFFFDBCF), Color(0xFFF96025)), // Orange
-        EventTypeUiModel("quiz", "Quiz", "Short assessments and pop quizzes", Icons.Rounded.Quiz, Color(0xFFCCE8E4), Color(0xFF00796B)), // Teal
-        EventTypeUiModel("exam", "Exam", "Major tests and midterms/finals", Icons.Rounded.School, Color(0xFFFFDAD6), Color(0xFFBA1A1A)), // Red
-        EventTypeUiModel("project", "Project", "Long-term assignments and presentations", Icons.Rounded.GridView, Color(0xFFD3E3FD), Color(0xFF0B57D0)) // Blue
+        EventTypeUiModel("study", stringResource(R.string.event_study_title), stringResource(R.string.event_study_desc), Icons.Rounded.MenuBook, eventColors.studyContainer, eventColors.studyIcon),
+        EventTypeUiModel("assignment", stringResource(R.string.event_assignment_title), stringResource(R.string.event_assignment_desc), Icons.AutoMirrored.Rounded.Assignment, eventColors.assignmentContainer, eventColors.assignmentIcon),
+        EventTypeUiModel("quiz", stringResource(R.string.event_quiz_title), stringResource(R.string.event_quiz_desc), Icons.Rounded.Quiz, eventColors.quizContainer, eventColors.quizIcon),
+        EventTypeUiModel("exam", stringResource(R.string.event_midterm_title), stringResource(R.string.event_midterm_desc), Icons.Rounded.School, eventColors.examContainer, eventColors.examIcon),
+        EventTypeUiModel("project", stringResource(R.string.event_project_title), stringResource(R.string.event_project_desc), Icons.Rounded.GridView, eventColors.projectContainer, eventColors.projectIcon)
     )
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Choose Event Type",
+            text = stringResource(R.string.add_event_choose_type),
             style = Theme.typography.title.large,
             fontWeight = FontWeight.SemiBold,
             color = Theme.colorScheme.text.primary
@@ -306,7 +307,7 @@ private fun StepOneType(
                         if (isSelected) {
                             Icon(
                                 imageVector = Icons.Rounded.CheckCircle,
-                                contentDescription = "Selected",
+                                contentDescription = stringResource(com.iti.mongez.designsystem.R.string.cd_completed),
                                 tint = Theme.colorScheme.brand.primary
                             )
                         }
@@ -324,7 +325,7 @@ private fun StepOneType(
             colors = ButtonDefaults.buttonColors(containerColor = Theme.colorScheme.brand.primary),
             shape = RoundedCornerShape(100)
         ) {
-            Text("Continue", modifier = Modifier.padding(vertical = 8.dp))
+            Text(stringResource(R.string.add_event_continue), modifier = Modifier.padding(vertical = 8.dp))
         }
     }
 }
@@ -341,7 +342,7 @@ private fun StepTwoCourse(
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Choose Course",
+            text = stringResource(R.string.add_event_choose_course),
             style = Theme.typography.title.large,
             fontWeight = FontWeight.SemiBold,
             color = Theme.colorScheme.text.primary
@@ -389,7 +390,7 @@ private fun StepTwoCourse(
                 onClick = onBack,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Back", color = Theme.colorScheme.text.secondary)
+                Text(stringResource(R.string.add_event_back), color = Theme.colorScheme.text.secondary)
             }
             Button(
                 onClick = onContinue,
@@ -398,7 +399,7 @@ private fun StepTwoCourse(
                 colors = ButtonDefaults.buttonColors(containerColor = Theme.colorScheme.brand.primary),
                 shape = RoundedCornerShape(100)
             ) {
-                Text("Continue")
+                Text(stringResource(R.string.add_event_continue))
             }
         }
     }
@@ -426,7 +427,7 @@ private fun StepThreeDetails(
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Event Details",
+            text = stringResource(R.string.add_event_details),
             style = Theme.typography.title.large,
             fontWeight = FontWeight.SemiBold,
             color = Theme.colorScheme.text.primary
@@ -440,21 +441,21 @@ private fun StepThreeDetails(
             AppTextField(
                 value = eventName,
                 onValueChange = onNameChange,
-                label = "Event Name",
-                placeholder = "Enter event name"
+                label = stringResource(R.string.add_event_name_label),
+                placeholder = stringResource(R.string.add_event_name_hint)
             )
 
             AppTextField(
                 value = eventDate,
                 onValueChange = {},
-                label = "Date",
-                placeholder = "Select date",
+                label = stringResource(R.string.add_event_date_label),
+                placeholder = stringResource(R.string.add_event_date_hint),
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(
                             imageVector = Icons.Rounded.CalendarToday,
-                            contentDescription = "Select Date",
+                            contentDescription = stringResource(R.string.add_event_date_hint),
                             tint = Theme.colorScheme.input.icon
                         )
                     }
@@ -464,14 +465,14 @@ private fun StepThreeDetails(
             AppTextField(
                 value = eventTime,
                 onValueChange = {},
-                label = "Time",
-                placeholder = "Select time",
+                label = stringResource(R.string.add_event_time_label),
+                placeholder = stringResource(R.string.add_event_time_hint),
                 readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { showTimePicker = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Schedule,
-                            contentDescription = "Select Time",
+                            contentDescription = stringResource(R.string.add_event_time_hint),
                             tint = Theme.colorScheme.input.icon
                         )
                     }
@@ -481,8 +482,8 @@ private fun StepThreeDetails(
             AppTextField(
                 value = eventNotes,
                 onValueChange = onNotesChange,
-                label = "Optional Notes",
-                placeholder = "Add any extra details here...",
+                label = stringResource(R.string.add_event_notes_label),
+                placeholder = stringResource(R.string.add_event_notes_hint),
                 singleLine = false,
                 modifier = Modifier.height(120.dp)
             )
@@ -498,7 +499,7 @@ private fun StepThreeDetails(
                 onClick = onBack,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Back", color = Theme.colorScheme.text.secondary)
+                Text(stringResource(R.string.add_event_back), color = Theme.colorScheme.text.secondary)
             }
             Button(
                 onClick = onCreate,
@@ -507,7 +508,7 @@ private fun StepThreeDetails(
                 colors = ButtonDefaults.buttonColors(containerColor = Theme.colorScheme.brand.primary),
                 shape = RoundedCornerShape(100)
             ) {
-                Text("Create Event")
+                Text(stringResource(R.string.add_event_create))
             }
         }
     }
@@ -525,12 +526,12 @@ private fun StepThreeDetails(
                         showDatePicker = false
                     }
                 ) {
-                    Text("OK", color = Theme.colorScheme.brand.primary)
+                    Text(stringResource(com.iti.mongez.designsystem.R.string.action_ok), color = Theme.colorScheme.brand.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel", color = Theme.colorScheme.text.secondary)
+                    Text(stringResource(com.iti.mongez.designsystem.R.string.action_cancel), color = Theme.colorScheme.text.secondary)
                 }
             }
         ) {

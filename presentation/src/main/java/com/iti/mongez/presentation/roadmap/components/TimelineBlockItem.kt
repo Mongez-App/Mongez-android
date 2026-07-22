@@ -138,12 +138,6 @@ fun TimelineBlockItem(
                         modifier = Modifier.size(Theme.spacing.lg)
                     )
                 }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .border(Theme.spacing.xxs, lineColor, CircleShape)
-                )
             }
         }
     }

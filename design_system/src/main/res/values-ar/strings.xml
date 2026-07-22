@@ -15,4 +15,10 @@
     <string name="priority_medium">متوسط</string>
     <string name="priority_low">منخفض</string>
     <string name="cd_completed">مكتمل</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_select_time">اختر الوقت</string>
+    <string name="action_ok">موافق</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="cd_close">إغلاق</string>
 </resources>
