@@ -10,8 +10,10 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -22,7 +24,7 @@ fun CourseFilterSection(
     onStateChange: (RoadmapFilterState) -> Unit,
 ) {
     Text(
-        text = "Courses",
+        text = stringResource(R.string.filter_courses),
         style = Theme.typography.title.medium,
         fontWeight = FontWeight.SemiBold,
         color = Theme.colorScheme.text.primary,

@@ -4,13 +4,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,14 +24,12 @@ fun FilterBottomSheet(
     onApply: (RoadmapFilterState) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     var localState by remember { mutableStateOf(initialState) }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = Theme.colorScheme.surface.background,
-        dragHandle = { BottomSheetDefaults.DragHandle() }
+    AppBottomSheet(
+        onDismiss = onDismiss,
+        title = stringResource(R.string.filter_roadmap_title),
+        sheetState = sheetState
     ) {
         FilterBottomSheetContent(
             localState = localState,
@@ -52,17 +51,9 @@ fun FilterBottomSheetContent(
     onStateChange: (RoadmapFilterState) -> Unit,
     onReset: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxHeight(0.9f)) {
-        Text(
-            text = "Filter Roadmap",
-            style = Theme.typography.title.large,
-            fontWeight = FontWeight.Bold,
-            color = Theme.colorScheme.text.primary,
-            modifier = Modifier.padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.sm)
-        )
-
+    Column(modifier = Modifier.fillMaxHeight(0.85f)) {
         HorizontalDivider(
-            Modifier,
+            Modifier.padding(vertical = Theme.spacing.sm),
             DividerDefaults.Thickness,
             color = Theme.colorScheme.border.primary
         )
@@ -70,7 +61,6 @@ fun FilterBottomSheetContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = Theme.spacing.lg)
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(Theme.spacing.lg))

@@ -95,6 +95,15 @@
     <string name="roadmap_title">Roadmap</string>
     <string name="roadmap_add_event">Add Event</string>
     <string name="roadmap_filter_label">Filter: %1$s - %2$s</string>
+    <string name="filter_roadmap_title">Filter Roadmap</string>
+    <string name="filter_date_range">Date Range</string>
+    <string name="filter_no_date_selected">No date selected</string>
+    <string name="filter_selected_range">Selected:\n%1$s</string>
+    <string name="filter_courses">Courses</string>
+    <string name="filter_event_types">Event Types</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_apply_count">Apply (%1$d)</string>
 
     <string name="add_new_event_title">Add New Event</string>
     <string name="event_quiz_title">Quiz</string>

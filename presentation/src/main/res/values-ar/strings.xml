@@ -93,6 +93,15 @@
     <string name="roadmap_title">خارطة الطريق</string>
     <string name="roadmap_add_event">إضافة حدث</string>
     <string name="roadmap_filter_label">تصفية: %1$s - %2$s</string>
+    <string name="filter_roadmap_title">تصفية خارطة الطريق</string>
+    <string name="filter_date_range">نطاق التاريخ</string>
+    <string name="filter_no_date_selected">لم يتم اختيار تاريخ</string>
+    <string name="filter_selected_range">المختار:\n%1$s</string>
+    <string name="filter_courses">المواد</string>
+    <string name="filter_event_types">أنواع الأحداث</string>
+    <string name="filter_reset">إعادة ضبط</string>
+    <string name="filter_apply">تطبيق</string>
+    <string name="filter_apply_count">تطبيق (%1$d)</string>
 
     <string name="add_new_event_title">إضافة حدث جديد</string>
     <string name="event_quiz_title">اختبار قصير</string>

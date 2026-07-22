@@ -18,9 +18,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -31,7 +33,7 @@ fun EventTypeSection(
     onStateChange: (RoadmapFilterState) -> Unit,
 ) {
     Text(
-        text = "Event Types",
+        text = stringResource(R.string.filter_event_types),
         style = Theme.typography.title.medium,
         fontWeight = FontWeight.SemiBold,
         color = Theme.colorScheme.text.primary,
