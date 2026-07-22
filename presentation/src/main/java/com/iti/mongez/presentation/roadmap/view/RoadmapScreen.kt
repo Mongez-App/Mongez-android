@@ -6,19 +6,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.res.stringResource
-import com.iti.mongez.designsystem.components.button.AppButton
-import com.iti.mongez.designsystem.components.button.AppButtonVariant
-import com.iti.mongez.designsystem.components.chip.AppChip
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
@@ -27,13 +27,37 @@ import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
-import com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockColor
 import com.iti.mongez.presentation.roadmap.uiState.StudyBlockUiModel
 import com.iti.mongez.presentation.roadmap.viewmodel.RoadmapViewModel
 import com.iti.mongez.presentation.utils.UiText
+
+private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehind {
+    val shadowColor = color.copy(alpha = 0.7f).toArgb()
+    
+    drawIntoCanvas { canvas ->
+        val paint = android.graphics.Paint()
+        paint.color = android.graphics.Color.WHITE
+        
+        val blurRadius = 5.dp.toPx()
+
+        paint.setShadowLayer(
+            blurRadius,
+            0f,
+            0f,
+            shadowColor
+        )
+        
+        canvas.nativeCanvas.drawCircle(
+            size.width / 2,
+            size.height / 2,
+            size.width / 2,
+            paint
+        )
+    }
+}
 
 @Composable
 fun RoadmapScreen(
@@ -83,84 +107,65 @@ fun RoadmapContent(
                 title = {
                     Text(
                         text = stringResource(R.string.roadmap_title),
-                        style = Theme.typography.display.small,
-                        fontWeight = FontWeight.SemiBold
+                        style = Theme.typography.headline.medium,
+                        color = Theme.colorScheme.text.primary
                     )
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
-                        Icon(imageVector = Icons.Default.MoreHoriz, contentDescription = null)
+                    IconButton(
+                        onClick = { /* TODO */ },
+                        modifier = Modifier
+                            .padding(end = Theme.spacing.lg)
+                            .size(Theme.spacing.xxxl)
+                            .roadmapActionShadow(Theme.colorScheme.brand.primary)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.filter),
+                            contentDescription = null,
+                            tint = Theme.colorScheme.brand.primary
+                        )
+                    }
+
+
+                    IconButton(
+                        onClick = { onEvent(RoadmapEvent.OnAddEventClicked) },
+                        modifier = Modifier
+                            .padding(end = Theme.spacing.lg)
+                            .size(Theme.spacing.xxxl)
+                            .roadmapActionShadow(Theme.colorScheme.brand.primary)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Theme.colorScheme.brand.primary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Theme.colorScheme.surface.background
                 )
             )
-        },
-        floatingActionButton = {
-            AppButton(
-                text = stringResource(R.string.roadmap_add_event),
-                onClick = { onEvent(RoadmapEvent.OnAddEventClicked) },
-                variant = AppButtonVariant.Primary,
-                leadingIcon = Icons.Default.Add,
-                fullWidth = false,
-                modifier = Modifier.padding(bottom = Theme.spacing.lg)
-            )
-        },
-        floatingActionButtonPosition = FabPosition.End
+        }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Theme.colorScheme.surface.background)
                 .padding(padding)
-                .padding(horizontal = Theme.spacing.xl)
+                .padding(horizontal = Theme.spacing.lg)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = Theme.spacing.md)
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.roadmap_filter_label,
-                        state.filterStartDateDisplay,
-                        state.filterEndDateDisplay
-                    ),
-                    style = Theme.typography.label.medium,
-                    color = Theme.colorScheme.text.primary,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = Theme.spacing.sm)
-                )
-
-                // The Range Slider
-                RangeSlider(
-                    value = state.dateRangeSliderValue,
-                    onValueChange = { newRange ->
-                        onEvent(RoadmapEvent.OnDateRangeChanged(newRange))
-                    },
-                    valueRange = 0f..100f,
-                    steps = 0,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 100.dp)
+                contentPadding = PaddingValues(bottom = Theme.spacing.xxl)
             ) {
                 state.weeks.forEach { week ->
                     item {
                         WeekHeader(week)
                     }
                     week.days.forEach { day ->
-                        itemsIndexed(day.blocks) { blockIndex, block ->
-                            val isLastBlock = blockIndex == day.blocks.size - 1 && 
-                                            day == week.days.last() && 
-                                            week == state.weeks.last()
-                            
+                        itemsIndexed(day.blocks) { _, block ->
                             TimelineBlockItem(
                                 block = block,
-                                isLast = isLastBlock,
                                 onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
                             )
                         }
@@ -177,28 +182,47 @@ fun RoadmapScreenPreview() {
     val mockWeeks = listOf(
         RoadmapWeekUiModel(
             weekNumber = 1,
-            dateRange = UiText.DynamicString("Mar 12 - Mar 18"),
+            dateRange = UiText.DynamicString("May 6 - May 12"),
             days = listOf(
                 RoadmapDayUiModel(
-                    date = "2024-03-12",
-                    dayName = UiText.DynamicString("Tuesday"),
+                    date = "2024-05-06",
+                    dayName = UiText.DynamicString("Monday"),
                     blocks = listOf(
                         StudyBlockUiModel(
                             id = "1",
-                            courseName = UiText.DynamicString("Operating Systems"),
-                            topic = UiText.DynamicString("Process Management"),
+                            courseName = UiText.DynamicString("Algorithms"),
+                            topic = UiText.DynamicString("Graph Theory"),
                             durationMinutes = 60,
                             isCompleted = true,
                             color = StudyBlockColor.PURPLE
-                        ),
+                        )
+                    )
+                )
+            )
+        ),
+        RoadmapWeekUiModel(
+            weekNumber = 2,
+            dateRange = UiText.DynamicString("May 13 - May 19"),
+            days = listOf(
+                RoadmapDayUiModel(
+                    date = "2024-05-13",
+                    dayName = UiText.DynamicString("Monday"),
+                    blocks = listOf(
                         StudyBlockUiModel(
                             id = "2",
-                            courseName = UiText.DynamicString("Algorithms"),
-                            topic = UiText.DynamicString("Dynamic Programming"),
+                            courseName = UiText.DynamicString("Database Systems"),
+                            topic = UiText.DynamicString("SQL Optimization"),
                             durationMinutes = 90,
+                            isCompleted = true,
+                            color = StudyBlockColor.BLUE
+                        ),
+                        StudyBlockUiModel(
+                            id = "3",
+                            courseName = UiText.DynamicString("Networks"),
+                            topic = UiText.DynamicString("OSI Model"),
+                            durationMinutes = 45,
                             isCompleted = false,
-                            event = RoadmapEventUiModel(UiText.DynamicString("Quiz"), "Quiz"),
-                            color = StudyBlockColor.PURPLE
+                            color = StudyBlockColor.GREEN
                         )
                     )
                 )
@@ -211,8 +235,8 @@ fun RoadmapScreenPreview() {
             state = RoadmapUiState(
                 isLoading = false,
                 weeks = mockWeeks,
-                filterStartDateDisplay = "Mar 12",
-                filterEndDateDisplay = "Mar 18"
+                filterStartDateDisplay = "May 6",
+                filterEndDateDisplay = "May 30"
             ),
             innerPadding = PaddingValues(0.dp),
             onEvent = {}

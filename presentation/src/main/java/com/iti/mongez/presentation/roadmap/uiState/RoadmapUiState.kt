@@ -36,10 +36,12 @@ data class StudyBlockUiModel(
 enum class StudyBlockColor {
     PURPLE,
     GREEN,
-    ORANGE
+    ORANGE,
+    BLUE
 }
 
 data class RoadmapEventUiModel(
     val title: UiText,
-    val type: String
+    val type: String,
+    val dateTime: UiText? = null
 )

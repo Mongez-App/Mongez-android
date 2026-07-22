@@ -90,7 +90,7 @@
     <string name="roadmap_sql">استعلامات SQL</string>
     <string name="roadmap_quiz">اختبار قصير</string>
     <string name="roadmap_midterm">امتحان نصف الفصل</string>
-    <string name="roadmap_title">خارطة طريق الفصل الدراسي</string>
+    <string name="roadmap_title">خارطة الطريق</string>
     <string name="roadmap_add_event">إضافة حدث</string>
     <string name="roadmap_filter_label">تصفية: %1$s - %2$s</string>
 

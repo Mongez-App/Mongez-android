@@ -57,45 +57,49 @@ class RoadmapViewModel @Inject constructor(
             val mockWeeks = listOf(
                 RoadmapWeekUiModel(
                     weekNumber = 1,
-                    dateRange = UiText.DynamicString("Mar 12 - Mar 18"),
+                    dateRange = UiText.DynamicString("May 6 - May 12"),
                     days = listOf(
                         RoadmapDayUiModel(
-                            date = "2024-03-12",
-                            dayName = UiText.DynamicString(
-                                LocalDate.parse("2024-03-12", dateFormatter)
-                                    .dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
-                            ),
+                            date = "2024-05-06",
+                            dayName = UiText.DynamicString("Monday"),
                             blocks = listOf(
                                 StudyBlockUiModel(
                                     id = "1",
-                                    courseName = UiText.StringResource(R.string.roadmap_os),
-                                    topic = UiText.StringResource(R.string.roadmap_process_mgmt),
+                                    courseName = UiText.DynamicString("Algorithms"),
+                                    topic = UiText.DynamicString("Graph Theory"),
                                     durationMinutes = 60,
                                     isCompleted = true,
-                                    color = StudyBlockColor.PURPLE
-                                ),
-                                StudyBlockUiModel(
-                                    id = "2",
-                                    courseName = UiText.StringResource(R.string.roadmap_algorithms),
-                                    topic = UiText.StringResource(R.string.roadmap_dp),
-                                    durationMinutes = 90,
-                                    isCompleted = false,
-                                    event = RoadmapEventUiModel(UiText.StringResource(R.string.roadmap_quiz), "Quiz"),
-                                    color = StudyBlockColor.PURPLE
+                                    color = StudyBlockColor.PURPLE,
+                                    event = RoadmapEventUiModel(
+                                        title = UiText.DynamicString("Algorithms Exam"),
+                                        type = "Exam",
+                                        dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                    )
                                 )
                             )
-                        ),
+                        )
+                    )
+                ),
+                RoadmapWeekUiModel(
+                    weekNumber = 2,
+                    dateRange = UiText.DynamicString("May 13 - May 19"),
+                    days = listOf(
                         RoadmapDayUiModel(
-                            date = "2024-03-13",
-                            dayName = UiText.DynamicString(
-                                LocalDate.parse("2024-03-13", dateFormatter)
-                                    .dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
-                            ),
+                            date = "2024-05-13",
+                            dayName = UiText.DynamicString("Monday"),
                             blocks = listOf(
                                 StudyBlockUiModel(
+                                    id = "2",
+                                    courseName = UiText.DynamicString("Database Systems"),
+                                    topic = UiText.DynamicString("SQL Optimization"),
+                                    durationMinutes = 90,
+                                    isCompleted = true,
+                                    color = StudyBlockColor.BLUE
+                                ),
+                                StudyBlockUiModel(
                                     id = "3",
-                                    courseName = UiText.StringResource(R.string.roadmap_networks),
-                                    topic = UiText.StringResource(R.string.roadmap_tcp_ip),
+                                    courseName = UiText.DynamicString("Networks"),
+                                    topic = UiText.DynamicString("OSI Model"),
                                     durationMinutes = 45,
                                     isCompleted = false,
                                     color = StudyBlockColor.GREEN
@@ -105,24 +109,28 @@ class RoadmapViewModel @Inject constructor(
                     )
                 ),
                 RoadmapWeekUiModel(
-                    weekNumber = 2,
-                    dateRange = UiText.DynamicString("Mar 19 - Mar 25"),
+                    weekNumber = 3,
+                    dateRange = UiText.DynamicString("May 20 - May 26"),
                     days = listOf(
                         RoadmapDayUiModel(
-                            date = "2024-03-19",
-                            dayName = UiText.DynamicString(
-                                LocalDate.parse("2024-03-19", dateFormatter)
-                                    .dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
-                            ),
+                            date = "2024-05-20",
+                            dayName = UiText.DynamicString("Monday"),
                             blocks = listOf(
                                 StudyBlockUiModel(
                                     id = "4",
-                                    courseName = UiText.StringResource(R.string.roadmap_db),
-                                    topic = UiText.StringResource(R.string.roadmap_sql),
+                                    courseName = UiText.DynamicString("Operating Systems"),
+                                    topic = UiText.DynamicString("Memory Management"),
                                     durationMinutes = 120,
                                     isCompleted = false,
-                                    event = RoadmapEventUiModel(UiText.StringResource(R.string.roadmap_midterm), "Midterm"),
                                     color = StudyBlockColor.ORANGE
+                                ),
+                                StudyBlockUiModel(
+                                    id = "5",
+                                    courseName = UiText.DynamicString("Networks"),
+                                    topic = UiText.DynamicString("TCP/UDP"),
+                                    durationMinutes = 60,
+                                    isCompleted = false,
+                                    color = StudyBlockColor.GREEN
                                 )
                             )
                         )
@@ -133,7 +141,7 @@ class RoadmapViewModel @Inject constructor(
             fullRoadmapWeeks = mockWeeks
             _state.value = _state.value.copy(
                 isLoading = false,
-                roadmapStartDate = "2024-03-12",
+                roadmapStartDate = "2024-05-06",
                 weeks = mockWeeks
             )
         }
