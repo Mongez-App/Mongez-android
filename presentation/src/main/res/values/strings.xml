@@ -235,6 +235,9 @@
     <string name="hours">Hours</string>
     <string name="task_marked_completed">Task marked completed!</string>
     <string name="error_loading_dashboard">Failed to load dashboard data.</string>
+    <string name="no_tasks_for_today">No tasks for today</string>
+    <string name="dashboard_error_loading">Failed to load dashboard data.</string>
+    <string name="no_upcoming_deadlines">No upcoming deadlines</string>
     <string name="no_materials_empty_state">No materials available at the moment.</string>
 
 </resources>
