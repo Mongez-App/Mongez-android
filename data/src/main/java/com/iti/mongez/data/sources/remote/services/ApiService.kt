@@ -19,7 +19,6 @@ interface ApiService {
     @GET("users/me/profile")
     suspend fun getUserProfile(): ProfileResponseDto
 
-    @Headers("Cache-Control: no-cache, no-store, must-revalidate", "Pragma: no-cache")
     @GET("users/me/profile")
     suspend fun getFullUserProfile(@Query("_t") timestamp: Long = System.currentTimeMillis()): FullProfileDto
 
