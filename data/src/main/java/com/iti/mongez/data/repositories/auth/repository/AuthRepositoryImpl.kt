@@ -62,6 +62,8 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun logout() {
+        firebaseAuthDataSource.logout()
+        userDao.clearUser()
         tokenManager.clearToken()
     }
 }
