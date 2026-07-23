@@ -25,8 +25,6 @@ sealed interface CoursesIntent {
 }
 
 sealed interface CoursesEffect {
-    data class ShowSnackbar(
-        val message: String,
-        val type: AppSnackbarType = AppSnackbarType.Info
-    ) : CoursesEffect
+    data class ShowSnackbar(val message: String, val type: AppSnackbarType = AppSnackbarType.Info) : CoursesEffect
+    data class NavigateToUploadMaterial(val courseId: String) : CoursesEffect // NEW
 }

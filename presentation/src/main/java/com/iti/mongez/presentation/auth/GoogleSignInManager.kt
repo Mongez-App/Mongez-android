@@ -1,50 +1,57 @@
 package com.iti.mongez.presentation.auth
 
-import android.content.Context
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.iti.mongez.presentation.BuildConfig
 
 /**
- * Encapsulates all Credential Manager / Google Identity setup logic.
+ * Encapsulates legacy Google Sign-In setup logic.
  *
- * This is a plain class — no Hilt injection — because [CredentialManager.getCredential]
- * requires an Activity context to anchor its bottom sheet. Activity context is not
- * injectable into ViewModels (ViewModelComponent ≠ child of ActivityComponent).
- *
- * Instantiate with [remember] in a Composable using [LocalContext.current], then
- * call [getGoogleIdToken] from a coroutine (e.g., inside a LaunchedEffect) and
- * forward the result to the ViewModel as an intent. The ViewModel drives *when*
- * sign-in happens (via a side effect); this class owns *how*.
+ * This provides a Composable that returns a launcher function `() -> Unit`.
+ * When called, it launches the Google Sign-In intent. This is the legacy approach
+ * which works reliably on empty emulators by automatically launching the "Add Account" flow.
  */
-class GoogleSignInManager(private val context: Context) {
-
-    /**
-     * Launches the Google account picker and returns the raw ID token on success.
-     * Throws on any failure (user cancelled, misconfiguration, network error, etc.)
-     * — callers should wrap with [runCatching] or try/catch.
-     */
-    suspend fun getGoogleIdToken(): String {
-        val credentialManager = CredentialManager.create(context)
-
-        // GetSignInWithGoogleOption is the specific option for explicit button taps.
-        // Unlike GetGoogleIdOption (which is for "One Tap" bottom sheets), this one
-        // will gracefully let the user add a Google account if none are on the device.
-        val googleIdOption = GetSignInWithGoogleOption.Builder(BuildConfig.GOOGLE_WEB_CLIENT_ID).build()
-
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
-        val result = credentialManager.getCredential(context, request)
-        val credential = result.credential
-
-        check(credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-            "Unexpected credential type: ${credential.type}"
+@Composable
+fun rememberGoogleSignInLauncher(
+    onResult: (Result<String>) -> Unit
+): () -> Unit {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                val token = account.idToken
+                if (token != null) {
+                    onResult(Result.success(token))
+                } else {
+                    onResult(Result.failure(Exception("Google Sign-In failed: No ID Token returned")))
+                }
+            } catch (e: Exception) {
+                onResult(Result.failure(e))
+            }
+        } else {
+            onResult(Result.failure(Exception("Google Sign-In cancelled or failed")))
         }
+    }
 
-        return GoogleIdTokenCredential.createFrom(credential.data).idToken
+    return remember(launcher, context) {
+        {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                .requestEmail()
+                .build()
+            val client = GoogleSignIn.getClient(context, gso)
+            launcher.launch(client.signInIntent)
+        }
     }
 }

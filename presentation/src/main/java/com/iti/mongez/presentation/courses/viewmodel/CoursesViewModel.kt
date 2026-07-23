@@ -104,18 +104,16 @@ class CoursesViewModel @Inject constructor(
 
             when (result) {
                 is Result.Success<*> -> {
-                    loadCourses() // Refresh list
-                    @Suppress("UNCHECKED_CAST")
+                    loadCourses()
                     val creationResult = result.data as CourseCreationResult
 
                     creationResult.alertMessage?.let { alert ->
-                        // Specify Success type
-                        _effect.emit(
-                            CoursesEffect.ShowSnackbar(
-                                message = alert,
-                                type = AppSnackbarType.Success
-                            )
-                        )
+                        _effect.emit(CoursesEffect.ShowSnackbar(message = alert, type = AppSnackbarType.Success))
+                    }
+
+                    // TRIGGER NAVIGATION IF HAS MATERIALS
+                    if (intent.hasMaterials) {
+                        _effect.emit(CoursesEffect.NavigateToUploadMaterial(courseId = creationResult.course.id))
                     }
                 }
                 is Result.Failure -> {

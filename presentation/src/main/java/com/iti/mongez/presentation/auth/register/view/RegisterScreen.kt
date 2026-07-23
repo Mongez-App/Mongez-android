@@ -44,7 +44,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.iti.mongez.designsystem.R as DesignSystemR
 import com.iti.mongez.presentation.R
-import com.iti.mongez.presentation.auth.GoogleSignInManager
+import com.iti.mongez.presentation.auth.rememberGoogleSignInLauncher
 import com.iti.mongez.presentation.auth.register.contract.RegisterIntent
 import com.iti.mongez.presentation.auth.register.uiState.RegisterEffect
 import com.iti.mongez.presentation.auth.register.uiState.RegisterUiState
@@ -63,7 +63,23 @@ fun RegisterScreen(
     var topErrorMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
-    val googleSignInManager = remember { GoogleSignInManager(context) }
+    
+    val launchGoogleSignIn = rememberGoogleSignInLauncher(
+        onResult = { result ->
+            result.onSuccess { token ->
+                viewModel.onIntent(RegisterIntent.OnGoogleIdTokenReceived(token))
+            }.onFailure { e ->
+                topErrorMessage = e.message ?: "Google Sign-Up failed"
+            }
+        }
+    )
+
+    LaunchedEffect(topErrorMessage) {
+        if (topErrorMessage != null) {
+            delay(3000)
+            topErrorMessage = null
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
@@ -72,19 +88,9 @@ fun RegisterScreen(
                 RegisterEffect.NavigateToLogin -> onNavigateToLogin()
                 is RegisterEffect.ShowError -> {
                     topErrorMessage = effect.message
-                    delay(3000)
-                    topErrorMessage = null
                 }
                 RegisterEffect.LaunchGoogleSignUp -> {
-                    runCatching { googleSignInManager.getGoogleIdToken() }
-                        .onSuccess { token ->
-                            viewModel.onIntent(RegisterIntent.OnGoogleIdTokenReceived(token))
-                        }
-                        .onFailure { e ->
-                            topErrorMessage = e.message ?: "Google Sign-Up failed"
-                            delay(3000)
-                            topErrorMessage = null
-                        }
+                    launchGoogleSignIn()
                 }
             }
         }

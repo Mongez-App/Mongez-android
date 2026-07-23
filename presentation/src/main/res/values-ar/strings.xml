@@ -232,4 +232,5 @@
     <string name="no_tasks_for_today">لا توجد مهام لليوم</string>
     <string name="dashboard_error_loading">فشل تحميل بيانات لوحة التحكم.</string>
     <string name="no_upcoming_deadlines">لا توجد مواعيد نهائية قادمة</string>
+    <string name="no_materials_empty_state">لا توجد مواد متاحة في الوقت الحالي.</string>
 </resources>
