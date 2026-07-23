@@ -200,6 +200,8 @@
     <string name="profile_logout">Logout</string>
     <string name="profile_studying_preferences">Studying Preferences</string>
     <string name="profile_edit">Edit</string>
+    <string name="edit_preferences_title">Edit Preferences</string>
+    <string name="save_button">Save</string>
 
     <!-- Dashboard -->
     <string name="dashboard_greeting">Hi, %1$s</string>

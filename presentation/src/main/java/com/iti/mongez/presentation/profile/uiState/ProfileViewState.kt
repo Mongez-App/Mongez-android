@@ -13,5 +13,8 @@ data class ProfileViewState(
     val isDarkModeEnabled: Boolean = false,
     val language: Language = Language.EN,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isEditPreferencesSheetVisible: Boolean = false,
+    val selectedStudyHours: Int = 8,
+    val selectedDays: Set<String> = emptySet()
 )

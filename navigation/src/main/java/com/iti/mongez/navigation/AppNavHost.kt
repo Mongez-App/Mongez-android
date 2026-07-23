@@ -154,9 +154,6 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                         backStack.clear()
                         backStack.add(AppRoute.Login)
                     },
-                    onNavigateToPreferences = {
-                        backStack.add(AppRoute.Preferences)
-                    },
                     onShowSnackBar = { /* Handle */ }
                 )
             }

@@ -154,7 +154,6 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 viewModel = hiltViewModel(),
                 onNavigateToLogin = onNavigateToLogin,
-                onNavigateToPreferences = onNavigateToPreferences,
                 onShowSnackBar = onShowSnackBar
             )
         }

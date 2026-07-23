@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.iti.mongez.designsystem.components.card.AppCard
 import com.iti.mongez.designsystem.components.divider.AppDivider
+import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
@@ -44,6 +45,7 @@ import com.iti.mongez.presentation.profile.viewmodel.ProfileViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.iti.mongez.domain.settings.model.Language
+import com.iti.mongez.presentation.profile.components.EditPreferencesSheetContent
 import com.iti.mongez.presentation.profile.components.ProfileHeader
 import com.iti.mongez.presentation.profile.components.SettingItem
 import com.iti.mongez.presentation.profile.components.StatCard
@@ -53,7 +55,6 @@ fun ProfileScreen(
     innerPadding: PaddingValues,
     viewModel: ProfileViewModel,
     onNavigateToLogin: () -> Unit,
-    onNavigateToPreferences: () -> Unit,
     onShowSnackBar: (String) -> Unit
 ) {
     val viewState by viewModel.viewState.collectAsState()
@@ -66,7 +67,6 @@ fun ProfileScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ProfileEffect.NavigateToLogin -> onNavigateToLogin()
-                is ProfileEffect.NavigateToPreferences -> onNavigateToPreferences()
                 is ProfileEffect.ShowError -> onShowSnackBar(effect.message)
             }
         }
@@ -79,6 +79,7 @@ fun ProfileScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreenContent(
     innerPadding: PaddingValues,
@@ -237,7 +238,7 @@ private fun ProfileScreenContent(
             iconContainerColor = Theme.colorScheme.state.warningContainer,
             iconTint = Theme.colorScheme.state.warning,
             title = stringResource(R.string.profile_studying_preferences),
-            onClick = { onIntent(ProfileIntent.EditPreferences) },
+            onClick = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(true)) },
             action = {
                 Text(
                     text = stringResource(R.string.profile_edit),
@@ -249,17 +250,33 @@ private fun ProfileScreenContent(
 
         AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
 
-            SettingItem(
-                icon = Icons.AutoMirrored.Rounded.Logout,
-                iconContainerColor = Theme.colorScheme.state.errorContainer,
-                iconTint = Theme.colorScheme.state.error,
-                title = stringResource(R.string.profile_logout),
-                titleColor = Theme.colorScheme.state.error,
-                onClick = { onIntent(ProfileIntent.Logout) }
+        SettingItem(
+            icon = Icons.AutoMirrored.Rounded.Logout,
+            iconContainerColor = Theme.colorScheme.state.errorContainer,
+            iconTint = Theme.colorScheme.state.error,
+            title = stringResource(R.string.profile_logout),
+            titleColor = Theme.colorScheme.state.error,
+            onClick = { onIntent(ProfileIntent.Logout) }
+        )
+    }
+
+    if (viewState.isEditPreferencesSheetVisible) {
+        AppBottomSheet(
+            onDismiss = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(false)) }
+        ) {
+            EditPreferencesSheetContent(
+                selectedHours = viewState.selectedStudyHours,
+                selectedDays = viewState.selectedDays,
+                onHoursChanged = { onIntent(ProfileIntent.UpdateStudyHours(it)) },
+                onDayToggle = { onIntent(ProfileIntent.ToggleDay(it)) },
+                onSave = { onIntent(ProfileIntent.SavePreferences) },
+                onCancel = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(false)) },
+                isLoading = viewState.isLoading
             )
         }
+    }
 
-        if (viewState.isLoading) {
+    if (viewState.isLoading && !viewState.isEditPreferencesSheetVisible) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
                 color = Theme.colorScheme.brand.primary
