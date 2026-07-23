@@ -229,4 +229,5 @@
     <string name="hours">ساعات</string>
     <string name="task_marked_completed">تم وضع علامة على المهمة كمكتملة!</string>
     <string name="error_loading_dashboard">فشل تحميل بيانات لوحة التحكم.</string>
+    <string name="no_materials_empty_state">لا توجد مواد متاحة في الوقت الحالي.</string>
 </resources>

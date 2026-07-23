@@ -1,7 +1,6 @@
 package com.iti.mongez.data.di
 
 import com.iti.mongez.data.repositories.courses.CoursesRepositoryImpl
-import com.iti.mongez.data.repositories.courses.FakeCoursesRepositoryImpl
 import com.iti.mongez.data.sources.remote.services.CoursesApiService
 import com.iti.mongez.domain.courses.repository.CoursesRepository
 import dagger.Binds
@@ -30,6 +29,6 @@ abstract class CoursesRepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCoursesRepository(
-        coursesRepositoryImpl: FakeCoursesRepositoryImpl
+        coursesRepositoryImpl: CoursesRepositoryImpl
     ): CoursesRepository
 }

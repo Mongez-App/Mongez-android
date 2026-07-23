@@ -30,6 +30,10 @@ fun CoursesScreen(
                     topSnackbarMessage = effect.message
                     topSnackbarType = effect.type
                 }
+                is CoursesEffect.NavigateToUploadMaterial -> {
+                    // Call your navigation controller here to open the Material Upload Screen
+                    // e.g., navController.navigate("upload_materials/${effect.courseId}")
+                }
             }
         }
     }
