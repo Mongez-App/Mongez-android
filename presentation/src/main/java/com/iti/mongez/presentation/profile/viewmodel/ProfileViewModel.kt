@@ -9,6 +9,7 @@ import com.iti.mongez.domain.settings.model.AppSettings
 import com.iti.mongez.domain.settings.model.Language
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import com.iti.mongez.domain.settings.usecase.UpdateAppSettingsUseCase
+import com.iti.mongez.domain.auth.usecase.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getAppSettingsUseCase: GetAppSettingsUseCase,
-    private val updateAppSettingsUseCase: UpdateAppSettingsUseCase
+    private val updateAppSettingsUseCase: UpdateAppSettingsUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(ProfileViewState())
@@ -99,6 +101,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun logout() {
         viewModelScope.launch {
+            logoutUseCase()
             _effect.emit(ProfileEffect.NavigateToLogin)
         }
     }

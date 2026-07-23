@@ -44,14 +44,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.iti.mongez.designsystem.R as DesignSystemR
 import com.iti.mongez.presentation.R
-import com.iti.mongez.presentation.auth.GoogleSignInManager
+import com.iti.mongez.presentation.auth.rememberGoogleSignInLauncher
 import com.iti.mongez.presentation.auth.login.contract.LoginIntent
 import com.iti.mongez.presentation.auth.login.uiState.LoginEffect
 import com.iti.mongez.presentation.auth.login.uiState.LoginUiState
 import com.iti.mongez.presentation.auth.login.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun LoginScreen(
@@ -64,9 +63,25 @@ fun LoginScreen(
     var topErrorMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
-    // GoogleSignInManager needs Activity context (for the CredentialManager bottom sheet).
-    // remember{} ties its lifetime to this Composable; LocalContext.current is the Activity.
-    val googleSignInManager = remember { GoogleSignInManager(context) }
+    
+    val launchGoogleSignIn = rememberGoogleSignInLauncher(
+        onResult = { result ->
+            result.onSuccess { token ->
+                viewModel.onIntent(LoginIntent.OnGoogleIdTokenReceived(token))
+            }.onFailure { e ->
+                topErrorMessage = e.message ?: "Google Sign-In failed"
+                // The LaunchedEffect inside the UI manages delay elsewhere if we want, 
+                // but for now we can rely on a LaunchedEffect tied to the error message.
+            }
+        }
+    )
+
+    LaunchedEffect(topErrorMessage) {
+        if (topErrorMessage != null) {
+            delay(3000)
+            topErrorMessage = null
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
@@ -76,21 +91,9 @@ fun LoginScreen(
                 LoginEffect.NavigateToForgotPassword -> onShowSnackbar("Forgot password clicked")
                 is LoginEffect.ShowError -> {
                     topErrorMessage = effect.message
-                    delay(3000.milliseconds)
-                    topErrorMessage = null
                 }
                 LoginEffect.LaunchGoogleSignIn -> {
-                    // collectLatest is already a coroutine — no extra launch needed.
-                    // All boilerplate (request building, token extraction) is in GoogleSignInManager.
-                    runCatching { googleSignInManager.getGoogleIdToken() }
-                        .onSuccess { token ->
-                            viewModel.onIntent(LoginIntent.OnGoogleIdTokenReceived(token))
-                        }
-                        .onFailure { e ->
-                            topErrorMessage = e.message ?: "Google Sign-In failed"
-                            delay(3000.milliseconds)
-                            topErrorMessage = null
-                        }
+                    launchGoogleSignIn()
                 }
             }
         }
