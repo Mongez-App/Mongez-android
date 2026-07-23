@@ -122,7 +122,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.Dashboard -> NavEntry(key) {
                 MainScreen(
-                    showDefaultAlert = (key).showDefaultAlert,
+                    showDefaultAlert = key.showDefaultAlert,
                     onNavigateToPreferences = {
                         backStack.add(AppRoute.Preferences)
                     },

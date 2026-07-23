@@ -2,6 +2,7 @@ package com.iti.mongez.data.sources.remote.services
 
 import com.iti.mongez.data.dtos.DashboardResponseDto
 import com.iti.mongez.data.dtos.ProfileResponseDto
+import com.iti.mongez.data.dtos.FullProfileDto
 import com.iti.mongez.data.dtos.AuthResponseDto
 import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
@@ -17,6 +18,10 @@ interface ApiService {
 
     @GET("users/me/profile")
     suspend fun getUserProfile(): ProfileResponseDto
+
+    @Headers("Cache-Control: no-cache, no-store, must-revalidate", "Pragma: no-cache")
+    @GET("users/me/profile")
+    suspend fun getFullUserProfile(@Query("_t") timestamp: Long = System.currentTimeMillis()): FullProfileDto
 
     @GET("home/dashboard")
     suspend fun getHomeDashboard(): DashboardResponseDto

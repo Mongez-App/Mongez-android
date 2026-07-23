@@ -66,4 +66,8 @@ class AuthRepositoryImpl @Inject constructor(
         userDao.clearUser()
         tokenManager.clearToken()
     }
+
+    override suspend fun getCurrentUser(): User? {
+        return userDao.getUser()?.toDomain()
+    }
 }

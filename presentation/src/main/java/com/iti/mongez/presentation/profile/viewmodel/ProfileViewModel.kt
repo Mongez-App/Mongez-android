@@ -10,6 +10,8 @@ import com.iti.mongez.domain.settings.model.Language
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import com.iti.mongez.domain.settings.usecase.UpdateAppSettingsUseCase
 import com.iti.mongez.domain.auth.usecase.LogoutUseCase
+import com.iti.mongez.domain.profile.usecase.GetUserProfileUseCase
+import com.iti.mongez.domain.core.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +28,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getAppSettingsUseCase: GetAppSettingsUseCase,
     private val updateAppSettingsUseCase: UpdateAppSettingsUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val getUserProfileUseCase: GetUserProfileUseCase
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(ProfileViewState())
@@ -65,14 +68,35 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun loadProfile() {
-        _viewState.update {
-            it.copy(
-                name = "Abdullah Mohamed",
-                email = "abdullah@example.com",
-                studyingHours = 145,
-                completedTasks = 382,
-                streakDays = 14
-            )
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val result = getUserProfileUseCase()) {
+                is Result.Success -> {
+                    val profile = result.data
+                    _viewState.update {
+                        it.copy(
+                            isLoading = false,
+                            name = profile.name ?: "",
+                            email = profile.email,
+                            profilePictureUrl = profile.avatarUrl,
+                            studyingHours = profile.totalStudyHours,
+                            completedTasks = profile.completedTasksCount,
+                            streakDays = profile.currentStreakDays
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _viewState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.exception.message ?: "Failed to load profile"
+                        )
+                    }
+                }
+                is Result.Loading -> {
+                    _viewState.update { it.copy(isLoading = true) }
+                }
+            }
         }
     }
 
@@ -102,6 +126,7 @@ class ProfileViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             logoutUseCase()
+            _viewState.update { ProfileViewState() }
             _effect.emit(ProfileEffect.NavigateToLogin)
         }
     }

@@ -59,6 +59,10 @@ fun ProfileScreen(
     val viewState by viewModel.viewState.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.processIntent(ProfileIntent.LoadProfile)
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ProfileEffect.NavigateToLogin -> onNavigateToLogin()
@@ -81,20 +85,24 @@ private fun ProfileScreenContent(
     viewState: ProfileViewState,
     onIntent: (ProfileIntent) -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
-            .verticalScroll(rememberScrollState())
-            .padding(Theme.spacing.lg),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Profile Header
-        ProfileHeader(
-            name = viewState.name,
-            email = viewState.email,
-            profilePictureUrl = viewState.profilePictureUrl
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(Theme.spacing.lg),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Profile Header
+            ProfileHeader(
+                name = viewState.name.ifEmpty { viewState.email.substringBefore("@") },
+                email = viewState.email,
+                profilePictureUrl = viewState.profilePictureUrl
+            )
 
         Spacer(modifier = Modifier.height(Theme.spacing.xxl))
 
@@ -241,14 +249,22 @@ private fun ProfileScreenContent(
 
         AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
 
-        SettingItem(
-            icon = Icons.AutoMirrored.Rounded.Logout,
-            iconContainerColor = Theme.colorScheme.state.errorContainer,
-            iconTint = Theme.colorScheme.state.error,
-            title = stringResource(R.string.profile_logout),
-            titleColor = Theme.colorScheme.state.error,
-            onClick = { onIntent(ProfileIntent.Logout) }
-        )
+            SettingItem(
+                icon = Icons.AutoMirrored.Rounded.Logout,
+                iconContainerColor = Theme.colorScheme.state.errorContainer,
+                iconTint = Theme.colorScheme.state.error,
+                title = stringResource(R.string.profile_logout),
+                titleColor = Theme.colorScheme.state.error,
+                onClick = { onIntent(ProfileIntent.Logout) }
+            )
+        }
+
+        if (viewState.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = Theme.colorScheme.brand.primary
+            )
+        }
     }
 }
 

@@ -12,5 +12,6 @@ data class ProfileViewState(
     val isCalendarSyncEnabled: Boolean = false,
     val isDarkModeEnabled: Boolean = false,
     val language: Language = Language.EN,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )
