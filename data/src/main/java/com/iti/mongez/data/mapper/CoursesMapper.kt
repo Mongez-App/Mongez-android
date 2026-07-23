@@ -1,8 +1,6 @@
 package com.iti.mongez.data.mapper
 
-import com.iti.mongez.data.dtos.CourseCreationResponseDto
-import com.iti.mongez.data.dtos.CourseDto
-import com.iti.mongez.data.dtos.CourseMaterialDto
+import com.iti.mongez.data.dtos.coursesdtos.*
 import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.domain.courses.model.CourseCreationResult
 import com.iti.mongez.domain.courses.model.CourseMaterial

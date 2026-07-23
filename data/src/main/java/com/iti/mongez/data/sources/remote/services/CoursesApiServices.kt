@@ -1,13 +1,6 @@
 package com.iti.mongez.data.sources.remote.services
 
-import com.iti.mongez.data.dtos.ActionStatusResponseDto
-import com.iti.mongez.data.dtos.CourseCreationResponseDto
-import com.iti.mongez.data.dtos.CourseDto
-import com.iti.mongez.data.dtos.CourseMaterialDto
-import com.iti.mongez.data.dtos.CreateCourseRequestDto
-import com.iti.mongez.data.dtos.MaterialUploadRequestDto
-import com.iti.mongez.data.dtos.MaterialUploadResponseDto
-import com.iti.mongez.data.dtos.UpdateCourseRequestDto
+import com.iti.mongez.data.dtos.coursesdtos.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body

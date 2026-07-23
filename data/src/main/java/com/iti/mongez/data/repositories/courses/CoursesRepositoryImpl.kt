@@ -1,8 +1,6 @@
 package com.iti.mongez.data.repositories.courses
 
-import com.iti.mongez.data.dtos.CreateCourseRequestDto
-import com.iti.mongez.data.dtos.MaterialUploadRequestDto
-import com.iti.mongez.data.dtos.UpdateCourseRequestDto
+import com.iti.mongez.data.dtos.coursesdtos.*
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.data.network.safeApi
