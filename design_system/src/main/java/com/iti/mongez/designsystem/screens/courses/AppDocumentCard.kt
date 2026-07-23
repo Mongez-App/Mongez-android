@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +44,7 @@ fun AppDocumentCard(
     fileExtension: String = "PDF",
     badgeBackgroundColor: Color = Theme.colorScheme.state.error,
     onClick: (() -> Unit)? = null,
-    onMoreClick: (() -> Unit)? = null,
+    onDeleteClick: (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(16.dp)
 
@@ -124,14 +125,14 @@ fun AppDocumentCard(
         }
 
         // 3. More Actions Button (32dp x 32dp)
-        if (onMoreClick != null) {
+        if (onDeleteClick != null) {
             IconButton(
-                onClick = onMoreClick,
+                onClick = onDeleteClick,
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.MoreHoriz,
-                    contentDescription = "More options",
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete document",
                     tint = Theme.colorScheme.text.primary
                 )
             }
@@ -157,7 +158,7 @@ private fun AppDocumentCardLightPreview() {
                 pageCount = 28,
                 fileSize = "2.4 MB",
                 onClick = {},
-                onMoreClick = {}
+                onDeleteClick = {}
             )
         }
     }
@@ -177,7 +178,7 @@ private fun AppDocumentCardDarkPreview() {
                 pageCount = 45,
                 fileSize = "3.1 MB",
                 onClick = {},
-                onMoreClick = {}
+                onDeleteClick = {}
             )
         }
     }

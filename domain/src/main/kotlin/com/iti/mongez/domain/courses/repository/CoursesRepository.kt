@@ -20,6 +20,12 @@ interface CoursesRepository {
     suspend fun deleteCourse(courseId: String): Result<CourseActionResponse<Unit>>
     
     suspend fun getCourseMaterials(courseId: String): Result<List<CourseMaterial>>
-    suspend fun uploadCourseMaterial(courseId: String, fileName: String, contentType: String, fileSizeBytes: Long): Result<CourseActionResponse<String>>
-    suspend fun deleteCourseMaterial(courseId: String, materialId: String): Result<CourseActionResponse<Unit>>
+    suspend fun uploadCourseMaterial(
+        courseId: String,
+        fileName: String,
+        contentType: String,
+        fileSizeBytes: Long,
+        pageCount: Int,
+        fileBytes: ByteArray // We now pass the physical file to the repository
+    ): Result<CourseActionResponse<Unit>>    suspend fun deleteCourseMaterial(courseId: String, materialId: String): Result<CourseActionResponse<Unit>>
 }

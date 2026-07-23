@@ -162,6 +162,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.CourseDetails -> NavEntry(key) {
                 CourseDetailsScreen(
+                    courseId = key.courseId, // ADD THIS LINE: Pass the ID from the sealed class[cite: 38, 39]
                     onNavigateBack = {
                         backStack.remove(key)
                     },

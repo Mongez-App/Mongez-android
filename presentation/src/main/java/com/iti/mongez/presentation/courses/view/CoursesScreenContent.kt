@@ -80,17 +80,24 @@ fun CoursesScreenContent(
                 )
 
                 if (state.isLoading && state.allCourses.isEmpty()) {
-
-                    // Fix 1: Center the circular indicator vertically and horizontally
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        modifier = Modifier.fillMaxWidth().weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
                     }
-
+                } else if (!state.isLoading && state.filteredCourses.isEmpty()) {
+                    // NEW: Empty State Handling
+                    Box(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (state.searchQuery.isNotEmpty()) "No courses match your search." else "No courses available. Add one below!",
+                            style = Theme.typography.body.large,
+                            color = Theme.colorScheme.text.secondary
+                        )
+                    }
                 } else {
 
                     LazyColumn(
