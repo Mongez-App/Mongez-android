@@ -52,6 +52,7 @@ class NavViewModel @Inject constructor(
             _startDestination.value = when (destination) {
                 StartDestination.ONBOARDING -> AppRoute.Onboarding
                 StartDestination.LOGIN -> AppRoute.Login
+                StartDestination.PREFERENCES -> AppRoute.Preferences
                 StartDestination.DASHBOARD -> AppRoute.Dashboard()
             }
         }
@@ -88,9 +89,13 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.Login -> NavEntry(AppRoute.Login) {
                 LoginScreen(
-                    onNavigateToPreferences = {
+                    onNavigateToHome = { isPreferencesSet ->
                         backStack.clear()
-                        backStack.add(AppRoute.Preferences)
+                        if (isPreferencesSet) {
+                            backStack.add(AppRoute.Dashboard())
+                        } else {
+                            backStack.add(AppRoute.Preferences)
+                        }
                     },
                     onNavigateToSignUp = {
                         backStack.add(AppRoute.Register)
@@ -100,9 +105,13 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             }
             is AppRoute.Register -> NavEntry(AppRoute.Register) {
                 RegisterScreen(
-                    onNavigateToHome = {
+                    onNavigateToHome = { isPreferencesSet ->
                         backStack.clear()
-                        backStack.add(AppRoute.Preferences)
+                        if (isPreferencesSet) {
+                            backStack.add(AppRoute.Dashboard())
+                        } else {
+                            backStack.add(AppRoute.Preferences)
+                        }
                     },
                     onNavigateToLogin = {
                         backStack.remove(AppRoute.Register)

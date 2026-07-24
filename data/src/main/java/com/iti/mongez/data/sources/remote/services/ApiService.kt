@@ -37,6 +37,9 @@ interface ApiService {
     @GET("home/dashboard")
     suspend fun getHomeDashboard(): DashboardResponseDto
 
+    @GET("users/me/preferences")
+    suspend fun getPreferences(): UserPreferencesDto
+
     @PUT("users/me/preferences")
     suspend fun updatePreferences(@Body preferences: UserPreferencesDto): Unit
 

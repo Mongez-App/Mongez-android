@@ -7,6 +7,7 @@ import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.usecase.LoginUseCase
 import com.iti.mongez.domain.auth.usecase.LoginWithGoogleUseCase
 import com.iti.mongez.domain.core.exceptions.AppException
+import com.iti.mongez.domain.preferences.usecase.CheckPreferencesSetUseCase
 import com.iti.mongez.presentation.auth.login.contract.LoginIntent
 import com.iti.mongez.presentation.auth.login.uiState.LoginEffect
 import com.iti.mongez.presentation.auth.login.uiState.LoginUiState
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val checkPreferencesSetUseCase: CheckPreferencesSetUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -112,8 +114,11 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun navigateToHome(user: User?) {
-        _state.value = LoginUiState()
-        emitEffect(LoginEffect.NavigateToHome(user))
+        viewModelScope.launch {
+            val isPreferencesSet = checkPreferencesSetUseCase()
+            _state.value = LoginUiState()
+            emitEffect(LoginEffect.NavigateToHome(user, isPreferencesSet))
+        }
     }
 
     private fun emitEffect(effect: LoginEffect) {

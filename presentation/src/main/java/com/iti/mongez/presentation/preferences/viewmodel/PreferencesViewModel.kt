@@ -21,11 +21,21 @@ class PreferencesViewModel @Inject constructor(
     private val savePreferencesUseCase: SavePreferencesUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PreferencesUiState())
+    private val _uiState = MutableStateFlow(
+        PreferencesUiState(
+            studyHours = DEFAULT_STUDY_HOURS,
+            selectedDays = DEFAULT_AVAILABLE_DAYS.toSet()
+        )
+    )
     val uiState = _uiState.asStateFlow()
 
     private val _effect = MutableSharedFlow<PreferencesEffect>()
     val effect = _effect.asSharedFlow()
+
+    companion object {
+        private const val DEFAULT_STUDY_HOURS = 8
+        private val DEFAULT_AVAILABLE_DAYS = listOf("Sun", "Mon", "Tue", "Wed", "Thu")
+    }
 
     fun processIntent(intent: PreferencesIntent) {
         when (intent) {
@@ -100,9 +110,7 @@ class PreferencesViewModel @Inject constructor(
     private fun saveDefaultPreferencesAndComplete() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val defaultHours = 8
-            val defaultDays = listOf("Sun", "Mon", "Tue", "Wed", "Thu")
-            savePreferencesUseCase(defaultHours, defaultDays)
+            savePreferencesUseCase(DEFAULT_STUDY_HOURS, DEFAULT_AVAILABLE_DAYS)
             _uiState.update { it.copy(isLoading = false, isSetupComplete = true) }
             _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = true))
         }

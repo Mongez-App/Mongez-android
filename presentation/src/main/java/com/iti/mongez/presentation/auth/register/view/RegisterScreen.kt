@@ -55,7 +55,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel<RegisterViewModel>(),
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: (Boolean) -> Unit,
     onNavigateToLogin: () -> Unit,
     onShowSnackbar: (String) -> Unit
 ) {
@@ -84,7 +84,7 @@ fun RegisterScreen(
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is RegisterEffect.NavigateToHome -> onNavigateToHome()
+                is RegisterEffect.NavigateToHome -> onNavigateToHome(effect.isPreferencesSet)
                 RegisterEffect.NavigateToLogin -> onNavigateToLogin()
                 is RegisterEffect.ShowError -> {
                     topErrorMessage = effect.message
