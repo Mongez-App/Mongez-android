@@ -14,6 +14,11 @@ import com.iti.mongez.domain.profile.usecase.GetUserProfileUseCase
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
+import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
+import com.iti.mongez.domain.calendar.usecase.ConnectCalendarUseCase
+import com.iti.mongez.domain.calendar.usecase.DisconnectCalendarUseCase
+import com.iti.mongez.domain.calendar.usecase.GetCalendarStatusUseCase
+import com.iti.mongez.domain.profile.usecase.UploadProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +38,12 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val getPreferencesUseCase: GetPreferencesUseCase,
-    private val savePreferencesUseCase: SavePreferencesUseCase
+    private val savePreferencesUseCase: SavePreferencesUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val connectCalendarUseCase: ConnectCalendarUseCase,
+    private val disconnectCalendarUseCase: DisconnectCalendarUseCase,
+    private val getCalendarStatusUseCase: GetCalendarStatusUseCase,
+    private val uploadProfileImageUseCase: UploadProfileImageUseCase
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(ProfileViewState())
@@ -88,6 +98,31 @@ class ProfileViewModel @Inject constructor(
                 }
             }
             is ProfileIntent.SavePreferences -> savePreferences()
+            is ProfileIntent.ToggleEditProfileDialog -> {
+                _viewState.update { 
+                    it.copy(
+                        isEditProfileDialogVisible = intent.visible,
+                        editingName = it.name,
+                        editingAvatarUri = null // Reset local selection
+                    )
+                }
+            }
+            is ProfileIntent.UpdateEditingName -> {
+                _viewState.update { it.copy(editingName = intent.name) }
+            }
+            is ProfileIntent.OnImagePicked -> {
+                _viewState.update { 
+                    it.copy(
+                        editingAvatarUri = intent.uri, 
+                        editingAvatarBytes = intent.bytes,
+                        isImageSourcePickerVisible = false 
+                    ) 
+                }
+            }
+            is ProfileIntent.ToggleImageSourcePicker -> {
+                _viewState.update { it.copy(isImageSourcePickerVisible = intent.visible) }
+            }
+            ProfileIntent.SubmitProfileUpdate -> submitProfileUpdate()
         }
     }
 
@@ -142,38 +177,131 @@ class ProfileViewModel @Inject constructor(
     private fun loadProfile() {
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true, errorMessage = null) }
-            when (val result = getUserProfileUseCase()) {
+            
+            // Load Profile and Calendar Status concurrently
+            val profileJob = launch {
+                when (val result = getUserProfileUseCase()) {
+                    is Result.Success -> {
+                        val profile = result.data
+                        android.util.Log.d("ProfileViewModel", "Load Success. Server Name: ${profile.name}, Server Avatar: ${profile.avatarUrl}")
+                        _viewState.update {
+                            it.copy(
+                                name = profile.name?.takeIf { n -> n.isNotBlank() && n != "null" } ?: "",
+                                email = profile.email,
+                                profilePictureUrl = profile.avatarUrl?.takeIf { a -> a.isNotBlank() && a != "null" },
+                                studyingHours = profile.totalStudyHours,
+                                completedTasks = profile.completedTasksCount,
+                                streakDays = profile.currentStreakDays
+                            )
+                        }
+                    }
+                    is Result.Failure -> {
+                        _viewState.update {
+                            it.copy(errorMessage = result.exception.message ?: "Failed to load profile")
+                        }
+                    }
+                    is Result.Loading -> {}
+                }
+            }
+
+            val calendarJob = launch {
+                when (val result = getCalendarStatusUseCase()) {
+                    is Result.Success -> {
+                        _viewState.update {
+                            it.copy(
+                                isCalendarSyncEnabled = result.data.isConnected,
+                                calendarEmail = result.data.email
+                            )
+                        }
+                    }
+                    is Result.Failure -> {
+                        // We don't necessarily want to block the whole UI if just calendar status fails
+                        android.util.Log.e("ProfileViewModel", "Failed to load calendar status", result.exception)
+                    }
+                    is Result.Loading -> {}
+                }
+            }
+
+            profileJob.join()
+            calendarJob.join()
+            _viewState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    private fun submitProfileUpdate() {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true) }
+            val state = _viewState.value
+
+            var finalAvatarUrl = state.profilePictureUrl
+
+            // TODO: Implement Firebase Storage upload here in the future
+            // If the user picked a new image, we would upload state.editingAvatarBytes
+            // to Firebase Storage, get the URL, and assign it to finalAvatarUrl.
+
+            // For now, we only send the JSON update to the deployed backend
+            val result = updateProfileUseCase(
+                name = state.editingName,
+                avatarUrl = finalAvatarUrl
+            )
+
+            when (result) {
                 is Result.Success -> {
-                    val profile = result.data
                     _viewState.update {
                         it.copy(
                             isLoading = false,
-                            name = profile.name ?: "",
-                            email = profile.email,
-                            profilePictureUrl = profile.avatarUrl,
-                            studyingHours = profile.totalStudyHours,
-                            completedTasks = profile.completedTasksCount,
-                            streakDays = profile.currentStreakDays
+                            isEditProfileDialogVisible = false,
+                            // Keep the local URI visible in the UI so it looks like it worked
+                            profilePictureUrl = state.editingAvatarUri?.toString() ?: result.data.avatarUrl,
+                            editingAvatarUri = null,
+                            editingAvatarBytes = null,
+                            name = result.data.name?.takeIf { n -> n.isNotBlank() && n != "null" } ?: it.name
                         )
                     }
                 }
                 is Result.Failure -> {
-                    _viewState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = result.exception.message ?: "Failed to load profile"
-                        )
-                    }
+                    _viewState.update { it.copy(isLoading = false) }
+                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Update failed"))
                 }
-                is Result.Loading -> {
-                    _viewState.update { it.copy(isLoading = true) }
-                }
+                is Result.Loading -> {}
             }
         }
     }
 
     private fun toggleCalendarSync(enabled: Boolean) {
-        updateSettings { it.copy(isCalendarSyncEnabled = enabled) }
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true) }
+            val result = if (enabled) connectCalendarUseCase() else disconnectCalendarUseCase()
+            
+            when (result) {
+                is Result.Success -> {
+                    // Refresh status to get the updated email/state from server
+                    when (val statusResult = getCalendarStatusUseCase()) {
+                        is Result.Success -> {
+                            _viewState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isCalendarSyncEnabled = statusResult.data.isConnected,
+                                    calendarEmail = statusResult.data.email
+                                )
+                            }
+                            // Also update local settings to stay in sync
+                            updateSettings { it.copy(isCalendarSyncEnabled = statusResult.data.isConnected) }
+                        }
+                        is Result.Failure -> {
+                            _viewState.update { it.copy(isLoading = false) }
+                            _effect.emit(ProfileEffect.ShowError("Sync succeeded but failed to fetch status"))
+                        }
+                        is Result.Loading -> {}
+                    }
+                }
+                is Result.Failure -> {
+                    _viewState.update { it.copy(isLoading = false) }
+                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Calendar sync update failed"))
+                }
+                is Result.Loading -> {}
+            }
+        }
     }
 
     private fun toggleDarkMode(enabled: Boolean) {

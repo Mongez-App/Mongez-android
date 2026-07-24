@@ -2,11 +2,15 @@ package com.iti.mongez.data.sources.remote.services
 
 import com.iti.mongez.data.dtos.DashboardResponseDto
 import com.iti.mongez.data.dtos.ProfileResponseDto
-import com.iti.mongez.data.dtos.FullProfileDto
+import com.iti.mongez.data.dtos.profile.FullProfileDto
+import com.iti.mongez.data.dtos.profile.UpdateProfileRequestDto
+import com.iti.mongez.data.dtos.profile.UpdateProfileResponseDto
 import com.iti.mongez.data.dtos.AuthResponseDto
+import com.iti.mongez.data.dtos.HandshakeRequestDto
 import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
 import com.iti.mongez.data.dtos.UserPreferencesDto
+import okhttp3.MultipartBody
 import retrofit2.http.*
 
 interface ApiService {
@@ -20,7 +24,15 @@ interface ApiService {
     suspend fun getUserProfile(): ProfileResponseDto
 
     @GET("users/me/profile")
-    suspend fun getFullUserProfile(@Query("_t") timestamp: Long = System.currentTimeMillis()): FullProfileDto
+    suspend fun getFullUserProfile(): FullProfileDto
+
+    @Multipart
+    @POST("profile/avatar")
+    suspend fun uploadProfileImage(
+        @Part image: MultipartBody.Part
+    ): UpdateProfileResponseDto
+    @PATCH("users/me/profile")
+    suspend fun updateFullUserProfile(@Body request: UpdateProfileRequestDto): UpdateProfileResponseDto
 
     @GET("home/dashboard")
     suspend fun getHomeDashboard(): DashboardResponseDto
