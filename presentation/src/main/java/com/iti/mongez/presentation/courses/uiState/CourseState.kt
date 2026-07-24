@@ -8,5 +8,7 @@ data class CoursesState(
     val allCourses: List<Course> = emptyList(),
     val filteredCourses: List<Course> = emptyList(),
     val isAddCourseSheetVisible: Boolean = false,
-    val isCreatingCourse: Boolean = false
+    val isCreatingCourse: Boolean = false,
+    val courseToDeleteId: String? = null,
+    val isDeletingCourse: Boolean = false
 )

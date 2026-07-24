@@ -246,6 +246,30 @@
     <string name="dashboard_error_loading">Failed to load dashboard data.</string>
     <string name="no_upcoming_deadlines">No upcoming deadlines</string>
     <string name="no_materials_empty_state">No materials available at the moment.</string>
+        <!-- Existing App Strings -->
+
+        <!-- New Localized Strings -->
+        <string name="cover_image">Cover Image</string>
+        <string name="upload_cover_image">Upload cover image</string>
+        <string name="cover_image_hint">PNG or JPG, up to 5 MB</string>
+        <string name="selected_cover_image">Selected Cover Image</string>
+        <string name="select_start_date">Select start date</string>
+        <string name="select_exam_date">Select exam date</string>
+        <string name="no_courses_match_search">No courses match your search.</string>
+        <string name="no_courses_empty_state">No courses available. Add one below!</string>
+        <string name="delete_course_title">Delete Course?</string>
+        <string name="delete_course_dialog_description">This action cannot be undone. All data related to this course will be permanently removed.</string>
+        <string name="action_delete">Delete</string>
+        <string name="tab_materials">Materials</string>
+
+        <string name="today_tasks">Today Tasks</string>
+        <string name="upcoming_tasks">Upcoming Tasks</string>
+        <string name="filter_all">All</string>
+        <string name="filter_pending">Pending</string>
+        <string name="filter_completed">Completed</string>
+        <string name="filter_high">High</string>
+        <string name="filter_medium">Medium</string>
+        <string name="filter_low">Low</string>
 
 </resources>
 

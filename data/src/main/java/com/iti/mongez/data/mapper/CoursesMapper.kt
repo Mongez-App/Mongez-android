@@ -13,6 +13,7 @@ fun CourseDto.toDomain() = Course(
     id = this.id.orEmpty(),
     name = this.name.orEmpty(),
     courseCode = this.courseCode.orEmpty(),
+    imageUrl = this.imageUrl.orEmpty(),
     startDate = this.startDate.orEmpty(),
     examDate = this.examDate.orEmpty(),
     hasMaterials = this.hasMaterials ?: false,
@@ -29,7 +30,8 @@ fun CourseCreationResponseDto.toDomain() = CourseCreationResult(
         examDate = this.examDate.orEmpty(),
         hasMaterials = this.hasMaterials ?: false,
         completionPercentage = this.completionPercentage ?: 0f,
-        isHidden = false
+        isHidden = false,
+        imageUrl = this.imageUrl.orEmpty()
     ),
     alertMessage = this.alert?.message
 )

@@ -1,5 +1,7 @@
 package com.iti.mongez.presentation.coursedetails.uistate
 
+import androidx.annotation.StringRes
+import com.iti.mongez.presentation.R
 
 data class DocumentItem(
     val id: String,
@@ -8,6 +10,7 @@ data class DocumentItem(
     val fileSize: String,
     val fileExtension: String = "PDF"
 )
+
 data class TaskItem(
     val id: String,
     val title: String,
@@ -19,15 +22,26 @@ data class TaskItem(
 
 data class CourseDetailsUiState(
     val isLoading: Boolean = false,
-    val courseTitle: String = "Operating Systems",
+    val courseTitle: String = "",
     val selectedTabIndex: Int = 0,
-    val tabs: List<String> = listOf("Materials", "Tasks"),
+    @StringRes val tabs: List<Int> = listOf(
+        R.string.tab_materials,
+        R.string.tab_tasks
+    ),
     val materials: List<DocumentItem> = emptyList(),
     // Tasks Tab Data
     val completedTasks: Int = 3,
     val totalTasks: Int = 5,
     val progressPercentage: Int = 60,
-    val taskFilters: List<String> = listOf("All", "Pending", "Completed", "High", "Medium", "Low"),
+    @StringRes val taskFilters: List<Int> = listOf(
+        R.string.filter_all,
+        R.string.filter_pending,
+        R.string.filter_completed,
+        R.string.filter_high,
+        R.string.filter_medium,
+        R.string.filter_low
+    ),
     val selectedTaskFilterIndex: Int = 0,
-    val tasks: List<TaskItem> = emptyList()
+    val tasks: List<TaskItem> = emptyList(),
+    val isDeleteDialogVisible: Boolean = false
 )

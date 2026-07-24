@@ -17,6 +17,7 @@ import okhttp3.MultipartBody
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
+
 class CoursesRepositoryImpl @Inject constructor(
     private val apiService: CoursesApiService
 ) : CoursesRepository {
@@ -30,9 +31,21 @@ class CoursesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createCourse(
-        name: String, courseCode: String, startDate: String, examDate: String, hasMaterials: Boolean
+        name: String,
+        courseCode: String,
+        imageUrl: String,
+        startDate: String,
+        examDate: String,
+        hasMaterials: Boolean
     ): Result<CourseCreationResult> = safeApi {
-        val request = CreateCourseRequestDto(name, courseCode, startDate, examDate, hasMaterials)
+        val request = CreateCourseRequestDto(
+            name = name,
+            courseCode = courseCode,
+            imageUrl = imageUrl,
+            startDate = startDate,
+            examDate = examDate,
+            hasMaterials = hasMaterials
+        )
         apiService.createCourse(request).toDomain()
     }
 
@@ -50,7 +63,6 @@ class CoursesRepositoryImpl @Inject constructor(
         apiService.getCourseMaterials(courseId).map { it.toDomain() }
     }
 
-    // Updated signature to include pageCount
     override suspend fun uploadCourseMaterial(
         courseId: String,
         fileName: String,
@@ -60,7 +72,6 @@ class CoursesRepositoryImpl @Inject constructor(
         fileBytes: ByteArray
     ): Result<CourseActionResponse<Unit>> {
 
-        // Step 1: Tell the server to expect a file and get the URL
         val step1Response = safeApi {
             apiService.requestMaterialUploadUrl(
                 courseId,
@@ -73,11 +84,9 @@ class CoursesRepositoryImpl @Inject constructor(
                 val uploadUrl = step1Response.data.uploadUrl
                     ?: return Result.Failure(Exception("Server did not return an upload URL"))
 
-                // Format the URL to prevent double slashes and missing domains
                 val baseUrl = "https://api-gateway-production-3fd0.up.railway.app"
                 val finalUrl = if (uploadUrl.startsWith("/")) "$baseUrl$uploadUrl" else uploadUrl
 
-                // Step 2: Upload the physical file to the generated URL via Retrofit
                 try {
                     val mediaType = MediaType.parse(contentType)
                     val requestBody = RequestBody.create(mediaType, fileBytes)
@@ -89,17 +98,13 @@ class CoursesRepositoryImpl @Inject constructor(
                     if (uploadResponse.isSuccessful) {
                         Result.Success(CourseActionResponse(data = Unit, alert = null))
                     } else {
-                        // The server rejected the file upload
                         Result.Failure(Exception("Upload failed: Error ${uploadResponse.code()}"))
                     }
                 } catch (e: Exception) {
                     Result.Failure(e)
                 }
             }
-            is Result.Failure -> {
-                // Step 1 Failed
-                step1Response
-            }
+            is Result.Failure -> step1Response
             else -> Result.Failure(Exception("Unknown error occurred during upload initialization"))
         }
     }

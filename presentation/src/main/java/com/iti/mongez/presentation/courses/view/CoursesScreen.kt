@@ -5,17 +5,15 @@ import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.presentation.courses.contract.CoursesEffect
+import com.iti.mongez.presentation.courses.contract.CoursesIntent
 import com.iti.mongez.presentation.courses.viewmodel.CoursesViewModel
 import kotlinx.coroutines.delay
 
-/**
- * 1. Stateful Wrapper
- * Handles ViewModel interaction, state collection, and side-effects using Hilt.
- */
 @Composable
 fun CoursesScreen(
     innerPadding: PaddingValues,
     onCourseClick: (String) -> Unit,
+    onNavigateBack: () -> Unit = {},
     viewModel: CoursesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -24,15 +22,18 @@ fun CoursesScreen(
     var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
 
     LaunchedEffect(Unit) {
+        // Automatically fetch latest list whenever returning to CoursesScreen
+        viewModel.handleIntent(CoursesIntent.LoadCourses)
+
         viewModel.effect.collect { effect ->
             when (effect) {
                 is CoursesEffect.ShowSnackbar -> {
                     topSnackbarMessage = effect.message
                     topSnackbarType = effect.type
                 }
-                is CoursesEffect.NavigateToUploadMaterial -> {
-                    // Call your navigation controller here to open the Material Upload Screen
-                    // e.g., navController.navigate("upload_materials/${effect.courseId}")
+                is CoursesEffect.NavigateToUploadMaterial -> {}
+                is CoursesEffect.NavigateBack -> {
+                    onNavigateBack()
                 }
             }
         }
@@ -45,7 +46,6 @@ fun CoursesScreen(
         }
     }
 
-    // Pass everything down to the stateless content function
     CoursesScreenContent(
         state = state,
         innerPadding = innerPadding,
