@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.iti.mongez.domain.auth.usecase.RegisterUseCase
 import com.iti.mongez.domain.auth.usecase.LoginWithGoogleUseCase
 import com.iti.mongez.domain.core.exceptions.AppException
+import com.iti.mongez.domain.preferences.usecase.CheckPreferencesSetUseCase
 import com.iti.mongez.presentation.auth.register.contract.RegisterIntent
 import com.iti.mongez.presentation.auth.register.uiState.RegisterEffect
 import com.iti.mongez.presentation.auth.register.uiState.RegisterUiState
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
-    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val checkPreferencesSetUseCase: CheckPreferencesSetUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterUiState())
@@ -79,8 +81,9 @@ class RegisterViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             registerUseCase(currentState.firstName, currentState.email, currentState.password).fold(
                 onSuccess = { user ->
+                    val isPreferencesSet = checkPreferencesSetUseCase()
                     _state.value = RegisterUiState()
-                    emitEffect(RegisterEffect.NavigateToHome(user))
+                    emitEffect(RegisterEffect.NavigateToHome(user, isPreferencesSet))
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false) }
@@ -101,8 +104,9 @@ class RegisterViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             loginWithGoogleUseCase(idToken).fold(
                 onSuccess = { user ->
+                    val isPreferencesSet = checkPreferencesSetUseCase()
                     _state.value = RegisterUiState()
-                    emitEffect(RegisterEffect.NavigateToHome(user))
+                    emitEffect(RegisterEffect.NavigateToHome(user, isPreferencesSet))
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false) }
