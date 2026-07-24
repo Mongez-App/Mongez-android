@@ -25,7 +25,6 @@ class AuthInterceptor @Inject constructor(
                 null
             }
         }
-        android.util.Log.d("POSTMAN_TOKEN", "Bearer $token")
 
         if (!token.isNullOrEmpty()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")

@@ -9,4 +9,5 @@ sealed interface RegisterIntent {
     object OnRegisterClicked : RegisterIntent
     object OnGoogleSignUpClicked : RegisterIntent
     object OnLoginClicked : RegisterIntent
+    object ClearFields : RegisterIntent
 }

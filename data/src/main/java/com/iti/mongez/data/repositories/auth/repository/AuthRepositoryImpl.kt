@@ -62,6 +62,12 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun logout() {
+        firebaseAuthDataSource.logout()
+        userDao.clearUser()
         tokenManager.clearToken()
+    }
+
+    override suspend fun getCurrentUser(): User? {
+        return userDao.getUser()?.toDomain()
     }
 }

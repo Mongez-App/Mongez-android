@@ -10,6 +10,10 @@ import com.iti.mongez.domain.settings.model.Language
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import com.iti.mongez.domain.settings.usecase.UpdateAppSettingsUseCase
 import com.iti.mongez.domain.auth.usecase.LogoutUseCase
+import com.iti.mongez.domain.profile.usecase.GetUserProfileUseCase
+import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
+import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +30,10 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getAppSettingsUseCase: GetAppSettingsUseCase,
     private val updateAppSettingsUseCase: UpdateAppSettingsUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val getUserProfileUseCase: GetUserProfileUseCase,
+    private val getPreferencesUseCase: GetPreferencesUseCase,
+    private val savePreferencesUseCase: SavePreferencesUseCase
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(ProfileViewState())
@@ -60,19 +67,108 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ToggleDarkMode -> toggleDarkMode(intent.enabled)
             is ProfileIntent.ChangeLanguage -> changeLanguage(intent.language)
             is ProfileIntent.Logout -> logout()
-            is ProfileIntent.EditPreferences -> editPreferences()
+            is ProfileIntent.ToggleEditPreferencesSheet -> {
+                if (intent.visible) {
+                    loadPreferences()
+                } else {
+                    _viewState.update { it.copy(isEditPreferencesSheetVisible = false) }
+                }
+            }
+            is ProfileIntent.UpdateStudyHours -> {
+                _viewState.update { it.copy(selectedStudyHours = intent.hours) }
+            }
+            is ProfileIntent.ToggleDay -> {
+                _viewState.update { state ->
+                    val newDays = if (state.selectedDays.contains(intent.day)) {
+                        state.selectedDays - intent.day
+                    } else {
+                        state.selectedDays + intent.day
+                    }
+                    state.copy(selectedDays = newDays)
+                }
+            }
+            is ProfileIntent.SavePreferences -> savePreferences()
+        }
+    }
+
+    private fun loadPreferences() {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true) }
+            when (val result = getPreferencesUseCase()) {
+                is Result.Success -> {
+                    _viewState.update {
+                        it.copy(
+                            isLoading = false,
+                            isEditPreferencesSheetVisible = true,
+                            selectedStudyHours = result.data.dailyStudyHours,
+                            selectedDays = result.data.availableDays.toSet()
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _viewState.update { it.copy(isLoading = false) }
+                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Failed to load preferences"))
+                }
+                is Result.Loading -> {}
+            }
+        }
+    }
+
+    private fun savePreferences() {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true) }
+            val state = _viewState.value
+            when (val result = savePreferencesUseCase(state.selectedStudyHours, state.selectedDays.toList())) {
+                is Result.Success -> {
+                    _viewState.update {
+                        it.copy(
+                            isLoading = false,
+                            isEditPreferencesSheetVisible = false,
+                            studyingHours = result.data.dailyStudyHours // Update profile stats if applicable
+                        )
+                    }
+                    // Re-load profile to reflect any stat changes if necessary
+                    loadProfile()
+                }
+                is Result.Failure -> {
+                    _viewState.update { it.copy(isLoading = false) }
+                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Failed to save preferences"))
+                }
+                is Result.Loading -> {}
+            }
         }
     }
 
     private fun loadProfile() {
-        _viewState.update {
-            it.copy(
-                name = "Abdullah Mohamed",
-                email = "abdullah@example.com",
-                studyingHours = 145,
-                completedTasks = 382,
-                streakDays = 14
-            )
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val result = getUserProfileUseCase()) {
+                is Result.Success -> {
+                    val profile = result.data
+                    _viewState.update {
+                        it.copy(
+                            isLoading = false,
+                            name = profile.name ?: "",
+                            email = profile.email,
+                            profilePictureUrl = profile.avatarUrl,
+                            studyingHours = profile.totalStudyHours,
+                            completedTasks = profile.completedTasksCount,
+                            streakDays = profile.currentStreakDays
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _viewState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.exception.message ?: "Failed to load profile"
+                        )
+                    }
+                }
+                is Result.Loading -> {
+                    _viewState.update { it.copy(isLoading = true) }
+                }
+            }
         }
     }
 
@@ -102,13 +198,9 @@ class ProfileViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             logoutUseCase()
+            _viewState.update { ProfileViewState() }
             _effect.emit(ProfileEffect.NavigateToLogin)
         }
     }
 
-    private fun editPreferences() {
-        viewModelScope.launch {
-            _effect.emit(ProfileEffect.NavigateToPreferences)
-        }
-    }
 }

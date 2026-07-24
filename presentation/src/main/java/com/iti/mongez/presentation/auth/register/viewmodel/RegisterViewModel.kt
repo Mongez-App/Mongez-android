@@ -45,6 +45,7 @@ class RegisterViewModel @Inject constructor(
             // and returns the token via OnGoogleIdTokenReceived.
             RegisterIntent.OnGoogleSignUpClicked -> emitEffect(RegisterEffect.LaunchGoogleSignUp)
             RegisterIntent.OnLoginClicked -> emitEffect(RegisterEffect.NavigateToLogin)
+            RegisterIntent.ClearFields -> _state.value = RegisterUiState()
         }
     }
 
@@ -78,7 +79,7 @@ class RegisterViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             registerUseCase(currentState.firstName, currentState.email, currentState.password).fold(
                 onSuccess = { user ->
-                    _state.update { it.copy(isLoading = false) }
+                    _state.value = RegisterUiState()
                     emitEffect(RegisterEffect.NavigateToHome(user))
                 },
                 onFailure = { exception ->
@@ -100,7 +101,7 @@ class RegisterViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             loginWithGoogleUseCase(idToken).fold(
                 onSuccess = { user ->
-                    _state.update { it.copy(isLoading = false) }
+                    _state.value = RegisterUiState()
                     emitEffect(RegisterEffect.NavigateToHome(user))
                 },
                 onFailure = { exception ->
