@@ -51,6 +51,7 @@ class LoginViewModel @Inject constructor(
             LoginIntent.OnGoogleSignInClicked -> emitEffect(LoginEffect.LaunchGoogleSignIn)
             LoginIntent.OnSignUpClicked -> emitEffect(LoginEffect.NavigateToSignUp)
             LoginIntent.OnForgotPasswordClicked -> emitEffect(LoginEffect.NavigateToForgotPassword)
+            LoginIntent.ClearFields -> _state.value = LoginUiState()
         }
     }
 
@@ -73,8 +74,7 @@ class LoginViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             loginUseCase(currentState.email, currentState.password).fold(
                 onSuccess = { user ->
-                    _state.update { it.copy(isLoading = false) }
-                    emitEffect(LoginEffect.NavigateToHome(user))
+                    navigateToHome(user)
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false) }
@@ -95,8 +95,7 @@ class LoginViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             loginWithGoogleUseCase(idToken).fold(
                 onSuccess = { user ->
-                    _state.update { it.copy(isLoading = false) }
-                    emitEffect(LoginEffect.NavigateToHome(user))
+                    navigateToHome(user)
                 },
                 onFailure = { exception ->
                     _state.update { it.copy(isLoading = false) }
@@ -113,6 +112,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun navigateToHome(user: User?) {
+        _state.value = LoginUiState()
         emitEffect(LoginEffect.NavigateToHome(user))
     }
 
