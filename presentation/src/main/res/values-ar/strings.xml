@@ -198,6 +198,8 @@
     <string name="profile_logout">تسجيل الخروج</string>
     <string name="profile_studying_preferences">تفضيلات الدراسة</string>
     <string name="profile_edit">تعديل</string>
+    <string name="edit_preferences_title">تعديل التفضيلات</string>
+    <string name="save_button">حفظ</string>
     <!-- Dashboard -->
     <string name="dashboard_greeting">مرحبًا، %1$s</string>
     <string name="dashboard_greeting_subtext">لننجز مهام اليوم</string>
@@ -229,5 +231,8 @@
     <string name="hours">ساعات</string>
     <string name="task_marked_completed">تم وضع علامة على المهمة كمكتملة!</string>
     <string name="error_loading_dashboard">فشل تحميل بيانات لوحة التحكم.</string>
+    <string name="no_tasks_for_today">لا توجد مهام لليوم</string>
+    <string name="dashboard_error_loading">فشل تحميل بيانات لوحة التحكم.</string>
+    <string name="no_upcoming_deadlines">لا توجد مواعيد نهائية قادمة</string>
     <string name="no_materials_empty_state">لا توجد مواد متاحة في الوقت الحالي.</string>
 </resources>

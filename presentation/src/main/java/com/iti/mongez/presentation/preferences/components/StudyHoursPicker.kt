@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
@@ -39,7 +38,16 @@ fun StudyHoursPicker(
 
     val currentCenterIndex by remember {
         derivedStateOf {
-            listState.firstVisibleItemIndex
+            val layoutInfo = listState.layoutInfo
+            val visibleItems = layoutInfo.visibleItemsInfo
+            if (visibleItems.isEmpty()) {
+                (selectedHours - 1).coerceIn(0, hours.size - 1)
+            } else {
+                val viewportCenter = (layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset) / 2
+                visibleItems.minByOrNull {
+                    kotlin.math.abs((it.offset + it.size / 2) - viewportCenter)
+                }?.index ?: 0
+            }
         }
     }
 
@@ -148,9 +156,8 @@ fun StudyHoursPicker(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = hour.toString(),
-                        style = Theme.typography.headline.large.copy(
-                            fontSize = if (isSelected) 36.sp else 24.sp,
+                        text = "${hour}h",
+                        style = Theme.typography.title.medium.copy(
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = if (isSelected) Theme.colorScheme.brand.primary 
                                     else Theme.colorScheme.text.tertiary

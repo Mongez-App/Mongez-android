@@ -9,4 +9,5 @@ sealed interface LoginIntent {
     object OnGoogleSignInClicked : LoginIntent
     object OnSignUpClicked : LoginIntent
     object OnForgotPasswordClicked : LoginIntent
+    object ClearFields : LoginIntent
 }

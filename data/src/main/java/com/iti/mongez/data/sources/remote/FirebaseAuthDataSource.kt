@@ -23,4 +23,6 @@ class FirebaseAuthDataSource @Inject constructor(
         val result = firebaseAuth.signInWithCredential(credential).await()
         return result.user?.getIdToken(true)?.await()?.token ?: throw Exception("Token retrieval failed")
     }
+
+    fun logout() = firebaseAuth.signOut()
 }

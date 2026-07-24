@@ -1,5 +1,10 @@
 package com.iti.mongez.presentation.dashboard
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -9,32 +14,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.avatar.AppAvatar
 import com.iti.mongez.designsystem.components.section.AppSectionHeader
-import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
+import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.*
 import com.iti.mongez.designsystem.theme.Theme
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import com.iti.mongez.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -62,10 +56,10 @@ fun DashboardScreen(
                     delay(3000.milliseconds)
                     topSnackbarMessageRes = null
                 }
-
                 is DashboardEffect.NavigateToFocusSession -> onNavigateToFocus()
                 is DashboardEffect.NavigateToAllTasks -> onViewAllTasks()
                 is DashboardEffect.NavigateToAllDeadlines -> onViewAllDeadlines()
+                else -> {}
             }
         }
     }
@@ -80,7 +74,7 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing.xl)
         ) {
 
-            // 1. Profile Header Area Row (Updated to use AppAvatar)
+            // 1. Profile Header
             item {
                 Row(
                     modifier = Modifier
@@ -95,20 +89,18 @@ fun DashboardScreen(
                     ) {
                         AppAvatar(
                             size = 56.dp,
-                            initials = state.userName // AppAvatar will safely take the first two letters internally
+                            initials = state.userName
                         )
 
                         Column {
                             Text(
-                                text = stringResource(
-                                    R.string.dashboard_greeting,
-                                    state.userName
-                                ),
+                                text = state.welcomeMessage.ifEmpty {
+                                    stringResource(R.string.dashboard_greeting, state.userName)
+                                },
                                 style = Theme.typography.title.large,
                                 fontWeight = FontWeight.Bold,
                                 color = Theme.colorScheme.text.primary
                             )
-                            // 2. Wrap greetingSubtext
                             Text(
                                 text = stringResource(state.greetingSubtext),
                                 style = Theme.typography.body.medium,
@@ -124,20 +116,22 @@ fun DashboardScreen(
                 }
             }
 
-            // 2. Focus Card Section
-            item {
-                Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
-                    AppFocusCard(
-                        title = stringResource(state.focusTitle),
-                        topic = stringResource(state.focusTopic),
-                        duration = stringResource(state.focusDuration),
-                        imagePainter = ColorPainter(Color(0xFF1E1E1E)),
-                        onStartClick = { viewModel.onEvent(DashboardEvent.OnStartFocusClicked) }
-                    )
+            // 2. Focus Card Section (DISAPPEARS IF NULL)
+            state.todayFocus?.takeIf { it.courseName.isNotBlank() }?.let { focus ->
+                item {
+                    Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
+                        AppFocusCard(
+                            title = stringResource(R.string.dashboard_todays_focus),
+                            topic = focus.courseName,
+                            duration = focus.durationText,
+                            imagePainter = ColorPainter(Color(0xFF1E1E1E)),
+                            onStartClick = { viewModel.onEvent(DashboardEvent.OnStartFocusClicked) }
+                        )
+                    }
                 }
             }
 
-            // 3. Horizontal Goal Row Section
+            // 3. Goals Section
             item {
                 Row(
                     modifier = Modifier
@@ -163,66 +157,106 @@ fun DashboardScreen(
                 }
             }
 
-            // 4. Today's Tasks Section Header + List Column (Updated to use AppSectionHeader)
+            // 4. Today's Tasks Section Header
             item {
                 AppSectionHeader(
                     title = stringResource(R.string.dashboard_todays_tasks),
-                    actionText = stringResource(R.string.dashboard_view_all),
+                    actionText = if (state.tasks.isNotEmpty()) stringResource(R.string.dashboard_view_all) else "",
                     onAction = { viewModel.onEvent(DashboardEvent.OnViewAllTasksClicked) },
                     modifier = Modifier.padding(horizontal = Theme.spacing.xl)
                 )
             }
 
-            items(state.tasks, key = { it.id }) { task ->
-                Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
-                    AppTaskCard(
-                        title = task.title,
-                        duration = task.duration,
-                        priority = task.priority,
-                        isCompleted = task.isCompleted,
-                        onClick = {
-                            onNavigateToStudyRoom(task.id, task.title)
-                        }
-                    )
+            // Tasks List OR Empty State
+            if (state.tasks.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Theme.spacing.xl, vertical = Theme.spacing.md),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_tasks_for_today),
+                            style = Theme.typography.body.medium,
+                            color = Theme.colorScheme.text.secondary
+                        )
+                    }
                 }
-            }
-
-            // 5. Upcoming Deadlines Section Header + Horizontal Row Block (Updated to use AppSectionHeader)
-            item {
-                AppSectionHeader(
-                    title = stringResource(R.string.dashboard_upcoming_deadlines),
-                    actionText = stringResource(R.string.dashboard_view_all),
-                    onAction = { viewModel.onEvent(DashboardEvent.OnViewAllDeadlinesClicked) },
-                    modifier = Modifier.padding(horizontal = Theme.spacing.xl)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = Theme.spacing.xl, vertical = Theme.spacing.xs),
-                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
-                ) {
-                    state.deadlines.forEach { deadline ->
-                        AppDeadlineCard(
-                            subject = deadline.subject,
-                            taskType = deadline.taskType,
-                            timeLeft = deadline.timeLeft,
-                            tintColor = if (deadline.isUrgent) Theme.colorScheme.state.error else Theme.colorScheme.state.success
+            } else {
+                items(state.tasks, key = { it.id }) { task ->
+                    Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
+                        AppTaskCard(
+                            title = task.title,
+                            duration = task.duration,
+                            priority = task.priority,
+                            isCompleted = task.isCompleted,
+                            onClick = {
+                                onNavigateToStudyRoom(task.id, task.title)
+                            }
                         )
                     }
                 }
             }
 
-            // 6. Bottom AI Prompt Advice Footnote Card Component
+            // 5. Upcoming Deadlines Section Header + List
             item {
-                Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
-                    AppInfoCard(
-                        header = stringResource(state.aiSuggestionHeader),
-                        body = stringResource(state.aiSuggestionBody),
-                        icon = Icons.Default.WbSunny,
-                        tintColor = Theme.colorScheme.state.success
-                    )
+                AppSectionHeader(
+                    title = stringResource(R.string.dashboard_upcoming_deadlines),
+                    actionText = if (state.deadlines.isNotEmpty()) stringResource(R.string.dashboard_view_all) else "",
+                    onAction = { viewModel.onEvent(DashboardEvent.OnViewAllDeadlinesClicked) },
+                    modifier = Modifier.padding(horizontal = Theme.spacing.xl)
+                )
+            }
+
+// Deadlines List OR Empty State
+            if (state.deadlines.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Theme.spacing.xl, vertical = Theme.spacing.md),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_upcoming_deadlines),
+                            style = Theme.typography.body.medium,
+                            color = Theme.colorScheme.text.secondary
+                        )
+                    }
+                }
+            } else {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = Theme.spacing.xl, vertical = Theme.spacing.xs),
+                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+                    ) {
+                        state.deadlines.forEach { deadline ->
+                            AppDeadlineCard(
+                                subject = deadline.subject,
+                                taskType = deadline.taskType,
+                                timeLeft = deadline.timeLeft,
+                                tintColor = if (deadline.isUrgent) Theme.colorScheme.state.error else Theme.colorScheme.state.success
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 6. AI Suggestion Section
+            state.aiSuggestionText?.let { suggestion ->
+                item {
+                    Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
+                        AppInfoCard(
+                            header = stringResource(R.string.dashboard_ai_suggestion),
+                            body = suggestion,
+                            icon = Icons.Default.WbSunny,
+                            tintColor = Theme.colorScheme.state.success
+                        )
+                    }
                 }
             }
         }
@@ -236,7 +270,6 @@ fun DashboardScreen(
                 .padding(Theme.spacing.md)
                 .padding(top = 32.dp)
         ) {
-            // 5. Resolve Snackbar string resource here
             topSnackbarMessageRes?.let { messageRes ->
                 AppSnackbarContent(
                     message = stringResource(id = messageRes),

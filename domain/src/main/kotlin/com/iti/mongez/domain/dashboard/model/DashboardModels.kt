@@ -5,7 +5,9 @@ data class UserProfile(
 )
 
 data class DashboardFocus(
+    val courseId: String,
     val courseName: String,
+    val allocatedDuration: String,
     val durationMinutes: Int
 )
 
@@ -34,10 +36,13 @@ data class DashboardDeadline(
 )
 
 data class DashboardSummary(
+    val welcomeMessage: String,
     val focus: DashboardFocus?,
     val metrics: DashboardMetrics,
     val tasks: List<DashboardTask>,
-    val deadlines: List<DashboardDeadline>
+    val deadlines: List<DashboardDeadline>,
+    val streakDays: Int,
+    val aiSuggestion: String?
 )
 
 // The combined result to pass to the Presentation Layer

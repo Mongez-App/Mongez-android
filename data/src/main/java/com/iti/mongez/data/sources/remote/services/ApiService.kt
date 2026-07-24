@@ -1,11 +1,12 @@
 package com.iti.mongez.data.sources.remote.services
 
-import com.iti.mongez.data.dtos.DashboardResponseDto
-import com.iti.mongez.data.dtos.ProfileResponseDto
+import com.iti.mongez.data.dtos.FullProfileDto
 import com.iti.mongez.data.dtos.AuthResponseDto
 import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
 import com.iti.mongez.data.dtos.UserPreferencesDto
+import com.iti.mongez.data.dtos.dashboarddtos.DashboardResponseDto
+import com.iti.mongez.data.dtos.dashboarddtos.ProfileResponseDto
 import retrofit2.http.*
 
 interface ApiService {
@@ -17,6 +18,9 @@ interface ApiService {
 
     @GET("users/me/profile")
     suspend fun getUserProfile(): ProfileResponseDto
+
+    @GET("users/me/profile")
+    suspend fun getFullUserProfile(@Query("_t") timestamp: Long = System.currentTimeMillis()): FullProfileDto
 
     @GET("home/dashboard")
     suspend fun getHomeDashboard(): DashboardResponseDto
