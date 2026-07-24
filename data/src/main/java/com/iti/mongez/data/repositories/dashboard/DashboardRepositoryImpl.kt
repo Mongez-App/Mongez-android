@@ -3,7 +3,7 @@ package com.iti.mongez.data.repositories.dashboard
 import android.util.Log
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.remote.services.ApiService
-import com.iti.mongez.data.dtos.toDomain
+import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.dashboard.model.DashboardSummary
 import com.iti.mongez.domain.dashboard.model.UserProfile
