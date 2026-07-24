@@ -1,37 +1,32 @@
 package com.iti.mongez.presentation.profile.view
 
+import android.graphics.Bitmap
+import android.net.Uri
+import java.io.ByteArrayOutputStream
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.iti.mongez.designsystem.components.card.AppCard
+import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.divider.AppDivider
 import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.theme.MongezTheme
@@ -41,15 +36,14 @@ import com.iti.mongez.presentation.profile.contract.ProfileEffect
 import com.iti.mongez.presentation.profile.contract.ProfileIntent
 import com.iti.mongez.presentation.profile.uiState.ProfileViewState
 import com.iti.mongez.presentation.profile.viewmodel.ProfileViewModel
-
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.iti.mongez.domain.settings.model.Language
 import com.iti.mongez.presentation.profile.components.EditPreferencesSheetContent
+import com.iti.mongez.presentation.profile.components.EditProfileDialog
 import com.iti.mongez.presentation.profile.components.ProfileHeader
 import com.iti.mongez.presentation.profile.components.SettingItem
 import com.iti.mongez.presentation.profile.components.StatCard
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     innerPadding: PaddingValues,
@@ -58,6 +52,27 @@ fun ProfileScreen(
     onShowSnackBar: (String) -> Unit
 ) {
     val viewState by viewModel.viewState.collectAsState()
+
+    val context = LocalContext.current
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+            viewModel.processIntent(ProfileIntent.OnImagePicked(uri, bytes))
+        }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val bytes = stream.toByteArray()
+            viewModel.processIntent(ProfileIntent.OnImagePicked(null, bytes))
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.processIntent(ProfileIntent.LoadProfile)
@@ -77,9 +92,54 @@ fun ProfileScreen(
         viewState = viewState,
         onIntent = viewModel::processIntent
     )
+
+    if (viewState.isEditPreferencesSheetVisible) {
+        AppBottomSheet(
+            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleEditPreferencesSheet(false)) }
+        ) {
+            EditPreferencesSheetContent(
+                selectedHours = viewState.selectedStudyHours,
+                selectedDays = viewState.selectedDays,
+                onHoursChanged = { viewModel.processIntent(ProfileIntent.UpdateStudyHours(it)) },
+                onDayToggle = { viewModel.processIntent(ProfileIntent.ToggleDay(it)) },
+                onSave = { viewModel.processIntent(ProfileIntent.SavePreferences) },
+                onCancel = { viewModel.processIntent(ProfileIntent.ToggleEditPreferencesSheet(false)) },
+                isLoading = viewState.isLoading
+            )
+        }
+    }
+
+    if (viewState.isEditProfileDialogVisible) {
+        EditProfileDialog(
+            name = viewState.editingName,
+            avatarUri = viewState.editingAvatarUri,
+            avatarBytes = viewState.editingAvatarBytes,
+            profilePictureUrl = viewState.profilePictureUrl,
+            onNameChange = { viewModel.processIntent(ProfileIntent.UpdateEditingName(it)) },
+            onImageClick = { viewModel.processIntent(ProfileIntent.ToggleImageSourcePicker(true)) },
+            onSave = { viewModel.processIntent(ProfileIntent.SubmitProfileUpdate) },
+            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleEditProfileDialog(false)) },
+            isLoading = viewState.isLoading
+        )
+    }
+
+    if (viewState.isImageSourcePickerVisible) {
+        AppConfirmationDialog(
+            title = "Change Profile Picture",
+            description = "Choose a source for your new profile picture.",
+            primaryActionText = "Gallery",
+            onPrimaryAction = { 
+                galleryLauncher.launch("image/*")
+            },
+            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleImageSourcePicker(false)) },
+            secondaryActionText = "Camera",
+            onSecondaryAction = {
+                cameraLauncher.launch()
+            }
+        )
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreenContent(
     innerPadding: PaddingValues,
@@ -102,181 +162,166 @@ private fun ProfileScreenContent(
             ProfileHeader(
                 name = viewState.name.ifEmpty { viewState.email.substringBefore("@") },
                 email = viewState.email,
-                profilePictureUrl = viewState.profilePictureUrl
+                profilePictureUrl = viewState.profilePictureUrl,
+                onEditClick = { onIntent(ProfileIntent.ToggleEditProfileDialog(true)) }
             )
 
-        Spacer(modifier = Modifier.height(Theme.spacing.xxl))
+            Spacer(modifier = Modifier.height(Theme.spacing.xxl))
 
-        // Stats Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
-        ) {
-            StatCard(
-                modifier = Modifier.weight(1f),
-                label = stringResource(R.string.profile_studying_hours),
-                value = viewState.studyingHours.toString(),
-                valueColor = Theme.colorScheme.brand.primary
-            )
-            StatCard(
-                modifier = Modifier.weight(1f),
-                label = stringResource(R.string.profile_completed_tasks),
-                value = viewState.completedTasks.toString(),
-                valueColor = Theme.colorScheme.brand.primary
-            )
-            StatCard(
-                modifier = Modifier.weight(1f),
-                label = stringResource(R.string.profile_streak_days),
-                value = viewState.streakDays.toString(),
-                valueColor = Theme.colorScheme.brand.primary
-            )
-        }
-
-        Spacer(modifier = Modifier.height(Theme.spacing.xxl))
-
-        // Settings Items
-        SettingItem(
-            icon = Icons.Rounded.CalendarMonth,
-            iconContainerColor = Theme.colorScheme.state.infoContainer,
-            iconTint = Theme.colorScheme.state.info,
-            title = stringResource(R.string.profile_calendar_sync),
-            action = {
-                Switch(
-                    checked = viewState.isCalendarSyncEnabled,
-                    onCheckedChange = { onIntent(ProfileIntent.ToggleCalendarSync(it)) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Theme.colorScheme.brand.primary,
-                        uncheckedThumbColor = Theme.colorScheme.brand.primary,
-                        uncheckedTrackColor = Theme.colorScheme.brand.primary.copy(alpha = 0.12f),
-                        uncheckedBorderColor = Theme.colorScheme.brand.primary
-                    )
+            // Stats Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+            ) {
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.profile_studying_hours),
+                    value = viewState.studyingHours.toString(),
+                    valueColor = Theme.colorScheme.brand.primary
+                )
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.profile_completed_tasks),
+                    value = viewState.completedTasks.toString(),
+                    valueColor = Theme.colorScheme.brand.primary
+                )
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.profile_streak_days),
+                    value = viewState.streakDays.toString(),
+                    valueColor = Theme.colorScheme.brand.primary
                 )
             }
-        )
 
-        AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
+            Spacer(modifier = Modifier.height(Theme.spacing.xxl))
 
-        SettingItem(
-            icon = Icons.Rounded.Nightlight,
-            iconContainerColor = Theme.colorScheme.surface.surfaceLow,
-            iconTint = Theme.colorScheme.text.primary,
-            title = stringResource(R.string.profile_dark_mode),
-            action = {
-                Switch(
-                    checked = viewState.isDarkModeEnabled,
-                    onCheckedChange = { onIntent(ProfileIntent.ToggleDarkMode(it)) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Theme.colorScheme.brand.primary,
-                        uncheckedThumbColor = Theme.colorScheme.brand.primary,
-                        uncheckedTrackColor = Theme.colorScheme.brand.primary.copy(alpha = 0.12f),
-                        uncheckedBorderColor = Theme.colorScheme.brand.primary
+            // Settings Items
+            SettingItem(
+                icon = Icons.Rounded.CalendarMonth,
+                iconContainerColor = Theme.colorScheme.state.infoContainer,
+                iconTint = Theme.colorScheme.state.info,
+                title = stringResource(R.string.profile_calendar_sync),
+                action = {
+                    Switch(
+                        checked = viewState.isCalendarSyncEnabled,
+                        onCheckedChange = { onIntent(ProfileIntent.ToggleCalendarSync(it)) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Theme.colorScheme.brand.primary,
+                            uncheckedThumbColor = Theme.colorScheme.brand.primary,
+                            uncheckedTrackColor = Theme.colorScheme.brand.primary.copy(alpha = 0.12f),
+                            uncheckedBorderColor = Theme.colorScheme.brand.primary
+                        )
                     )
-                )
-            }
-        )
+                }
+            )
 
-        AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
+            AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
 
-        SettingItem(
-            icon = Icons.Rounded.Translate,
-            iconContainerColor = Theme.colorScheme.brand.primaryContainer,
-            iconTint = Theme.colorScheme.brand.primary,
-            title = stringResource(R.string.profile_language),
-            action = {
-                var expanded by remember { mutableStateOf(false) }
-                Box {
-                    OutlinedCard(
-                        onClick = { expanded = true },
-                        shape = RoundedCornerShape(Theme.radius.md),
-                        border = BorderStroke(1.dp, Theme.colorScheme.border.secondary),
-                        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(
-                                horizontal = Theme.spacing.sm,
-                                vertical = Theme.spacing.xs
-                            ),
-                            verticalAlignment = Alignment.CenterVertically
+            SettingItem(
+                icon = Icons.Rounded.Nightlight,
+                iconContainerColor = Theme.colorScheme.surface.surfaceLow,
+                iconTint = Theme.colorScheme.text.primary,
+                title = stringResource(R.string.profile_dark_mode),
+                action = {
+                    Switch(
+                        checked = viewState.isDarkModeEnabled,
+                        onCheckedChange = { onIntent(ProfileIntent.ToggleDarkMode(it)) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Theme.colorScheme.brand.primary,
+                            uncheckedThumbColor = Theme.colorScheme.brand.primary,
+                            uncheckedTrackColor = Theme.colorScheme.brand.primary.copy(alpha = 0.12f),
+                            uncheckedBorderColor = Theme.colorScheme.brand.primary
+                        )
+                    )
+                }
+            )
+
+            AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
+
+            SettingItem(
+                icon = Icons.Rounded.Translate,
+                iconContainerColor = Theme.colorScheme.brand.primaryContainer,
+                iconTint = Theme.colorScheme.brand.primary,
+                title = stringResource(R.string.profile_language),
+                action = {
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        OutlinedCard(
+                            onClick = { expanded = true },
+                            shape = RoundedCornerShape(Theme.radius.md),
+                            border = BorderStroke(1.dp, Theme.colorScheme.border.secondary),
+                            colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
                         ) {
-                            Text(
-                                text = viewState.language.name,
-                                style = Theme.typography.body.small,
-                                color = Theme.colorScheme.text.secondary
-                            )
-                            Icon(
-                                imageVector = Icons.Rounded.KeyboardArrowDown,
-                                contentDescription = null,
-                                tint = Theme.colorScheme.text.secondary,
-                                modifier = Modifier.size(Theme.spacing.md)
-                            )
+                            Row(
+                                modifier = Modifier.padding(
+                                    horizontal = Theme.spacing.sm,
+                                    vertical = Theme.spacing.xs
+                                ),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = viewState.language.name,
+                                    style = Theme.typography.body.small,
+                                    color = Theme.colorScheme.text.secondary
+                                )
+                                Icon(
+                                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                                    contentDescription = null,
+                                    tint = Theme.colorScheme.text.secondary,
+                                    modifier = Modifier.size(Theme.spacing.md)
+                                )
+                            }
                         }
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        Language.entries.forEach { language ->
-                            DropdownMenuItem(
-                                text = { Text(language.name) },
-                                onClick = {
-                                    onIntent(ProfileIntent.ChangeLanguage(language))
-                                    expanded = false
-                                }
-                            )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            Language.entries.forEach { language ->
+                                DropdownMenuItem(
+                                    text = { Text(language.name) },
+                                    onClick = {
+                                        onIntent(ProfileIntent.ChangeLanguage(language))
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
-            }
-        )
+            )
 
-        AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
+            AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
 
-        SettingItem(
-            icon = Icons.Rounded.Tune,
-            iconContainerColor = Theme.colorScheme.state.warningContainer,
-            iconTint = Theme.colorScheme.state.warning,
-            title = stringResource(R.string.profile_studying_preferences),
-            onClick = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(true)) },
-            action = {
-                Text(
-                    text = stringResource(R.string.profile_edit),
-                    style = Theme.typography.body.medium,
-                    color = Theme.colorScheme.text.secondary
-                )
-            }
-        )
+            SettingItem(
+                icon = Icons.Rounded.Tune,
+                iconContainerColor = Theme.colorScheme.state.warningContainer,
+                iconTint = Theme.colorScheme.state.warning,
+                title = stringResource(R.string.profile_studying_preferences),
+                onClick = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(true)) },
+                action = {
+                    Text(
+                        text = stringResource(R.string.profile_edit),
+                        style = Theme.typography.body.medium,
+                        color = Theme.colorScheme.text.secondary
+                    )
+                }
+            )
 
-        AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
+            AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
 
-        SettingItem(
-            icon = Icons.AutoMirrored.Rounded.Logout,
-            iconContainerColor = Theme.colorScheme.state.errorContainer,
-            iconTint = Theme.colorScheme.state.error,
-            title = stringResource(R.string.profile_logout),
-            titleColor = Theme.colorScheme.state.error,
-            onClick = { onIntent(ProfileIntent.Logout) }
-        )
-    }
-
-    if (viewState.isEditPreferencesSheetVisible) {
-        AppBottomSheet(
-            onDismiss = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(false)) }
-        ) {
-            EditPreferencesSheetContent(
-                selectedHours = viewState.selectedStudyHours,
-                selectedDays = viewState.selectedDays,
-                onHoursChanged = { onIntent(ProfileIntent.UpdateStudyHours(it)) },
-                onDayToggle = { onIntent(ProfileIntent.ToggleDay(it)) },
-                onSave = { onIntent(ProfileIntent.SavePreferences) },
-                onCancel = { onIntent(ProfileIntent.ToggleEditPreferencesSheet(false)) },
-                isLoading = viewState.isLoading
+            SettingItem(
+                icon = Icons.AutoMirrored.Rounded.Logout,
+                iconContainerColor = Theme.colorScheme.state.errorContainer,
+                iconTint = Theme.colorScheme.state.error,
+                title = stringResource(R.string.profile_logout),
+                titleColor = Theme.colorScheme.state.error,
+                onClick = { onIntent(ProfileIntent.Logout) }
             )
         }
-    }
 
-    if (viewState.isLoading && !viewState.isEditPreferencesSheetVisible) {
+        if (viewState.isLoading && !viewState.isEditPreferencesSheetVisible && !viewState.isEditProfileDialogVisible) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
                 color = Theme.colorScheme.brand.primary
