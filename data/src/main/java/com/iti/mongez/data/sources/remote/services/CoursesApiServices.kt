@@ -28,7 +28,7 @@ interface CoursesApiService {
     suspend fun updateCourse(
         @Path("course_id") courseId: String,
         @Body request: UpdateCourseRequestDto
-    ): CourseDto // Wait, check API response, it might need a wrapper if it returns an alert
+    ): CourseDto
 
     @DELETE("courses/{course_id}")
     suspend fun deleteCourse(@Path("course_id") courseId: String): ActionStatusResponseDto
@@ -49,7 +49,7 @@ interface CoursesApiService {
     ): ActionStatusResponseDto
 
     @Multipart
-    @POST // Note: If your backend strictly uses PUT for file uploads, change this to @PUT
+    @POST
     suspend fun uploadMaterialFile(
         @Url url: String,
         @Part file: MultipartBody.Part

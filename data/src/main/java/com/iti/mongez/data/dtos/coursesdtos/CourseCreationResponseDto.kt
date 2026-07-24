@@ -2,7 +2,6 @@ package com.iti.mongez.data.dtos.coursesdtos
 
 import com.google.gson.annotations.SerializedName
 
-
 data class CourseCreationResponseDto(
     @SerializedName("id") val id: String?,
     @SerializedName("name") val name: String?,

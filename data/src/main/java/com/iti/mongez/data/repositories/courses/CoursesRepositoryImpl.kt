@@ -1,6 +1,8 @@
 package com.iti.mongez.data.repositories.courses
 
-import com.iti.mongez.data.dtos.coursesdtos.*
+import com.iti.mongez.data.dtos.coursesdtos.CreateCourseRequestDto
+import com.iti.mongez.data.dtos.coursesdtos.MaterialUploadRequestDto
+import com.iti.mongez.data.dtos.coursesdtos.UpdateCourseRequestDto
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.data.network.safeApi
@@ -12,10 +14,9 @@ import com.iti.mongez.domain.courses.model.CourseActionResponse
 import com.iti.mongez.domain.courses.model.CourseMaterial
 import com.iti.mongez.domain.courses.repository.CoursesRepository
 import okhttp3.MultipartBody
-import javax.inject.Inject
 import okhttp3.MediaType
 import okhttp3.RequestBody
-
+import javax.inject.Inject
 class CoursesRepositoryImpl @Inject constructor(
     private val apiService: CoursesApiService
 ) : CoursesRepository {
@@ -69,7 +70,8 @@ class CoursesRepositoryImpl @Inject constructor(
 
         return when (step1Response) {
             is Result.Success -> {
-                val uploadUrl = step1Response.data.uploadUrl ?: return Result.Failure(Exception("Server did not return an upload URL"))
+                val uploadUrl = step1Response.data.uploadUrl
+                    ?: return Result.Failure(Exception("Server did not return an upload URL"))
 
                 // Format the URL to prevent double slashes and missing domains
                 val baseUrl = "https://api-gateway-production-3fd0.up.railway.app"
@@ -79,7 +81,8 @@ class CoursesRepositoryImpl @Inject constructor(
                 try {
                     val mediaType = MediaType.parse(contentType)
                     val requestBody = RequestBody.create(mediaType, fileBytes)
-                    val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody)
+                    val multipartBody =
+                        MultipartBody.Part.createFormData("file", fileName, requestBody)
 
                     val uploadResponse = apiService.uploadMaterialFile(finalUrl, multipartBody)
 
