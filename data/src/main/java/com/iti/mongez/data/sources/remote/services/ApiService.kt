@@ -1,7 +1,5 @@
 package com.iti.mongez.data.sources.remote.services
 
-import com.iti.mongez.data.dtos.DashboardResponseDto
-import com.iti.mongez.data.dtos.ProfileResponseDto
 import com.iti.mongez.data.dtos.FullProfileDto
 import com.iti.mongez.data.dtos.AuthResponseDto
 import com.iti.mongez.data.dtos.CalendarStatusDto
