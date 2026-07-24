@@ -199,6 +199,11 @@
     <string name="profile_studying_preferences">تفضيلات الدراسة</string>
     <string name="profile_edit">تعديل</string>
     <string name="edit_preferences_title">تعديل التفضيلات</string>
+    <string name="edit_profile_title">تعديل الملف الشخصي</string>
+    <string name="label_display_name">اسم العرض</string>
+    <string name="hint_display_name">أدخل اسمك</string>
+    <string name="label_profile_image_url">رابط صورة الملف الشخصي</string>
+    <string name="hint_profile_image_url">أدخل رابط الصورة</string>
     <string name="save_button">حفظ</string>
     <!-- Dashboard -->
     <string name="dashboard_greeting">مرحبًا، %1$s</string>

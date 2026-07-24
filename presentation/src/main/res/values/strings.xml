@@ -201,6 +201,11 @@
     <string name="profile_studying_preferences">Studying Preferences</string>
     <string name="profile_edit">Edit</string>
     <string name="edit_preferences_title">Edit Preferences</string>
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="label_display_name">Display Name</string>
+    <string name="hint_display_name">Enter your name</string>
+    <string name="label_profile_image_url">Profile Image URL</string>
+    <string name="hint_profile_image_url">Enter image URL</string>
     <string name="save_button">Save</string>
 
     <!-- Dashboard -->

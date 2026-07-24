@@ -11,5 +11,13 @@ sealed interface ProfileIntent {
     data class ToggleEditPreferencesSheet(val visible: Boolean) : ProfileIntent
     data class UpdateStudyHours(val hours: Int) : ProfileIntent
     data class ToggleDay(val day: String) : ProfileIntent
+
     data object SavePreferences : ProfileIntent
+    data class ToggleEditProfileDialog(val visible: Boolean) : ProfileIntent
+    data class UpdateEditingName(val name: String) : ProfileIntent
+
+    data class OnImagePicked(val uri: android.net.Uri?, val bytes: ByteArray? = null) : ProfileIntent
+    data class ToggleImageSourcePicker(val visible: Boolean) : ProfileIntent
+
+    data object SubmitProfileUpdate : ProfileIntent
 }
