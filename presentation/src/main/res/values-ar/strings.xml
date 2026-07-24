@@ -240,4 +240,28 @@
     <string name="dashboard_error_loading">فشل تحميل بيانات لوحة التحكم.</string>
     <string name="no_upcoming_deadlines">لا توجد مواعيد نهائية قادمة</string>
     <string name="no_materials_empty_state">لا توجد مواد متاحة في الوقت الحالي.</string>
+
+
+        <!-- New Localized Strings -->
+        <string name="cover_image">صورة الغلاف</string>
+        <string name="upload_cover_image">رفع صورة الغلاف</string>
+        <string name="cover_image_hint">PNG أو JPG، حتى 5 ميجابايت</string>
+        <string name="selected_cover_image">صورة الغلاف المحددة</string>
+        <string name="select_start_date">اختر تاريخ البداية</string>
+        <string name="select_exam_date">اختر تاريخ الامتحان</string>
+        <string name="no_courses_match_search">لا توجد مواد تطابق بحثك.</string>
+        <string name="no_courses_empty_state">لا توجد مواد متاحة. أضف مادة جديدة أدناه!</string>
+        <string name="delete_course_title">حذف المادة؟</string>
+        <string name="delete_course_dialog_description">لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع البيانات المتعلقة بهذه المادة بشكل دائم.</string>
+        <string name="action_delete">حذف</string>
+        <string name="tab_materials">المحتوى</string>
+
+        <string name="today_tasks">مهام اليوم</string>
+        <string name="upcoming_tasks">المهام القادمة</string>
+        <string name="filter_all">الكل</string>
+        <string name="filter_pending">معلق</string>
+        <string name="filter_completed">مكتمل</string>
+        <string name="filter_high">عالي</string>
+        <string name="filter_medium">متوسط</string>
+        <string name="filter_low">منخفض</string>
 </resources>

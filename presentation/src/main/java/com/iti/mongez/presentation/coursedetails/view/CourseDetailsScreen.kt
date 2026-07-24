@@ -28,6 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.components.button.AppGlowButton
+import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.menu.AppPopupMenu
 import com.iti.mongez.designsystem.components.menu.PopupMenuItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -81,7 +83,6 @@ fun CourseDetailsScreen(
 
     var isCourseMenuExpanded by remember { mutableStateOf(false) }
 
-    // Snackbar State
     var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
     var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
 
@@ -89,7 +90,6 @@ fun CourseDetailsScreen(
         viewModel.processIntent(CourseDetailsIntent.LoadCourse(courseId))
     }
 
-    // Effect Observer
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
@@ -97,11 +97,13 @@ fun CourseDetailsScreen(
                     topSnackbarMessage = effect.message
                     topSnackbarType = effect.type
                 }
+                is CourseDetailsEffect.NavigateBack -> {
+                    onNavigateBack()
+                }
             }
         }
     }
 
-    // Snackbar Timeout
     LaunchedEffect(topSnackbarMessage) {
         if (topSnackbarMessage != null) {
             delay(3000L)
@@ -140,7 +142,6 @@ fun CourseDetailsScreen(
         }
     }
 
-    // Wrapped Scaffold in a Box to layer the Snackbar on top
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             containerColor = Theme.colorScheme.surface.background,
@@ -164,7 +165,7 @@ fun CourseDetailsScreen(
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
-                    // 1. Top Navigation Bar
+                    // Top Navigation Bar
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -211,6 +212,7 @@ fun CourseDetailsScreen(
                                             vertical = Theme.spacing.md
                                         ),
                                         onClick = {
+                                            isCourseMenuExpanded = false
                                             viewModel.processIntent(CourseDetailsIntent.EditCourse)
                                         }
                                     ),
@@ -226,7 +228,8 @@ fun CourseDetailsScreen(
                                             bottom = Theme.spacing.md
                                         ),
                                         onClick = {
-                                            viewModel.processIntent(CourseDetailsIntent.DeleteCourse)
+                                            isCourseMenuExpanded = false
+                                            viewModel.processIntent(CourseDetailsIntent.ShowDeleteDialog)
                                         }
                                     )
                                 )
@@ -234,7 +237,7 @@ fun CourseDetailsScreen(
                         }
                     }
 
-                    // 2. Screen Title
+                    // Screen Title
                     Text(
                         text = state.courseTitle,
                         color = Theme.colorScheme.text.primary,
@@ -248,16 +251,17 @@ fun CourseDetailsScreen(
 
                     Spacer(modifier = Modifier.height(Theme.spacing.md))
 
-                    // 3. Custom Tabs
+                    // Custom Tabs
+                    val tabTitles = state.tabs.map { stringResource(it) }
                     AppPrimaryTabs(
-                        tabs = state.tabs,
+                        tabs = tabTitles,
                         selectedTabIndex = state.selectedTabIndex,
                         onTabSelected = { index ->
                             viewModel.processIntent(CourseDetailsIntent.SelectTab(index))
                         }
                     )
 
-                    // 4. Main Scrollable Content Area
+                    // Scrollable Content Area
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -328,9 +332,9 @@ fun CourseDetailsScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     items(state.taskFilters.size) { index ->
-                                        val filter = state.taskFilters[index]
+                                        val filterRes = state.taskFilters[index]
                                         AppChip(
-                                            label = filter,
+                                            label = stringResource(filterRes),
                                             selected = state.selectedTaskFilterIndex == index,
                                             onSelectedChange = {
                                                 viewModel.processIntent(
@@ -347,7 +351,7 @@ fun CourseDetailsScreen(
                                 item {
                                     Spacer(modifier = Modifier.height(Theme.spacing.lg))
                                     Text(
-                                        text = "Today Tasks",
+                                        text = stringResource(R.string.today_tasks),
                                         style = Theme.typography.title.medium.copy(fontWeight = FontWeight.Bold),
                                         color = Theme.colorScheme.text.primary,
                                         modifier = Modifier.padding(bottom = Theme.spacing.sm)
@@ -371,7 +375,7 @@ fun CourseDetailsScreen(
                                 item {
                                     Spacer(modifier = Modifier.height(Theme.spacing.lg))
                                     Text(
-                                        text = "Upcoming Tasks",
+                                        text = stringResource(R.string.upcoming_tasks),
                                         style = Theme.typography.title.medium.copy(fontWeight = FontWeight.Bold),
                                         color = Theme.colorScheme.text.primary,
                                         modifier = Modifier.padding(bottom = Theme.spacing.sm)
@@ -404,7 +408,7 @@ fun CourseDetailsScreen(
                             .background(Color.Black.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        androidx.compose.material3.CircularProgressIndicator(
+                        CircularProgressIndicator(
                             color = Theme.colorScheme.brand.primary
                         )
                     }
@@ -412,7 +416,26 @@ fun CourseDetailsScreen(
             }
         }
 
-        // Animated Snackbar Implementation mapped over Scaffold
+        // Confirmation Dialog for Course Deletion
+        if (state.isDeleteDialogVisible) {
+            AppConfirmationDialog(
+                title = stringResource(R.string.delete_course_title),
+                description = stringResource(R.string.delete_course_dialog_description),
+                primaryActionText = stringResource(R.string.action_delete),
+                onPrimaryAction = {
+                    viewModel.processIntent(CourseDetailsIntent.DeleteCourse)
+                },
+                onDismiss = {
+                    viewModel.processIntent(CourseDetailsIntent.DismissDeleteDialog)
+                },
+                secondaryActionText = stringResource(R.string.action_cancel),
+                onSecondaryAction = {
+                    viewModel.processIntent(CourseDetailsIntent.DismissDeleteDialog)
+                }
+            )
+        }
+
+        // Animated Snackbar
         AnimatedVisibility(
             visible = topSnackbarMessage != null,
             enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
@@ -420,7 +443,7 @@ fun CourseDetailsScreen(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(Theme.spacing.md)
-                .padding(top = Theme.spacing.xxl) // adjust top padding as needed to prevent clipping with status bar
+                .padding(top = Theme.spacing.xxl)
         ) {
             topSnackbarMessage?.let { message ->
                 AppSnackbarContent(

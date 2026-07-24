@@ -1,10 +1,6 @@
 package com.iti.mongez.presentation.courses.view
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import coil.compose.rememberAsyncImagePainter
+import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.fab.AppFab
 import com.iti.mongez.designsystem.components.search.AppSearchBar
 import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
@@ -33,7 +30,7 @@ fun CoursesScreenContent(
     innerPadding: PaddingValues,
     topSnackbarMessage: String?,
     topSnackbarType: AppSnackbarType,
-    onIntent: (CoursesIntent) -> Unit, // Unified callback for all actions
+    onIntent: (CoursesIntent) -> Unit,
     onCourseClick: (String) -> Unit
 ) {
     Box(
@@ -45,9 +42,7 @@ fun CoursesScreenContent(
             floatingActionButton = {
                 AppFab(
                     modifier = Modifier.padding(bottom = Theme.spacing.lg),
-                    onClick = {
-                        onIntent(CoursesIntent.ToggleAddCourseSheet)
-                    }
+                    onClick = { onIntent(CoursesIntent.ToggleAddCourseSheet) }
                 )
             }
         ) { padding ->
@@ -57,7 +52,6 @@ fun CoursesScreenContent(
                     .padding(padding)
                     .padding(Theme.spacing.lg)
             ) {
-
                 Text(
                     text = stringResource(R.string.my_courses),
                     style = Theme.typography.headline.medium,
@@ -67,69 +61,41 @@ fun CoursesScreenContent(
 
                 AppSearchBar(
                     query = state.searchQuery,
-                    onQueryChange = {
-                        onIntent(CoursesIntent.SearchQueryChanged(it))
-                    },
-                    onFilterClick = {
-                        onIntent(CoursesIntent.FilterClicked)
-                    }
+                    onQueryChange = { onIntent(CoursesIntent.SearchQueryChanged(it)) },
+                    onFilterClick = { onIntent(CoursesIntent.FilterClicked) }
                 )
 
-                Spacer(
-                    modifier = Modifier.height(Theme.spacing.lg)
-                )
+                Spacer(modifier = Modifier.height(Theme.spacing.lg))
 
                 if (state.isLoading && state.allCourses.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 } else if (!state.isLoading && state.filteredCourses.isEmpty()) {
-                    // NEW: Empty State Handling
-                    Box(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                         Text(
-                            text = if (state.searchQuery.isNotEmpty()) "No courses match your search." else "No courses available. Add one below!",
+                            text = if (state.searchQuery.isNotEmpty()) {
+                                stringResource(R.string.no_courses_match_search)
+                            } else {
+                                stringResource(R.string.no_courses_empty_state)
+                            },
                             style = Theme.typography.body.large,
                             color = Theme.colorScheme.text.secondary
                         )
                     }
                 } else {
-
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(
-                            Theme.spacing.lg
-                        ),
-                        contentPadding = PaddingValues(
-                            bottom = Theme.spacing.giant + Theme.spacing.lg
-                        )
+                        verticalArrangement = Arrangement.spacedBy(Theme.spacing.lg),
+                        contentPadding = PaddingValues(bottom = Theme.spacing.giant + Theme.spacing.lg)
                     ) {
-
-                        items(
-                            state.filteredCourses,
-                            key = { it.id }
-                        ) { course ->
-
-                            // Fix 2: Smooth out search filtering, additions, and removals animations
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItem()
-                            ) {
+                        items(state.filteredCourses, key = { it.id }) { course ->
+                            Box(modifier = Modifier.fillMaxWidth().animateItem()) {
                                 CourseCard(
                                     title = course.name,
                                     progress = course.completionPercentage / 100f,
-                                    onClick = {
-                                        onCourseClick(course.id) // <-- TRIGGER NAVIGATION
-                                    },
-                                    imagePainter = rememberAsyncImagePainter(
-                                        "https://www.atmajaya.ac.id/en/media/coursera.png"
-                                    )
+                                    onClick = { onCourseClick(course.id) },
+                                    imagePainter = rememberAsyncImagePainter(course.imageUrl?.takeIf { it.isNotBlank() } ?: "https://www.atmajaya.ac.id/en/media/coursera.png")
                                 )
                             }
                         }
@@ -137,40 +103,45 @@ fun CoursesScreenContent(
                 }
             }
 
-            if (state.isAddCourseSheetVisible) {
-
-                AppBottomSheet(
-                    onDismiss = {
-                        onIntent(CoursesIntent.ToggleAddCourseSheet)
+            if (state.courseToDeleteId != null) {
+                AppConfirmationDialog(
+                    title = stringResource(R.string.delete_course_title),
+                    description = stringResource(R.string.delete_course_dialog_description),
+                    primaryActionText = stringResource(R.string.action_delete),
+                    onPrimaryAction = {
+                        onIntent(CoursesIntent.ConfirmDeleteCourse(state.courseToDeleteId!!))
                     },
+                    onDismiss = {
+                        onIntent(CoursesIntent.DismissDeleteConfirmation)
+                    },
+                    secondaryActionText = stringResource(R.string.action_cancel),
+                    onSecondaryAction = {
+                        onIntent(CoursesIntent.DismissDeleteConfirmation)
+                    }
+                )
+            }
+
+            if (state.isAddCourseSheetVisible) {
+                AppBottomSheet(
+                    onDismiss = { onIntent(CoursesIntent.ToggleAddCourseSheet) },
                     title = stringResource(R.string.add_new_course)
                 ) {
-
-                    // 1. Resolve the localized error string here
                     val emptyFieldsError = stringResource(R.string.error_empty_fields)
 
                     AddCourseSheetContent(
                         isLoading = state.isCreatingCourse,
-                        onAddCourse = { name, code, startDate, examDate, hasMaterials ->
-
-                            // 2. Validate the fields
+                        onAddCourse = { name, code, imageUrl, startDate, examDate, materials ->
                             if (name.isBlank() || code.isBlank() || startDate.isBlank() || examDate.isBlank()) {
-                                // 3. Fire error intent if validation fails
-                                onIntent(
-                                    CoursesIntent.ShowSnackbar(
-                                        message = emptyFieldsError,
-                                        type = AppSnackbarType.Error
-                                    )
-                                )
+                                onIntent(CoursesIntent.ShowSnackbar(message = emptyFieldsError, type = AppSnackbarType.Error))
                             } else {
-                                // 4. Proceed normally if validation passes
                                 onIntent(
                                     CoursesIntent.CreateCourse(
                                         name = name,
                                         courseCode = code,
+                                        imageUrl = imageUrl,
                                         startDate = startDate,
                                         examDate = examDate,
-                                        hasMaterials = hasMaterials,
+                                        materials = materials
                                     )
                                 )
                             }
@@ -189,13 +160,8 @@ fun CoursesScreenContent(
                 .padding(Theme.spacing.md)
                 .padding(top = Theme.spacing.xxl)
         ) {
-
             topSnackbarMessage?.let { message ->
-
-                AppSnackbarContent(
-                    message = message,
-                    type = topSnackbarType
-                )
+                AppSnackbarContent(message = message, type = topSnackbarType)
             }
         }
     }

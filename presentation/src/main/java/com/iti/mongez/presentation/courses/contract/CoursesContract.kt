@@ -1,9 +1,7 @@
 package com.iti.mongez.presentation.courses.contract
 
-import com.iti.mongez.domain.courses.model.Course
+import android.net.Uri
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
-
-
 
 sealed interface CoursesIntent {
     object LoadCourses : CoursesIntent
@@ -13,10 +11,15 @@ sealed interface CoursesIntent {
     data class CreateCourse(
         val name: String,
         val courseCode: String,
+        val imageUrl: String,
         val startDate: String,
         val examDate: String,
-        val hasMaterials: Boolean
+        val materials: List<Uri> // Replaced hasMaterials
     ) : CoursesIntent
+
+    data class ShowDeleteConfirmation(val courseId: String) : CoursesIntent
+    object DismissDeleteConfirmation : CoursesIntent
+    data class ConfirmDeleteCourse(val courseId: String) : CoursesIntent
 
     data class ShowSnackbar(
         val message: String,
@@ -26,5 +29,6 @@ sealed interface CoursesIntent {
 
 sealed interface CoursesEffect {
     data class ShowSnackbar(val message: String, val type: AppSnackbarType = AppSnackbarType.Info) : CoursesEffect
-    data class NavigateToUploadMaterial(val courseId: String) : CoursesEffect // NEW
+    data class NavigateToUploadMaterial(val courseId: String) : CoursesEffect
+    object NavigateBack : CoursesEffect
 }

@@ -5,6 +5,7 @@ data class Course(
     val id: String,
     val name: String,
     val courseCode: String,
+    val imageUrl: String?,
     val startDate: String,
     val examDate: String,
     val hasMaterials: Boolean,

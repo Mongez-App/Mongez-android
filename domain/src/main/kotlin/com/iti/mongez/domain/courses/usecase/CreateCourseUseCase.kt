@@ -9,8 +9,9 @@ class CreateCourseUseCase @Inject constructor(
     suspend operator fun invoke(
         name: String,
         courseCode: String,
+        imageUrl: String,
         startDate: String,
         examDate: String,
         hasMaterials: Boolean
-    ) = repository.createCourse(name, courseCode, startDate, examDate, hasMaterials)
+    ) = repository.createCourse(name, courseCode, imageUrl, startDate, examDate, hasMaterials)
 }

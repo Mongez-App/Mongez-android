@@ -11,6 +11,7 @@ interface CoursesRepository {
     suspend fun createCourse(
         name: String,
         courseCode: String,
+        imageUrl: String,
         startDate: String,
         examDate: String,
         hasMaterials: Boolean
