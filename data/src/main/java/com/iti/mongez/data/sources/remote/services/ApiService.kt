@@ -1,7 +1,5 @@
 package com.iti.mongez.data.sources.remote.services
 
-import com.iti.mongez.data.dtos.DashboardResponseDto
-import com.iti.mongez.data.dtos.ProfileResponseDto
 import com.iti.mongez.data.dtos.profile.FullProfileDto
 import com.iti.mongez.data.dtos.profile.UpdateProfileRequestDto
 import com.iti.mongez.data.dtos.profile.UpdateProfileResponseDto
@@ -10,6 +8,8 @@ import com.iti.mongez.data.dtos.HandshakeRequestDto
 import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
 import com.iti.mongez.data.dtos.UserPreferencesDto
+import com.iti.mongez.data.dtos.dashboarddtos.DashboardResponseDto
+import com.iti.mongez.data.dtos.dashboarddtos.ProfileResponseDto
 import okhttp3.MultipartBody
 import retrofit2.http.*
 
