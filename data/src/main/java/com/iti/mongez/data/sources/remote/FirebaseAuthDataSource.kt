@@ -25,4 +25,6 @@ class FirebaseAuthDataSource @Inject constructor(
     }
 
     fun logout() = firebaseAuth.signOut()
+
+    fun getCurrentUserName(): String? = firebaseAuth.currentUser?.displayName
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.remote.services.ApiService
 import com.iti.mongez.data.mapper.toDomain
+import com.iti.mongez.data.mapper.toUserProfile
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.dashboard.model.DashboardSummary
 import com.iti.mongez.domain.dashboard.model.UserProfile
@@ -16,8 +17,8 @@ class DashboardRepositoryImpl @Inject constructor(
 
     override suspend fun getUserProfile(): Result<UserProfile> = safeApi {
         val dto = apiService.getUserProfile()
-        Log.d("DASHBOARD_DEBUG", "Raw Profile DTO: ${dto.toDomain()}")
-        dto.toDomain()
+        Log.d("DASHBOARD_DEBUG", "Raw Profile DTO: $dto")
+        dto.toUserProfile()
     }
 
     override suspend fun getHomeDashboard(): Result<DashboardSummary> = safeApi {

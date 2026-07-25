@@ -11,22 +11,44 @@ import com.iti.mongez.data.sources.remote.FirebaseAuthDataSource
 import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.settings.repository.AppSettingsRepository
 import kotlinx.coroutines.flow.firstOrNull
+import java.util.Locale.getDefault
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuthDataSource: FirebaseAuthDataSource,
     private val apiService: ApiService,
     private val tokenManager: TokenManager,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val appSettingsRepository: AppSettingsRepository
 ) : AuthRepository {
+
+    private suspend fun buildHandshakeRequest(providedName: String? = null): HandshakeRequestDto {
+        val settings = appSettingsRepository.getAppSettings().firstOrNull()
+        val appearance = if (settings?.isDarkModeEnabled == true) "Dark Mode" else "Light Mode"
+        val languageCode = settings?.language?.code
+        val finalLanguage = if (languageCode == "system") {
+            getDefault().language.let { if (it.startsWith("ar")) "ar" else "en" }
+        } else {
+            languageCode ?: "en"
+        }
+        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName() ?: "User"
+        
+        return HandshakeRequestDto(
+            name = name,
+            appearance = appearance,
+            language = finalLanguage
+        )
+    }
 
     override suspend fun login(email: String, password: String): Result<User> {
         return safeApi {
             val firebaseToken = firebaseAuthDataSource.signInWithEmail(email, password)
             tokenManager.saveToken(firebaseToken)
             println("Firebase Token : $firebaseToken")
-            val response = apiService.handshake(HandshakeRequestDto(isGuest = false))
+            val request = buildHandshakeRequest()
+            val response = apiService.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
@@ -38,7 +60,8 @@ class AuthRepositoryImpl @Inject constructor(
             val firebaseToken = firebaseAuthDataSource.createUserWithEmail(email, password)
             tokenManager.saveToken(firebaseToken)
             println("Firebase Token : $firebaseToken")
-            val response = apiService.handshake(HandshakeRequestDto(isGuest = false))
+            val request = buildHandshakeRequest(firstName)
+            val response = apiService.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
@@ -49,7 +72,8 @@ class AuthRepositoryImpl @Inject constructor(
         return safeApi {
             val firebaseToken = firebaseAuthDataSource.signInWithGoogleCredential(idToken)
             tokenManager.saveToken(firebaseToken)
-            val response = apiService.handshake(HandshakeRequestDto(isGuest = false))
+            val request = buildHandshakeRequest()
+            val response = apiService.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
