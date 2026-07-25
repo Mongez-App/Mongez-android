@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 // Requests
 data class HandshakeRequestDto(
-    @SerializedName("is_guest") val isGuest: Boolean = false
+    @SerializedName("name") val name: String,
+    @SerializedName("appearance") val appearance: String,
+    @SerializedName("language") val language: String
 )
 
 // Responses
@@ -13,6 +15,9 @@ data class AuthResponseDto(
     @SerializedName("email") val email: String?,
     @SerializedName("name") val name: String?,
     @SerializedName("avatar_url") val avatarUrl: String?,
+    @SerializedName("appearance") val appearance: String?,
+    @SerializedName("language") val language: String?,
+    @SerializedName("calendar_sync_connected") val calendarSyncConnected: Boolean?,
     @SerializedName("stats") val stats: UserStatsDto?
 )
 

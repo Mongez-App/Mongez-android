@@ -7,7 +7,7 @@ import com.iti.mongez.data.local.entity.UserEntity
 
 @Database(
     entities = [UserEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class MongezDatabase : RoomDatabase() {

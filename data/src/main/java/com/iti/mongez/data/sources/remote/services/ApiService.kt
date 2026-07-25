@@ -9,7 +9,6 @@ import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
 import com.iti.mongez.data.dtos.UserPreferencesDto
 import com.iti.mongez.data.dtos.dashboarddtos.DashboardResponseDto
-import com.iti.mongez.data.dtos.dashboarddtos.ProfileResponseDto
 import okhttp3.MultipartBody
 import retrofit2.http.*
 
@@ -20,8 +19,8 @@ interface ApiService {
     @POST("roadmap/reschedule")
     suspend fun rescheduleBlocks(@Body request: Map<String, Any>): WeeklyRoadmapDto
 
-    @GET("users/me/profile")
-    suspend fun getUserProfile(): ProfileResponseDto
+    @GET("auth/me")
+    suspend fun getUserProfile(): AuthResponseDto
 
     @GET("users/me/profile")
     suspend fun getFullUserProfile(): FullProfileDto
@@ -44,7 +43,7 @@ interface ApiService {
     suspend fun updatePreferences(@Body preferences: UserPreferencesDto): Unit
 
     @POST("auth/handshake")
-    suspend fun handshake(@Body request: Any): AuthResponseDto
+    suspend fun handshake(@Body request: HandshakeRequestDto): AuthResponseDto
 
     @POST("auth/calendar/connect")
     suspend fun connectCalendar(): Unit

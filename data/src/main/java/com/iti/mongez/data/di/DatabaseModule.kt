@@ -23,7 +23,7 @@ object DatabaseModule {
             context,
             MongezDatabase::class.java,
             "mongez_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

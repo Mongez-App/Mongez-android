@@ -4,6 +4,14 @@ import com.iti.mongez.data.dtos.AuthResponseDto
 import com.iti.mongez.data.local.entity.UserEntity
 import com.iti.mongez.domain.auth.model.User
 
+import com.iti.mongez.domain.dashboard.model.UserProfile
+
+fun AuthResponseDto.toUserProfile(): UserProfile {
+    return UserProfile(
+        currentStreakDays = this.stats?.currentStreakDays ?: 0
+    )
+}
+
 // Map Network DTO -> Domain Model
 fun AuthResponseDto.toDomain(): User {
     return User(
@@ -11,6 +19,9 @@ fun AuthResponseDto.toDomain(): User {
         email = this.email ?: "",
         name = this.name ?: "",
         avatarUrl = this.avatarUrl,
+        appearance = this.appearance,
+        language = this.language,
+        calendarSyncConnected = this.calendarSyncConnected ?: false,
         totalStudyHours = this.stats?.totalStudyHours ?: 0,
         completedTasksCount = this.stats?.completedTasksCount ?: 0,
         currentStreakDays = this.stats?.currentStreakDays ?: 0
@@ -24,6 +35,9 @@ fun User.toEntity(): UserEntity {
         email = this.email,
         name = this.name,
         avatarUrl = this.avatarUrl,
+        appearance = this.appearance,
+        language = this.language,
+        calendarSyncConnected = this.calendarSyncConnected,
         totalStudyHours = this.totalStudyHours,
         completedTasksCount = this.completedTasksCount,
         currentStreakDays = this.currentStreakDays
@@ -37,6 +51,9 @@ fun UserEntity.toDomain(): User {
         email = this.email,
         name = this.name,
         avatarUrl = this.avatarUrl,
+        appearance = this.appearance,
+        language = this.language,
+        calendarSyncConnected = this.calendarSyncConnected,
         totalStudyHours = this.totalStudyHours,
         completedTasksCount = this.completedTasksCount,
         currentStreakDays = this.currentStreakDays
