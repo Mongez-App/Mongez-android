@@ -56,18 +56,29 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun isPreferencesSet(): Result<Boolean> {
         return try {
-            val localPrefs = dataSource.userPreferencesFlow.first()
-            if (localPrefs != null && localPrefs.dailyStudyHours > 0) {
+            val isOnboardingCompleted = dataSource.isOnboardingCompletedFlow.first()
+            if (isOnboardingCompleted) {
                 return Result.Success(true)
             }
+
             val response = apiService.getPreferences()
-            val isSet = response.dailyStudyHours > 0
-            if (isSet) {
+            val isSetRemotely = response.dailyStudyHours > 0
+            if (isSetRemotely) {
                 dataSource.savePreferences(response.toDomain())
+                dataSource.setOnboardingCompleted(true)
             }
-            Result.Success(isSet)
+            Result.Success(isSetRemotely)
         } catch (e: Exception) {
             Result.Success(false)
+        }
+    }
+
+    override suspend fun setPreferencesOnboardingCompleted(completed: Boolean): Result<Unit> {
+        return try {
+            dataSource.setOnboardingCompleted(completed)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Failure(e)
         }
     }
 }

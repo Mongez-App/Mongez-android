@@ -15,6 +15,7 @@ import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
+import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
 import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
 import com.iti.mongez.domain.calendar.usecase.ConnectCalendarUseCase
 import com.iti.mongez.domain.calendar.usecase.DisconnectCalendarUseCase
@@ -41,6 +42,7 @@ class ProfileViewModel @Inject constructor(
     private val getPreferencesUseCase: GetPreferencesUseCase,
     private val savePreferencesUseCase: SavePreferencesUseCase,
     private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
+    private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
     private val connectCalendarUseCase: ConnectCalendarUseCase,
     private val disconnectCalendarUseCase: DisconnectCalendarUseCase,
@@ -168,6 +170,7 @@ class ProfileViewModel @Inject constructor(
             val state = _viewState.value
             when (val result = savePreferencesUseCase(state.selectedStudyHours, state.selectedDays.toList())) {
                 is Result.Success -> {
+                    setPreferencesOnboardingCompletedUseCase(true)
                     _viewState.update {
                         it.copy(
                             isLoading = false,

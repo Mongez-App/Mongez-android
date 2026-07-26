@@ -33,6 +33,8 @@ import com.iti.mongez.presentation.R
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DefaultScheduleDialog(
+    studyHours: Int,
+    selectedDays: List<String>,
     onDismiss: () -> Unit,
     onGoToProfile: () -> Unit
 ) {
@@ -98,7 +100,7 @@ fun DefaultScheduleDialog(
                                 color = Theme.colorScheme.text.tertiary
                             )
                             Text(
-                                text = stringResource(id = R.string.default_study_hours_value),
+                                text = stringResource(id = R.string.hours_per_day, studyHours),
                                 style = Theme.typography.title.small,
                                 fontWeight = FontWeight.Bold,
                                 color = Theme.colorScheme.text.primary
@@ -137,7 +139,7 @@ fun DefaultScheduleDialog(
                                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing.xs),
                                 verticalArrangement = Arrangement.spacedBy(Theme.spacing.xs)
                             ) {
-                                listOf("Sun", "Mon", "Tue", "Wed", "Thu").forEach { day ->
+                                selectedDays.forEach { day ->
                                     AppChip(
                                         label = day,
                                         selected = true,
@@ -194,6 +196,8 @@ fun DefaultScheduleDialogPreview() {
             contentAlignment = Alignment.Center
         ) {
             DefaultScheduleDialog(
+                studyHours = 6,
+                selectedDays = listOf("Sat", "Sun"),
                 onDismiss = {},
                 onGoToProfile = {}
             )

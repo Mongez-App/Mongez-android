@@ -74,6 +74,7 @@
     <string name="schedule_default_title">Schedule set to default</string>
     <string name="schedule_default_description">We\'ve built your tasks schedule using default study preferences.</string>
     <string name="study_time_label">Study Time</string>
+    <string name="hours_per_day">%1$d hours / day</string>
     <string name="default_study_hours_value">8 hours / day</string>
     <string name="study_days_label">Study Days</string>
     <string name="change_settings_hint">Want to change this? Head to Profile to customize your study hours and days.</string>

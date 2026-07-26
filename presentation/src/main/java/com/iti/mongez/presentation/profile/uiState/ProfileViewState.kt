@@ -1,7 +1,7 @@
 package com.iti.mongez.presentation.profile.uiState
 
-import android.net.Uri
 import com.iti.mongez.domain.settings.model.Language
+import com.iti.mongez.domain.preferences.model.UserPreferences
 
 data class ProfileViewState(
     val name: String = "",
@@ -17,8 +17,8 @@ data class ProfileViewState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isEditPreferencesSheetVisible: Boolean = false,
-    val selectedStudyHours: Int = 8,
-    val selectedDays: Set<String> = emptySet(),
+    val selectedStudyHours: Int = UserPreferences.DEFAULT_STUDY_HOURS,
+    val selectedDays: Set<String> = UserPreferences.DEFAULT_AVAILABLE_DAYS.toSet(),
     val isEditProfileDialogVisible: Boolean = false,
     val editingName: String = "",
     val selectedAvatarUrl: String? = null,
