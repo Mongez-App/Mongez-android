@@ -42,80 +42,50 @@
 
 ## 🖼️ Screenshots
 
-### Authentication & Onboarding
+### Authentication
+<p align="center">
+  <img src="docs/screenshots/Auth%20Screens.png" alt="Auth Screens" width="100%" /><br />
+  <sub><b>Register · Login · Google One Tap Sign-In</b></sub>
+</p>
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/screenshots/Auth%20Screens.png" alt="Auth Screens" width="480" /><br />
-      <sub><b>Authentication</b> — Register · Login · Google One Tap</sub>
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/Onboarding%20Screens.png" alt="Onboarding Screens" width="480" /><br />
-      <sub><b>Onboarding</b> — AI Study · Time Optimization · AI Tutor</sub>
-    </td>
-  </tr>
-</table>
+### Onboarding
+<p align="center">
+  <img src="docs/screenshots/Onboarding%20Screens.png" alt="Onboarding Screens" width="100%" /><br />
+  <sub><b>AI Study Introduction · Time Optimization · Personal AI Tutor</b></sub>
+</p>
 
-### Preferences & Profile
+### Preferences
+<p align="center">
+  <img src="docs/screenshots/Preferences%20Screens.png" alt="Preferences Screens" width="100%" /><br />
+  <sub><b>Daily Study Hours · Available Days · Google Calendar Sync</b></sub>
+</p>
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/screenshots/Preferences%20Screens.png" alt="Preferences Screens" width="480" /><br />
-      <sub><b>Preferences</b> — Study Hours · Available Days · Calendar Sync</sub>
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/Profile%20Screens.png" alt="Profile Screens" width="480" /><br />
-      <sub><b>Profile</b> — Overview · Edit Profile · Edit Preferences</sub>
-    </td>
-  </tr>
-</table>
+### Profile
+<p align="center">
+  <img src="docs/screenshots/Profile%20Screens.png" alt="Profile Screens" width="100%" /><br />
+  <sub><b>Profile Overview · Edit Profile · Edit Preferences</b></sub>
+</p>
 
 ### Courses & Course Details
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/screenshots/Courses.png" alt="Courses Screen" width="240" /><br />
-      <sub><b>My Courses</b> — List with search, filter & progress</sub>
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/Materials.png" alt="Course Details Materials" width="240" /><br />
-      <sub><b>Course Details — Materials Tab</b></sub>
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/Tasks.png" alt="Course Details Tasks" width="240" /><br />
-      <sub><b>Course Details — Tasks Tab</b></sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/screenshots/Courses.png" alt="Courses Screen" width="32%" />
+  <img src="docs/screenshots/Materials.png" alt="Course Details Materials" width="32%" />
+  <img src="docs/screenshots/Tasks.png" alt="Course Details Tasks" width="32%" /><br />
+  <sub><b>My Courses · Materials Tab · Tasks Tab</b></sub>
+</p>
 
 ### Roadmap
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/screenshots/Roadmap%20Screens.png" alt="Roadmap Screens" width="960" /><br />
-      <sub><b>Roadmap</b> — Timeline · Filter · Add Event (Type · Details · Course)</sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/screenshots/Roadmap%20Screens.png" alt="Roadmap Screens" width="100%" /><br />
+  <sub><b>Timeline · Filter · Add Event (Type · Details · Course)</b></sub>
+</p>
 
 ### AI Study Room
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/screenshots/AI%20Study%20Room.png" alt="Study Room Chat" width="240" /><br />
-      <sub><b>AI Study Room</b> — Material summary & Q&A chat</sub>
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/End%20Session%20Alert.png" alt="Study Room End Session" width="240" /><br />
-      <sub><b>AI Study Room</b> — End session dialog</sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/screenshots/AI%20Study%20Room.png" alt="Study Room Chat" width="32%" />
+  <img src="docs/screenshots/End%20Session%20Alert.png" alt="Study Room End Session" width="32%" /><br />
+  <sub><b>AI Chat with Material Summaries & Q&A · End Session Dialog</b></sub>
+</p>
 
 ---
 
@@ -283,7 +253,6 @@ Mongez/
 │
 ├── docs/                         # Documentation
 │   ├── ArchitectureLayers.md
-│   ├── ArchitectureAgents.md
 │   ├── DesignSystem.md
 │   ├── GitBranchNamingConventions.md
 │   └── handshake_contract.md
