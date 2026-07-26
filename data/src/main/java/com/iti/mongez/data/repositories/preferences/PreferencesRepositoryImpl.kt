@@ -30,6 +30,15 @@ class PreferencesRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun savePreferencesLocally(preferences: UserPreferences): Result<Unit> {
+        return try {
+            dataSource.savePreferences(preferences)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
     override suspend fun getPreferences(): Result<UserPreferences> {
         return try {
             val localPrefs = dataSource.userPreferencesFlow.first()
@@ -47,8 +56,16 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun isPreferencesSet(): Result<Boolean> {
         return try {
+            val localPrefs = dataSource.userPreferencesFlow.first()
+            if (localPrefs != null && localPrefs.dailyStudyHours > 0) {
+                return Result.Success(true)
+            }
             val response = apiService.getPreferences()
-            Result.Success(response.dailyStudyHours > 0)
+            val isSet = response.dailyStudyHours > 0
+            if (isSet) {
+                dataSource.savePreferences(response.toDomain())
+            }
+            Result.Success(isSet)
         } catch (e: Exception) {
             Result.Success(false)
         }

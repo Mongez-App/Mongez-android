@@ -14,6 +14,7 @@ import com.iti.mongez.domain.profile.usecase.GetUserProfileUseCase
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
+import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
 import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
 import com.iti.mongez.domain.calendar.usecase.ConnectCalendarUseCase
 import com.iti.mongez.domain.calendar.usecase.DisconnectCalendarUseCase
@@ -39,6 +40,7 @@ class ProfileViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val getPreferencesUseCase: GetPreferencesUseCase,
     private val savePreferencesUseCase: SavePreferencesUseCase,
+    private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
     private val connectCalendarUseCase: ConnectCalendarUseCase,
     private val disconnectCalendarUseCase: DisconnectCalendarUseCase,
@@ -86,6 +88,7 @@ class ProfileViewModel @Inject constructor(
             }
             is ProfileIntent.UpdateStudyHours -> {
                 _viewState.update { it.copy(selectedStudyHours = intent.hours) }
+                savePreferencesLocally()
             }
             is ProfileIntent.ToggleDay -> {
                 _viewState.update { state ->
@@ -96,6 +99,7 @@ class ProfileViewModel @Inject constructor(
                     }
                     state.copy(selectedDays = newDays)
                 }
+                savePreferencesLocally()
             }
             is ProfileIntent.SavePreferences -> savePreferences()
             is ProfileIntent.ToggleEditProfileDialog -> {
@@ -146,6 +150,16 @@ class ProfileViewModel @Inject constructor(
                 }
                 is Result.Loading -> {}
             }
+        }
+    }
+
+    private fun savePreferencesLocally() {
+        viewModelScope.launch {
+            val state = _viewState.value
+            savePreferencesLocallyUseCase(
+                state.selectedStudyHours,
+                state.selectedDays.toList()
+            )
         }
     }
 

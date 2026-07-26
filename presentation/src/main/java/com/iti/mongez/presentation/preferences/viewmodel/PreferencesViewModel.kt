@@ -7,6 +7,9 @@ import com.iti.mongez.presentation.preferences.uiState.PreferencesEffect
 import com.iti.mongez.presentation.preferences.uiState.PreferencesStep
 import com.iti.mongez.presentation.preferences.uiState.PreferencesUiState
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
+import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
+import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
+import com.iti.mongez.domain.core.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PreferencesViewModel @Inject constructor(
-    private val savePreferencesUseCase: SavePreferencesUseCase
+    private val savePreferencesUseCase: SavePreferencesUseCase,
+    private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
+    private val getPreferencesUseCase: GetPreferencesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -28,6 +33,26 @@ class PreferencesViewModel @Inject constructor(
         )
     )
     val uiState = _uiState.asStateFlow()
+
+    init {
+        loadInitialPreferences()
+    }
+
+    private fun loadInitialPreferences() {
+        viewModelScope.launch {
+            when (val result = getPreferencesUseCase()) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            studyHours = result.data.dailyStudyHours,
+                            selectedDays = result.data.availableDays.toSet()
+                        )
+                    }
+                }
+                else -> { /* Use defaults already in state */ }
+            }
+        }
+    }
 
     private val _effect = MutableSharedFlow<PreferencesEffect>()
     val effect = _effect.asSharedFlow()
@@ -41,6 +66,7 @@ class PreferencesViewModel @Inject constructor(
         when (intent) {
             is PreferencesIntent.OnStudyHoursChanged -> {
                 _uiState.update { it.copy(studyHours = intent.hours) }
+                saveLocally()
             }
             is PreferencesIntent.OnDaySelected -> {
                 _uiState.update { state ->
@@ -51,6 +77,7 @@ class PreferencesViewModel @Inject constructor(
                     }
                     state.copy(selectedDays = newDays)
                 }
+                saveLocally()
             }
             is PreferencesIntent.OnStepChanged -> {
                 val step = when (intent.index) {
@@ -93,6 +120,16 @@ class PreferencesViewModel @Inject constructor(
         _uiState.update { it.copy(currentStep = prevStep) }
         viewModelScope.launch {
             _effect.emit(PreferencesEffect.ScrollToPreviousPage)
+        }
+    }
+
+    private fun saveLocally() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            savePreferencesLocallyUseCase(
+                state.studyHours,
+                state.selectedDays.toList()
+            )
         }
     }
 
