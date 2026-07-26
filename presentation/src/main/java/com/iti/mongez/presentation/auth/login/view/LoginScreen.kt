@@ -254,13 +254,6 @@ private fun LoginContent(
         Spacer(modifier = Modifier.height(Theme.spacing.xl))
 
         // Social Buttons
-        SocialButton(
-            text = stringResource(R.string.continue_as_guest),
-            icon = Icons.Outlined.Person,
-            onClick = { onIntent(LoginIntent.OnGuestClicked) }
-        )
-
-        Spacer(modifier = Modifier.height(Theme.spacing.md))
 
         SocialButton(
             text = stringResource(R.string.sign_in_google),
