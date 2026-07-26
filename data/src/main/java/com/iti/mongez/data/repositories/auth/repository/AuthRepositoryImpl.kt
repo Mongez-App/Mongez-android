@@ -26,7 +26,6 @@ class AuthRepositoryImpl @Inject constructor(
 
     private suspend fun buildHandshakeRequest(
         providedName: String? = null,
-        providedAvatar: String? = null
     ): HandshakeRequestDto {
         val settings = appSettingsRepository.getAppSettings().firstOrNull()
         val appearance = if (settings?.isDarkModeEnabled == true) "Dark Mode" else "Light Mode"
@@ -36,11 +35,10 @@ class AuthRepositoryImpl @Inject constructor(
         } else {
             languageCode ?: "en"
         }
-        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName()
+        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName() ?: ""
         
         return HandshakeRequestDto(
             name = name,
-            avatarUrl = providedAvatar,
             appearance = appearance,
             language = finalLanguage
         )
@@ -51,7 +49,10 @@ class AuthRepositoryImpl @Inject constructor(
             val firebaseToken = firebaseAuthDataSource.signInWithEmail(email, password)
             tokenManager.saveToken(firebaseToken)
             println("Firebase Token : $firebaseToken")
-            val request = buildHandshakeRequest()
+            
+            val profile = apiService.getFullUserProfile()
+            val request = buildHandshakeRequest(profile.name)
+            
             val response = apiService.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
@@ -80,7 +81,9 @@ class AuthRepositoryImpl @Inject constructor(
         return safeApi {
             val firebaseToken = firebaseAuthDataSource.signInWithGoogleCredential(idToken)
             tokenManager.saveToken(firebaseToken)
+
             val request = buildHandshakeRequest()
+
             val response = apiService.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
