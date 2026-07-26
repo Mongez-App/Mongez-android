@@ -199,8 +199,12 @@ class ProfileViewModel @Inject constructor(
                         val profile = result.data
                         android.util.Log.d("ProfileViewModel", "Load Success. Server Name: ${profile.name}, Server Avatar: ${profile.avatarUrl}")
                         _viewState.update {
+                            val finalName = profile.name?.takeIf { n -> 
+                                n.isNotBlank() && n != "null" && n != "User" 
+                            } ?: profile.email.substringBefore("@")
+                            
                             it.copy(
-                                name = profile.name?.takeIf { n -> n.isNotBlank() && n != "null" } ?: "",
+                                name = finalName,
                                 email = profile.email,
                                 profilePictureUrl = profile.avatarUrl?.takeIf { a -> a.isNotBlank() && a != "null" },
                                 studyingHours = profile.totalStudyHours,

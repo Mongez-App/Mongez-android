@@ -33,7 +33,7 @@ class AuthRepositoryImpl @Inject constructor(
         } else {
             languageCode ?: "en"
         }
-        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName() ?: "User"
+        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName()
         
         return HandshakeRequestDto(
             name = name,
@@ -59,6 +59,10 @@ class AuthRepositoryImpl @Inject constructor(
         return safeApi {
             val firebaseToken = firebaseAuthDataSource.createUserWithEmail(email, password)
             tokenManager.saveToken(firebaseToken)
+            
+            // Sync name with Firebase immediately
+            firebaseAuthDataSource.updateDisplayName(firstName)
+            
             println("Firebase Token : $firebaseToken")
             val request = buildHandshakeRequest(firstName)
             val response = apiService.handshake(request)
