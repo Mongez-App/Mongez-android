@@ -541,7 +541,6 @@ Types: `feature/` · `bugfix/` · `hotfix/` · `refactor/` · `docs/` · `test/`
 ```
 
 ### Coding Standards
-- ✅ Always **import** classes — never use fully qualified names inline
 - ✅ Use modern Compose APIs (e.g., `HorizontalDivider`, not `Divider`)
 - ✅ Place reusable UI components in `:design_system`, not in feature modules
 - ✅ Use design tokens (`Theme.spacing.*`, `Theme.colorScheme.*`, `Theme.typography.*`) — no hardcoded values
