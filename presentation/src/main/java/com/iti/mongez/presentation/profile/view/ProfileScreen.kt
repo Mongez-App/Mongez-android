@@ -1,11 +1,5 @@
 package com.iti.mongez.presentation.profile.view
 
-import android.graphics.Bitmap
-import android.net.Uri
-import java.io.ByteArrayOutputStream
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,6 +36,7 @@ import com.iti.mongez.presentation.profile.components.EditProfileDialog
 import com.iti.mongez.presentation.profile.components.ProfileHeader
 import com.iti.mongez.presentation.profile.components.SettingItem
 import com.iti.mongez.presentation.profile.components.StatCard
+import com.iti.mongez.presentation.profile.components.AvatarPickerDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,27 +47,6 @@ fun ProfileScreen(
     onShowSnackBar: (String) -> Unit
 ) {
     val viewState by viewModel.viewState.collectAsState()
-
-    val context = LocalContext.current
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        if (uri != null) {
-            val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            viewModel.processIntent(ProfileIntent.OnImagePicked(uri, bytes))
-        }
-    }
-
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap != null) {
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            val bytes = stream.toByteArray()
-            viewModel.processIntent(ProfileIntent.OnImagePicked(null, bytes))
-        }
-    }
 
     LaunchedEffect(Unit) {
         viewModel.processIntent(ProfileIntent.LoadProfile)
@@ -112,30 +86,21 @@ fun ProfileScreen(
     if (viewState.isEditProfileDialogVisible) {
         EditProfileDialog(
             name = viewState.editingName,
-            avatarUri = viewState.editingAvatarUri,
-            avatarBytes = viewState.editingAvatarBytes,
+            selectedAvatarUrl = viewState.selectedAvatarUrl,
             profilePictureUrl = viewState.profilePictureUrl,
             onNameChange = { viewModel.processIntent(ProfileIntent.UpdateEditingName(it)) },
-            onImageClick = { viewModel.processIntent(ProfileIntent.ToggleImageSourcePicker(true)) },
+            onImageClick = { viewModel.processIntent(ProfileIntent.ToggleAvatarPicker(true)) },
             onSave = { viewModel.processIntent(ProfileIntent.SubmitProfileUpdate) },
             onDismiss = { viewModel.processIntent(ProfileIntent.ToggleEditProfileDialog(false)) },
             isLoading = viewState.isLoading
         )
     }
 
-    if (viewState.isImageSourcePickerVisible) {
-        AppConfirmationDialog(
-            title = "Change Profile Picture",
-            description = "Choose a source for your new profile picture.",
-            primaryActionText = "Gallery",
-            onPrimaryAction = { 
-                galleryLauncher.launch("image/*")
-            },
-            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleImageSourcePicker(false)) },
-            secondaryActionText = "Camera",
-            onSecondaryAction = {
-                cameraLauncher.launch()
-            }
+    if (viewState.isAvatarPickerVisible) {
+        AvatarPickerDialog(
+            selectedAvatarUrl = viewState.selectedAvatarUrl,
+            onAvatarSelected = { viewModel.processIntent(ProfileIntent.OnAvatarSelected(it)) },
+            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleAvatarPicker(false)) }
         )
     }
 }

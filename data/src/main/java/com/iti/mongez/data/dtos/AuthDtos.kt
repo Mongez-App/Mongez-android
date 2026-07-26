@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 // Requests
 data class HandshakeRequestDto(
-    @SerializedName("name") val name: String,
+    @SerializedName("name") val name: String?,
+    @SerializedName("avatar_url") val avatarUrl: String?,
     @SerializedName("appearance") val appearance: String,
     @SerializedName("language") val language: String
 )

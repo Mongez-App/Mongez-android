@@ -2,6 +2,7 @@ package com.iti.mongez.data.sources.remote
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -27,4 +28,12 @@ class FirebaseAuthDataSource @Inject constructor(
     fun logout() = firebaseAuth.signOut()
 
     fun getCurrentUserName(): String? = firebaseAuth.currentUser?.displayName
+
+    suspend fun updateDisplayName(name: String) {
+        val user = firebaseAuth.currentUser
+        val profileUpdates = UserProfileChangeRequest.Builder()
+            .setDisplayName(name)
+            .build()
+        user?.updateProfile(profileUpdates)?.await()
+    }
 }

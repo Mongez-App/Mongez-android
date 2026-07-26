@@ -24,7 +24,10 @@ class AuthRepositoryImpl @Inject constructor(
     private val appSettingsRepository: AppSettingsRepository
 ) : AuthRepository {
 
-    private suspend fun buildHandshakeRequest(providedName: String? = null): HandshakeRequestDto {
+    private suspend fun buildHandshakeRequest(
+        providedName: String? = null,
+        providedAvatar: String? = null
+    ): HandshakeRequestDto {
         val settings = appSettingsRepository.getAppSettings().firstOrNull()
         val appearance = if (settings?.isDarkModeEnabled == true) "Dark Mode" else "Light Mode"
         val languageCode = settings?.language?.code
@@ -33,10 +36,11 @@ class AuthRepositoryImpl @Inject constructor(
         } else {
             languageCode ?: "en"
         }
-        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName() ?: "User"
+        val name = providedName ?: firebaseAuthDataSource.getCurrentUserName()
         
         return HandshakeRequestDto(
             name = name,
+            avatarUrl = providedAvatar,
             appearance = appearance,
             language = finalLanguage
         )
@@ -59,6 +63,10 @@ class AuthRepositoryImpl @Inject constructor(
         return safeApi {
             val firebaseToken = firebaseAuthDataSource.createUserWithEmail(email, password)
             tokenManager.saveToken(firebaseToken)
+            
+            // Sync name with Firebase immediately
+            firebaseAuthDataSource.updateDisplayName(firstName)
+            
             println("Firebase Token : $firebaseToken")
             val request = buildHandshakeRequest(firstName)
             val response = apiService.handshake(request)
