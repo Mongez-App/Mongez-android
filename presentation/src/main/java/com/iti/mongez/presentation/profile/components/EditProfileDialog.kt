@@ -29,8 +29,7 @@ import com.iti.mongez.presentation.R
 @Composable
 fun EditProfileDialog(
     name: String,
-    avatarUri: Uri?,
-    avatarBytes: ByteArray?,
+    selectedAvatarUrl: String?,
     profilePictureUrl: String?,
     onNameChange: (String) -> Unit,
     onImageClick: () -> Unit,
@@ -66,8 +65,8 @@ fun EditProfileDialog(
                         .clickable { onImageClick() },
                     contentAlignment = Alignment.Center
                 ) {
-                    val model = avatarUri ?: avatarBytes ?: profilePictureUrl
-                    val isModelValid = model != null && model.toString().isNotBlank() && model.toString() != "null"
+                    val model = selectedAvatarUrl ?: profilePictureUrl
+                    val isModelValid = model != null && model.isNotBlank() && model != "null"
                     
                     if (isModelValid) {
                         AsyncImage(

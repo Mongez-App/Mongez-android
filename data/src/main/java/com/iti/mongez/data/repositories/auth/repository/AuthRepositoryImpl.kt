@@ -24,7 +24,10 @@ class AuthRepositoryImpl @Inject constructor(
     private val appSettingsRepository: AppSettingsRepository
 ) : AuthRepository {
 
-    private suspend fun buildHandshakeRequest(providedName: String? = null): HandshakeRequestDto {
+    private suspend fun buildHandshakeRequest(
+        providedName: String? = null,
+        providedAvatar: String? = null
+    ): HandshakeRequestDto {
         val settings = appSettingsRepository.getAppSettings().firstOrNull()
         val appearance = if (settings?.isDarkModeEnabled == true) "Dark Mode" else "Light Mode"
         val languageCode = settings?.language?.code
@@ -37,6 +40,7 @@ class AuthRepositoryImpl @Inject constructor(
         
         return HandshakeRequestDto(
             name = name,
+            avatarUrl = providedAvatar,
             appearance = appearance,
             language = finalLanguage
         )

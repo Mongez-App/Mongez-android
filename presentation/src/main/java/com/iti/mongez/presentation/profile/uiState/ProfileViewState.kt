@@ -21,7 +21,6 @@ data class ProfileViewState(
     val selectedDays: Set<String> = emptySet(),
     val isEditProfileDialogVisible: Boolean = false,
     val editingName: String = "",
-    val editingAvatarUri: Uri? = null,
-    val editingAvatarBytes: ByteArray? = null,
-    val isImageSourcePickerVisible: Boolean = false
+    val selectedAvatarUrl: String? = null,
+    val isAvatarPickerVisible: Boolean = false
 )

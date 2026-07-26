@@ -200,6 +200,7 @@
     <string name="profile_edit">تعديل</string>
     <string name="edit_preferences_title">تعديل التفضيلات</string>
     <string name="edit_profile_title">تعديل الملف الشخصي</string>
+    <string name="choose_avatar_title">اختر صورتك الرمزية</string>
     <string name="label_display_name">اسم العرض</string>
     <string name="hint_display_name">أدخل اسمك</string>
     <string name="label_profile_image_url">رابط صورة الملف الشخصي</string>

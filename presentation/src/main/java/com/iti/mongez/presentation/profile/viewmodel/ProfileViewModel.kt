@@ -107,24 +107,23 @@ class ProfileViewModel @Inject constructor(
                     it.copy(
                         isEditProfileDialogVisible = intent.visible,
                         editingName = it.name,
-                        editingAvatarUri = null // Reset local selection
+                        selectedAvatarUrl = it.profilePictureUrl
                     )
                 }
             }
             is ProfileIntent.UpdateEditingName -> {
                 _viewState.update { it.copy(editingName = intent.name) }
             }
-            is ProfileIntent.OnImagePicked -> {
+            is ProfileIntent.OnAvatarSelected -> {
                 _viewState.update { 
                     it.copy(
-                        editingAvatarUri = intent.uri, 
-                        editingAvatarBytes = intent.bytes,
-                        isImageSourcePickerVisible = false 
+                        selectedAvatarUrl = intent.avatarUrl,
+                        isAvatarPickerVisible = false 
                     ) 
                 }
             }
-            is ProfileIntent.ToggleImageSourcePicker -> {
-                _viewState.update { it.copy(isImageSourcePickerVisible = intent.visible) }
+            is ProfileIntent.ToggleAvatarPicker -> {
+                _viewState.update { it.copy(isAvatarPickerVisible = intent.visible) }
             }
             ProfileIntent.SubmitProfileUpdate -> submitProfileUpdate()
         }
@@ -251,16 +250,9 @@ class ProfileViewModel @Inject constructor(
             _viewState.update { it.copy(isLoading = true) }
             val state = _viewState.value
 
-            var finalAvatarUrl = state.profilePictureUrl
-
-            // TODO: Implement Firebase Storage upload here in the future
-            // If the user picked a new image, we would upload state.editingAvatarBytes
-            // to Firebase Storage, get the URL, and assign it to finalAvatarUrl.
-
-            // For now, we only send the JSON update to the deployed backend
             val result = updateProfileUseCase(
                 name = state.editingName,
-                avatarUrl = finalAvatarUrl
+                avatarUrl = state.selectedAvatarUrl
             )
 
             when (result) {
@@ -269,10 +261,8 @@ class ProfileViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             isEditProfileDialogVisible = false,
-                            // Keep the local URI visible in the UI so it looks like it worked
-                            profilePictureUrl = state.editingAvatarUri?.toString() ?: result.data.avatarUrl,
-                            editingAvatarUri = null,
-                            editingAvatarBytes = null,
+                            profilePictureUrl = result.data.avatarUrl,
+                            selectedAvatarUrl = null,
                             name = result.data.name?.takeIf { n -> n.isNotBlank() && n != "null" } ?: it.name
                         )
                     }

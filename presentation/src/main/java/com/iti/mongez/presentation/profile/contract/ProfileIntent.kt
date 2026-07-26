@@ -16,8 +16,8 @@ sealed interface ProfileIntent {
     data class ToggleEditProfileDialog(val visible: Boolean) : ProfileIntent
     data class UpdateEditingName(val name: String) : ProfileIntent
 
-    data class OnImagePicked(val uri: android.net.Uri?, val bytes: ByteArray? = null) : ProfileIntent
-    data class ToggleImageSourcePicker(val visible: Boolean) : ProfileIntent
+    data class OnAvatarSelected(val avatarUrl: String) : ProfileIntent
+    data class ToggleAvatarPicker(val visible: Boolean) : ProfileIntent
 
     data object SubmitProfileUpdate : ProfileIntent
 }
