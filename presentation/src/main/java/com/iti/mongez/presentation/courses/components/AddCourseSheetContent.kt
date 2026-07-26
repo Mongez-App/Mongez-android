@@ -42,10 +42,14 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddCourseSheetContent(
     isLoading: Boolean,
-    onAddCourse: (name: String, code: String, imageUrl: String, startDate: String, examDate: String, materials: List<Uri>) -> Unit
+    onAddCourse: (name: String, code: String, imageUrl: String, startDate: String, examDate: String, materials: List<Uri>, isOnlineCourse: Boolean) -> Unit
 ) {
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    // MOVED HERE: Now the entire screen can access this variable
+    val isOnlineCourse = selectedTab == 0
+
     var courseName by remember { mutableStateOf("") }
     var courseCode by remember { mutableStateOf("") }
 
@@ -104,8 +108,8 @@ fun AddCourseSheetContent(
             AppTextField(
                 value = courseName,
                 onValueChange = { courseName = it },
-                label = stringResource(R.string.label_course_name),
-                placeholder = stringResource(R.string.hint_course_name)
+                label = if (isOnlineCourse) "Course URL" else stringResource(R.string.label_course_name),
+                placeholder = if (isOnlineCourse) "https://..." else stringResource(R.string.hint_course_name)
             )
 
             AppTextField(
@@ -115,46 +119,48 @@ fun AddCourseSheetContent(
                 placeholder = stringResource(R.string.hint_course_code)
             )
 
-            if (coverImageUri == null) {
-                AppUploadBox(
-                    title = stringResource(R.string.cover_image),
-                    primaryText = stringResource(R.string.upload_cover_image),
-                    secondaryText = stringResource(R.string.cover_image_hint),
-                    onClick = {
-                        imagePickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            if (!isOnlineCourse) {
+                if (coverImageUri == null) {
+                    AppUploadBox(
+                        title = stringResource(R.string.cover_image),
+                        primaryText = stringResource(R.string.upload_cover_image),
+                        secondaryText = stringResource(R.string.cover_image_hint),
+                        onClick = {
+                            imagePickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        iconContent = {
+                            Text(text = "🖼️", fontSize = 24.sp)
+                        }
+                    )
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(Theme.spacing.sm)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cover_image),
+                            color = Theme.colorScheme.text.primary,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                    },
-                    iconContent = {
-                        Text(text = "🖼️", fontSize = 24.sp)
-                    }
-                )
-            } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(Theme.spacing.sm)
-                ) {
-                    Text(
-                        text = stringResource(R.string.cover_image),
-                        color = Theme.colorScheme.text.primary,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
 
-                    AsyncImage(
-                        model = coverImageUri,
-                        contentDescription = stringResource(R.string.selected_cover_image),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(172.dp)
-                            .clip(RoundedCornerShape(Theme.radius.lg))
-                            .clickable {
-                                imagePickerLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-                            }
-                    )
+                        AsyncImage(
+                            model = coverImageUri,
+                            contentDescription = stringResource(R.string.selected_cover_image),
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(172.dp)
+                                .clip(RoundedCornerShape(Theme.radius.lg))
+                                .clickable {
+                                    imagePickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                        )
+                    }
                 }
             }
 
@@ -225,7 +231,7 @@ fun AddCourseSheetContent(
         AppButton(
             text = stringResource(R.string.button_add_course),
             onClick = {
-                val mockedImageUrl = if (coverImageUri != null) {
+                val mockedImageUrl = if (coverImageUri != null && !isOnlineCourse) {
                     "https://www.dreamstime.com/photos-images/course-word.html"
                 } else {
                     ""
@@ -236,64 +242,65 @@ fun AddCourseSheetContent(
                     mockedImageUrl,
                     startDateIso,
                     examDateIso,
-                    if (selectedTab == 1) selectedFiles else emptyList()
+                    if (!isOnlineCourse) selectedFiles else emptyList(),
+                    isOnlineCourse
                 )
             },
             variant = AppButtonVariant.Primary,
             isLoading = isLoading
         )
-    }
 
-    if (showStartDatePicker || showExamDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = {
-                showStartDatePicker = false
-                showExamDatePicker = false
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-                            val formattedUi = localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                            val formattedIso = Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
-
-                            if (showStartDatePicker) {
-                                startDateUi = formattedUi
-                                startDateIso = formattedIso
-                            } else {
-                                examDateUi = formattedUi
-                                examDateIso = formattedIso
-                            }
-                        }
-                        showStartDatePicker = false
-                        showExamDatePicker = false
-                    }
-                ) {
-                    Text(stringResource(R.string.action_ok), color = Theme.colorScheme.brand.primary)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
+        if (showStartDatePicker || showExamDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = {
                     showStartDatePicker = false
                     showExamDatePicker = false
-                }) {
-                    Text(stringResource(R.string.action_cancel), color = Theme.colorScheme.text.secondary)
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                                val formattedUi = localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                val formattedIso = Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
+
+                                if (showStartDatePicker) {
+                                    startDateUi = formattedUi
+                                    startDateIso = formattedIso
+                                } else {
+                                    examDateUi = formattedUi
+                                    examDateIso = formattedIso
+                                }
+                            }
+                            showStartDatePicker = false
+                            showExamDatePicker = false
+                        }
+                    ) {
+                        Text(stringResource(R.string.action_ok), color = Theme.colorScheme.brand.primary)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showStartDatePicker = false
+                        showExamDatePicker = false
+                    }) {
+                        Text(stringResource(R.string.action_cancel), color = Theme.colorScheme.text.secondary)
+                    }
                 }
-            }
-        ) {
-            DatePicker(
-                state = datePickerState,
-                colors = DatePickerDefaults.colors(
-                    containerColor = Theme.colorScheme.surface.surface,
-                    titleContentColor = Theme.colorScheme.text.primary,
-                    headlineContentColor = Theme.colorScheme.brand.primary,
-                    selectedDayContainerColor = Theme.colorScheme.brand.primary,
-                    selectedDayContentColor = Theme.colorScheme.button.primaryContent,
-                    todayContentColor = Theme.colorScheme.brand.primary,
-                    todayDateBorderColor = Theme.colorScheme.brand.primary
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    colors = DatePickerDefaults.colors(
+                        containerColor = Theme.colorScheme.surface.surface,
+                        titleContentColor = Theme.colorScheme.text.primary,
+                        headlineContentColor = Theme.colorScheme.brand.primary,
+                        selectedDayContainerColor = Theme.colorScheme.brand.primary,
+                        selectedDayContentColor = Theme.colorScheme.button.primaryContent,
+                        todayContentColor = Theme.colorScheme.brand.primary,
+                        todayDateBorderColor = Theme.colorScheme.brand.primary
+                    )
                 )
-            )
+            }
         }
     }
 }
