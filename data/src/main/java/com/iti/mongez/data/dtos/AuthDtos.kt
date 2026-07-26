@@ -30,6 +30,7 @@ data class UserStatsDto(
 
 // Calendar Sync DTOs
 data class CalendarStatusDto(
-    @SerializedName("is_connected") val isConnected: Boolean,
-    @SerializedName("email") val email: String?
+    @SerializedName("connected") val isConnected: Boolean,
+    @SerializedName("email") val email: String? = null,
+    @SerializedName("provider") val provider: String? = null
 )
