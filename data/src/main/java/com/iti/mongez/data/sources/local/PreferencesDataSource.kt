@@ -24,6 +24,7 @@ class PreferencesDataSource @Inject constructor(
         val CALENDAR_SYNC = booleanPreferencesKey("calendar_sync")
         val DARK_MODE = booleanPreferencesKey("dark_mode")
         val LANGUAGE = stringPreferencesKey("language")
+        val PREFERENCES_ONBOARDING_COMPLETED = booleanPreferencesKey("preferences_onboarding_completed")
     }
 
     val userPreferencesFlow: Flow<UserPreferences?> = dataStore.data.map { preferences ->
@@ -48,10 +49,20 @@ class PreferencesDataSource @Inject constructor(
         )
     }
 
+    val isOnboardingCompletedFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.PREFERENCES_ONBOARDING_COMPLETED] ?: false
+    }
+
     suspend fun savePreferences(preferences: UserPreferences) {
         dataStore.edit { prefs ->
             prefs[PreferencesKeys.DAILY_STUDY_HOURS] = preferences.dailyStudyHours
             prefs[PreferencesKeys.AVAILABLE_DAYS] = preferences.availableDays.toSet()
+        }
+    }
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PreferencesKeys.PREFERENCES_ONBOARDING_COMPLETED] = completed
         }
     }
 

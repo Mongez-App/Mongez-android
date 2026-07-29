@@ -15,10 +15,12 @@ import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
+import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
 import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
 import com.iti.mongez.domain.calendar.usecase.ConnectCalendarUseCase
 import com.iti.mongez.domain.calendar.usecase.DisconnectCalendarUseCase
 import com.iti.mongez.domain.calendar.usecase.GetCalendarStatusUseCase
+import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
 import com.iti.mongez.domain.profile.usecase.UploadProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,10 +43,12 @@ class ProfileViewModel @Inject constructor(
     private val getPreferencesUseCase: GetPreferencesUseCase,
     private val savePreferencesUseCase: SavePreferencesUseCase,
     private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
+    private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
     private val connectCalendarUseCase: ConnectCalendarUseCase,
     private val disconnectCalendarUseCase: DisconnectCalendarUseCase,
     private val getCalendarStatusUseCase: GetCalendarStatusUseCase,
+    private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase,
     private val uploadProfileImageUseCase: UploadProfileImageUseCase
 ) : ViewModel() {
 
@@ -168,6 +172,7 @@ class ProfileViewModel @Inject constructor(
             val state = _viewState.value
             when (val result = savePreferencesUseCase(state.selectedStudyHours, state.selectedDays.toList())) {
                 is Result.Success -> {
+                    setPreferencesOnboardingCompletedUseCase(true)
                     _viewState.update {
                         it.copy(
                             isLoading = false,
@@ -295,6 +300,11 @@ class ProfileViewModel @Inject constructor(
                             }
                             // Also update local settings to stay in sync
                             updateSettings { it.copy(isCalendarSyncEnabled = statusResult.data.isConnected) }
+
+                            // If enabled, trigger events sync (Assuming permission is handled in UI)
+                            if (enabled) {
+                                syncCalendarEvents()
+                            }
                         }
                         is Result.Failure -> {
                             _viewState.update { it.copy(isLoading = false) }
@@ -309,6 +319,12 @@ class ProfileViewModel @Inject constructor(
                 }
                 is Result.Loading -> {}
             }
+        }
+    }
+
+    private fun syncCalendarEvents() {
+        viewModelScope.launch {
+            syncCalendarEventsUseCase()
         }
     }
 

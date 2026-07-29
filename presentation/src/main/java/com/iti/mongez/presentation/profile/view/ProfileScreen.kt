@@ -1,5 +1,7 @@
 package com.iti.mongez.presentation.profile.view
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +50,16 @@ fun ProfileScreen(
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
+    val calendarPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.processIntent(ProfileIntent.ToggleCalendarSync(true))
+        } else {
+            onShowSnackBar("Calendar permission is required to sync events.")
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.processIntent(ProfileIntent.LoadProfile)
     }
@@ -64,7 +76,14 @@ fun ProfileScreen(
     ProfileScreenContent(
         innerPadding = innerPadding,
         viewState = viewState,
-        onIntent = viewModel::processIntent
+        onIntent = viewModel::processIntent,
+        onToggleCalendarSync = { enabled ->
+            if (enabled) {
+                calendarPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
+            } else {
+                viewModel.processIntent(ProfileIntent.ToggleCalendarSync(false))
+            }
+        }
     )
 
     if (viewState.isEditPreferencesSheetVisible) {
@@ -109,7 +128,8 @@ fun ProfileScreen(
 private fun ProfileScreenContent(
     innerPadding: PaddingValues,
     viewState: ProfileViewState,
-    onIntent: (ProfileIntent) -> Unit
+    onIntent: (ProfileIntent) -> Unit,
+    onToggleCalendarSync: (Boolean) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -169,7 +189,7 @@ private fun ProfileScreenContent(
                 action = {
                     Switch(
                         checked = viewState.isCalendarSyncEnabled,
-                        onCheckedChange = { onIntent(ProfileIntent.ToggleCalendarSync(it)) },
+                        onCheckedChange = onToggleCalendarSync,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.White,
                             checkedTrackColor = Theme.colorScheme.brand.primary,
@@ -315,7 +335,8 @@ private fun ProfileScreenPreview() {
             ProfileScreenContent(
                 innerPadding = PaddingValues(),
                 viewState = sampleState,
-                onIntent = {}
+                onIntent = {},
+                onToggleCalendarSync = {}
             )
         }
     }
@@ -340,7 +361,8 @@ private fun ProfileScreenArabicPreview() {
             ProfileScreenContent(
                 innerPadding = PaddingValues(),
                 viewState = sampleState,
-                onIntent = {}
+                onIntent = {},
+                onToggleCalendarSync = {}
             )
         }
     }
