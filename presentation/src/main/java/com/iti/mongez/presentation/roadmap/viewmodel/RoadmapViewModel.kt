@@ -54,122 +54,116 @@ class RoadmapViewModel @Inject constructor(
     private fun loadRoadmap() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
-            
-            // Mocking the API response for now
-            val mockWeeks = listOf(
-                RoadmapWeekUiModel(
-                    weekNumber = 1,
-                    dateRange = UiText.DynamicString("May 6 - May 12"),
-                    days = listOf(
-                        RoadmapDayUiModel(
-                            date = "2024-05-06",
-                            dayName = UiText.DynamicString("Monday"),
-                            blocks = listOf(
-                                StudyBlockUiModel(
-                                    id = "1",
-                                    courseName = UiText.DynamicString("Algorithms"),
-                                    topic = UiText.DynamicString("Graph Theory"),
-                                    durationMinutes = 60,
-                                    isCompleted = true,
-                                    color = StudyBlockColor.PURPLE,
-                                    events = listOf(
-                                        RoadmapEventUiModel(
-                                            title = UiText.DynamicString("Algorithms Exam"),
-                                            type = "Exam",
-                                            dateTime = UiText.DynamicString("May 8 - 3:00 PM")
-                                        )
-                                    ),
-                                    tasks = listOf(
-                                        RoadmapTaskUiModel(
-                                            title = UiText.DynamicString("Finish Graph Assignment"),
-                                            dateTime = UiText.DynamicString("May 7 - 11:59 PM")
-                                        ),
-                                        RoadmapTaskUiModel(
-                                            title = UiText.DynamicString("Review DFS/BFS"),
-                                            dateTime = UiText.DynamicString("May 6 - 8:00 PM")
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ),
-                RoadmapWeekUiModel(
-                    weekNumber = 2,
-                    dateRange = UiText.DynamicString("May 13 - May 19"),
-                    days = listOf(
-                        RoadmapDayUiModel(
-                            date = "2024-05-13",
-                            dayName = UiText.DynamicString("Monday"),
-                            blocks = listOf(
-                                StudyBlockUiModel(
-                                    id = "2",
-                                    courseName = UiText.DynamicString("Database Systems"),
-                                    topic = UiText.DynamicString("SQL Optimization"),
-                                    durationMinutes = 90,
-                                    isCompleted = true,
-                                    color = StudyBlockColor.BLUE,
-                                    tasks = listOf(
-                                        RoadmapTaskUiModel(
-                                            title = UiText.DynamicString("Practice Complex Joins"),
-                                            dateTime = UiText.DynamicString("May 14 - 4:00 PM")
-                                        )
-                                    )
-                                ),
-                                StudyBlockUiModel(
-                                    id = "3",
-                                    courseName = UiText.DynamicString("Networks"),
-                                    topic = UiText.DynamicString("OSI Model"),
-                                    durationMinutes = 45,
-                                    isCompleted = false,
-                                    color = StudyBlockColor.GREEN,
-                                    events = listOf(
-                                        RoadmapEventUiModel(
-                                            title = UiText.DynamicString("Networking Quiz"),
-                                            type = "Quiz",
-                                            dateTime = UiText.DynamicString("May 15 - 10:00 AM")
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ),
-                RoadmapWeekUiModel(
-                    weekNumber = 3,
-                    dateRange = UiText.DynamicString("May 20 - May 26"),
-                    days = listOf(
-                        RoadmapDayUiModel(
-                            date = "2024-05-20",
-                            dayName = UiText.DynamicString("Monday"),
-                            blocks = listOf(
-                                StudyBlockUiModel(
-                                    id = "4",
-                                    courseName = UiText.DynamicString("Operating Systems"),
-                                    topic = UiText.DynamicString("Memory Management"),
-                                    durationMinutes = 120,
-                                    isCompleted = false,
-                                    color = StudyBlockColor.ORANGE
-                                ),
-                                StudyBlockUiModel(
-                                    id = "5",
-                                    courseName = UiText.DynamicString("Networks"),
-                                    topic = UiText.DynamicString("TCP/UDP"),
-                                    durationMinutes = 60,
-                                    isCompleted = false,
-                                    color = StudyBlockColor.GREEN
-                                )
-                            )
-                        )
-                    )
-                )
-            )
 
-            fullRoadmapWeeks = mockWeeks
-            _state.value = _state.value.copy(
-                isLoading = false,
-                roadmapStartDate = "2024-05-06",
-                weeks = mockWeeks
+            getWeeklyRoadmapUseCase().fold(
+                onSuccess = { roadmap ->
+                    val courseColors = mutableMapOf<String, StudyBlockColor>()
+                    val colors = StudyBlockColor.entries.toTypedArray()
+                    var colorIndex = 0
+
+                    val uiWeeks = roadmap.weeks.map { week ->
+                        // Extract all unique dates from tasks and events in this week
+                        val allDates = week.studyBlocks.flatMap { block ->
+                            block.tasks.map { it.taskDate } + block.events.map { 
+                                // Event date is ISO 8601, extract date part
+                                it.eventDate.substringBefore('T')
+                            }
+                        }.distinct().sorted()
+
+                        val uiDays = allDates.map { dateStr ->
+                            val date = LocalDate.parse(dateStr)
+                            val dayName = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+
+                            val uiBlocks = week.studyBlocks.mapNotNull { block ->
+                                val dayTasks = block.tasks.filter { it.taskDate == dateStr }
+                                val dayEvents = block.events.filter { it.eventDate.substringBefore('T') == dateStr }
+
+                                if (dayTasks.isEmpty() && dayEvents.isEmpty()) return@mapNotNull null
+
+                                val color = courseColors.getOrPut(block.courseName) {
+                                    val selectedColor = colors[colorIndex % colors.size]
+                                    colorIndex++
+                                    selectedColor
+                                }
+
+                                StudyBlockUiModel(
+                                    id = block.id,
+                                    courseName = UiText.DynamicString(block.courseName),
+                                    topic = UiText.DynamicString(dayTasks.firstOrNull()?.topic ?: block.courseName),
+                                    durationMinutes = dayTasks.sumOf { it.durationMinutes },
+                                    isCompleted = block.isCompleted,
+                                    color = color,
+                                    tasks = dayTasks.map { task ->
+                                        RoadmapTaskUiModel(
+                                            title = UiText.DynamicString(task.topic),
+                                            dateTime = UiText.DynamicString("${task.durationMinutes} min")
+                                        )
+                                    },
+                                    events = dayEvents.map { event ->
+                                        RoadmapEventUiModel(
+                                            title = UiText.DynamicString(event.title),
+                                            type = event.eventType,
+                                            dateTime = UiText.DynamicString(
+                                                event.eventDate.substringAfter('T').substringBefore(':') + ":" +
+                                                event.eventDate.substringAfter(':').substringBefore(':')
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+
+                            RoadmapDayUiModel(
+                                date = dateStr,
+                                dayName = UiText.DynamicString(dayName),
+                                blocks = uiBlocks
+                            )
+                        }
+
+                        val startDate = LocalDate.parse(week.startDate)
+                        val endDate = LocalDate.parse(week.endDate)
+                        val rangeFormatter = DateTimeFormatter.ofPattern("MMM d")
+                        val dateRange = "${startDate.format(rangeFormatter)} - ${endDate.format(rangeFormatter)}"
+
+                        RoadmapWeekUiModel(
+                            weekNumber = week.weekNumber,
+                            dateRange = UiText.DynamicString(dateRange),
+                            days = uiDays
+                        )
+                    }
+
+                    val allCourses = uiWeeks.flatMap { week -> 
+                        week.days.flatMap { day -> 
+                            day.blocks.map { it.courseName.asRawString() }
+                        }
+                    }.distinct().sorted()
+
+                    val allEventTypes = uiWeeks.flatMap { week ->
+                        week.days.flatMap { day ->
+                            day.blocks.flatMap { it.events.map { event -> event.type } }
+                        }
+                    }.distinct().sorted().ifEmpty { listOf("Study", "Assignment", "Quiz", "Exam", "Reminder") }
+
+                    fullRoadmapWeeks = uiWeeks
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        roadmapStartDate = roadmap.roadmapStartDate,
+                        weeks = uiWeeks,
+                        availableCourses = allCourses,
+                        availableEventTypes = allEventTypes
+                    )
+                },
+                onFailure = { error ->
+                    _state.value = _state.value.copy(isLoading = false)
+                    _effect.emit(
+                        RoadmapEffect.ShowSnackBar(
+                            message = error.message ?: "Failed to load roadmap",
+                            type = AppSnackbarType.Error
+                        )
+                    )
+                },
+                onLoading = {
+                    _state.value = _state.value.copy(isLoading = true)
+                }
             )
         }
     }
