@@ -14,7 +14,9 @@ sealed interface CoursesIntent {
         val imageUrl: String,
         val startDate: String,
         val examDate: String,
-        val materials: List<Uri> // Replaced hasMaterials
+        val materials: List<Uri>,
+        val courseType: String,
+        val materialUrl: String?
     ) : CoursesIntent
 
     data class ShowDeleteConfirmation(val courseId: String) : CoursesIntent

@@ -1,5 +1,7 @@
 package com.iti.mongez.domain.courses.usecase
 
+import com.iti.mongez.domain.core.Result
+import com.iti.mongez.domain.courses.model.CourseCreationResult
 import com.iti.mongez.domain.courses.repository.CoursesRepository
 import javax.inject.Inject
 
@@ -12,6 +14,17 @@ class CreateCourseUseCase @Inject constructor(
         imageUrl: String,
         startDate: String,
         examDate: String,
-        hasMaterials: Boolean
-    ) = repository.createCourse(name, courseCode, imageUrl, startDate, examDate, hasMaterials)
+        courseType: String,
+        materialUrl: String?
+    ): Result<CourseCreationResult> {
+        return repository.createCourse(
+            name = name,
+            courseCode = courseCode,
+            imageUrl = imageUrl,
+            startDate = startDate,
+            examDate = examDate,
+            courseType = courseType,
+            materialUrl = materialUrl
+        )
+    }
 }
