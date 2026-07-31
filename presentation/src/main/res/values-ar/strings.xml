@@ -265,5 +265,5 @@
         <string name="filter_high">عالي</string>
         <string name="filter_medium">متوسط</string>
         <string name="filter_low">منخفض</string>
-    <string name="label_course_url">Course URL</string>
+    <string name="label_course_url">رابط المقرر</string>
 </resources>
