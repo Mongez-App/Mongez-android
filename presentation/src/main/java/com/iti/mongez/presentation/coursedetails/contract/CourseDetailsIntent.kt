@@ -17,7 +17,11 @@ sealed class CourseDetailsIntent {
     // Tasks Intents
     data class SelectTaskFilter(val index: Int) : CourseDetailsIntent()
     data class ClickTask(val taskId: String) : CourseDetailsIntent()
+
+    data class UpdateCourse(val name: String, val imageUrl: String) : CourseDetailsIntent()
 }
+
+
 
 sealed class CourseDetailsEffect {
     data class ShowSnackbar(val message: String, val type: AppSnackbarType = AppSnackbarType.Info) : CourseDetailsEffect()

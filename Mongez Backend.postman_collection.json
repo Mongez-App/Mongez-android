@@ -1,0 +1,1167 @@
+{
+  "info": {
+    "_postman_id": "020e5f19-b2ee-47da-aa84-67e9423ec7e1",
+    "name": "My Collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56788549",
+    "_collection_link": "https://go.postman.co/collection/53956874-020e5f19-b2ee-47da-aa84-67e9423ec7e1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Courses, Tasks, Roadmap",
+      "item": [
+        {
+          "name": "Create Course",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Operating Systems\",\r\n  \"course_code\": \"CS301\",\r\n  \"image_url\" : \"https://example.com/os.png\",\r\n  \"start_date\": \"2026-07-21T00:00:00Z\",\r\n  \"exam_date\": \"2026-08-15T09:00:00Z\",\r\n  \"course_type\": \"MATERIAL_COURSE\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Course Online",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Operating Systems\",\r\n  \"course_code\": \"CS301\",\r\n  \"image_url\" : \"https://example.com/os.png\",\r\n  \"start_date\": \"2026-07-21T00:00:00Z\",\r\n  \"exam_date\": \"2026-08-15T09:00:00Z\",\r\n  \"material_url\": \"https://www.coursera.org/learn/foundations-user-experience-design\",\r\n  \"course_type\": \"URL_COURSE\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Courses",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Course Details",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "Application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "Application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Operating Systems Updated\",\r\n  \"image_url\" : \"https://media.geeksforgeeks.org/wp-content/uploads/20250723191540166280/examples_of_os.webp\",\r\n  \"is_hidden\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Material",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Daily-Study-Minutes",
+                "value": "60",
+                "type": "text"
+              },
+              {
+                "key": "X-Preferred-Days",
+                "value": "MON,TUE,WED,THU,FRI",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "7d880c03-d6a8-44e7-bcec-1a896275b195",
+                  "src": [
+                    "/D:/ITI/JAVA/41- Microservices/Introduction to Microservices - 1.pdf",
+                    "/D:/ITI/JAVA/41- Microservices/Introduction to Microservices - 2.pdf",
+                    "/D:/ITI/JAVA/41- Microservices/Introduction to Microservices - 3.pdf"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}",
+                "materials"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Materials",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}",
+                "materials"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Material",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/materials/{{materialId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}",
+                "materials",
+                "{{materialId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Read Chapter 4\",\r\n  \"duration_minutes\": 45,\r\n  \"priority\": \"HIGH\",\r\n  \"date\": \"2026-07-21\",\r\n  \"course_id\": \"{{courseId}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"task_completed\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Tasks",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List tasks/course",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}",
+                "tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "Application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Operating Systems Updated\",\r\n  \"is_hidden\": false\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Start Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"course_id\": \"{{courseId}}\",\r\n  \"estimated_duration_minutes\": 45,\r\n  \"linked_task_id\": \"{{taskId}}\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sessions/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessions",
+                "start"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "End Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"task_completed\": true,\r\n    \"completion_time\": \"2026-08-03T10:05:00Z\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sessions/{{sessionId}}/end",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessions",
+                "{{sessionId}}",
+                "end"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/home/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "home",
+                "dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload PDF",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Midterm Exam\",\r\n  \"event_type\": \"exam\",\r\n  \"event_date\": \"2026-08-05T09:00:00Z\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event2",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"title\":\"Assignment 1\", \r\n    \"event_type\":\"ASSIGNMENT\", \r\n    \"event_date\":\"2026-08-15T20:00:00Z\" \r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseId}}",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Weekly Roadmap",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/roadmap/weekly?start_date=2026-07-06",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "roadmap",
+                "weekly"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-07-06"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reschedule Roadmap",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Preferred-Days",
+                "value": "MON,WED,FRI,SAT",
+                "type": "text"
+              },
+              {
+                "key": "X-Daily-Study-Minutes",
+                "value": "90",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/roadmap/reschedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "roadmap",
+                "reschedule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Deadlines",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-User-Id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/home/deadlines",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "home",
+                "deadlines"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Identity Service APIs",
+      "item": [
+        {
+          "name": "01. Authentication",
+          "item": [
+            {
+              "name": "Sign Up (Firebase)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"{{email}}\",\r\n    \"password\":\"{{password}}\",\r\n    \"returnSecureToken\":true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{firebase_api_key}}",
+                  "protocol": "https",
+                  "host": [
+                    "identitytoolkit",
+                    "googleapis",
+                    "com"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts:signUp"
+                  ],
+                  "query": [
+                    {
+                      "key": "key",
+                      "value": "{{firebase_api_key}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Sign In (Firebase)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const json = pm.response.json();\r",
+                      "\r",
+                      "pm.collectionVariables.set(\"id_token\", json.idToken);\r",
+                      "pm.collectionVariables.set(\"refresh_token\", json.refreshToken);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"{{email}}\",\r\n    \"password\":\"{{password}}\",\r\n    \"returnSecureToken\":true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{firebase_api_key}}",
+                  "protocol": "https",
+                  "host": [
+                    "identitytoolkit",
+                    "googleapis",
+                    "com"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts:signInWithPassword"
+                  ],
+                  "query": [
+                    {
+                      "key": "key",
+                      "value": "{{firebase_api_key}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Handshake",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"is_guest\":false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/handshake",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "handshake"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "02. Profile",
+          "item": [
+            {
+              "name": "Get Profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/users/me/profile",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me",
+                    "profile"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Profile",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"name\": \"Abdullah M.\",\r\n  \"avatar_url\": \"https://cdn.smartstudy.app/avatars/usr_99812_new.jpg\",\r\n  \"appearance\": \"Dark Mode\",\r\n  \"language\": \"Arabic\",\r\n  \"calendar_sync_connected\": true\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/me/profile",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me",
+                    "profile"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "03. Preferences",
+          "item": [
+            {
+              "name": "Update Preferences",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"daily_study_hours\": 4,\r\n  \"available_days\": [\"Mon\", \"Wed\", \"Fri\"]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/me/preferences",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me",
+                    "preferences"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "04. Google Calendar",
+          "item": [
+            {
+              "name": "Get Status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/calendar/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "calendar",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Connect",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/calendar/connect",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "calendar",
+                    "connect"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/calendar/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "calendar",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Disconnect",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/calendar/disconnect",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "calendar",
+                    "disconnect"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/auth/calendar/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "calendar",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

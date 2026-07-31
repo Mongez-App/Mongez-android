@@ -23,6 +23,14 @@ data class TaskItem(
 data class CourseDetailsUiState(
     val isLoading: Boolean = false,
     val courseTitle: String = "",
+    val imageUrl: String = "", // Added for editing
+
+    val courseCode: String = "",
+    val courseType: String = "",
+    val startDate: String = "",
+    val examDate: String = "",
+    val materialUrl: String? = null,
+
     val selectedTabIndex: Int = 0,
     @StringRes val tabs: List<Int> = listOf(
         R.string.tab_materials,
