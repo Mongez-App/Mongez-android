@@ -12,27 +12,31 @@ data class RoadmapWeekDto(
     @SerializedName("week_number") val weekNumber: Int,
     @SerializedName("start_date") val startDate: String,
     @SerializedName("end_date") val endDate: String,
-    @SerializedName("days") val days: List<RoadmapDayDto>
-)
-
-data class RoadmapDayDto(
-    @SerializedName("date") val date: String,
-    @SerializedName("day_name") val dayName: String,
     @SerializedName("study_blocks") val studyBlocks: List<StudyBlockDto>
 )
 
 data class StudyBlockDto(
     @SerializedName("block_id") val blockId: String,
+    @SerializedName("course_id") val courseId: String,
     @SerializedName("course_name") val courseName: String,
+    @SerializedName("tasks") val tasks: List<RoadmapTaskDto>,
+    @SerializedName("events") val events: List<RoadmapEventDto>,
+    @SerializedName("is_completed") val isCompleted: Boolean
+)
+
+data class RoadmapTaskDto(
     @SerializedName("topic") val topic: String,
     @SerializedName("duration_minutes") val durationMinutes: Int,
-    @SerializedName("is_completed") val isCompleted: Boolean,
-    @SerializedName("event") val event: RoadmapEventDto? = null
+    @SerializedName("task_date") val taskDate: String
 )
 
 data class RoadmapEventDto(
+    @SerializedName("event_id") val eventId: String,
+    @SerializedName("course_id") val courseId: String,
+    @SerializedName("course_name") val courseName: String,
     @SerializedName("title") val title: String,
-    @SerializedName("type") val type: String
+    @SerializedName("event_type") val eventType: String,
+    @SerializedName("event_date") val eventDate: String
 )
 
 fun WeeklyRoadmapDto.toDomain() = WeeklyRoadmap(
@@ -44,25 +48,29 @@ fun RoadmapWeekDto.toDomain() = RoadmapWeek(
     weekNumber = weekNumber,
     startDate = startDate,
     endDate = endDate,
-    days = days.map { it.toDomain() }
-)
-
-fun RoadmapDayDto.toDomain() = RoadmapDay(
-    date = date,
-    dayName = dayName,
     studyBlocks = studyBlocks.map { it.toDomain() }
 )
 
 fun StudyBlockDto.toDomain() = StudyBlock(
     id = blockId,
+    courseId = courseId,
     courseName = courseName,
+    tasks = tasks.map { it.toDomain() },
+    events = events.map { it.toDomain() },
+    isCompleted = isCompleted
+)
+
+fun RoadmapTaskDto.toDomain() = RoadmapTask(
     topic = topic,
     durationMinutes = durationMinutes,
-    isCompleted = isCompleted,
-    event = event?.toDomain()
+    taskDate = taskDate
 )
 
 fun RoadmapEventDto.toDomain() = RoadmapEvent(
+    id = eventId,
+    courseId = courseId,
+    courseName = courseName,
     title = title,
-    type = type
+    eventType = eventType,
+    eventDate = eventDate
 )

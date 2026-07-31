@@ -9,6 +9,8 @@ import com.iti.mongez.presentation.preferences.uiState.PreferencesUiState
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
+import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
+import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
 import com.iti.mongez.domain.core.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +25,9 @@ import javax.inject.Inject
 class PreferencesViewModel @Inject constructor(
     private val savePreferencesUseCase: SavePreferencesUseCase,
     private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
-    private val getPreferencesUseCase: GetPreferencesUseCase
+    private val getPreferencesUseCase: GetPreferencesUseCase,
+    private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
+    private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -156,6 +160,9 @@ class PreferencesViewModel @Inject constructor(
     private fun syncCalendar() {
         // Mock sync
         _uiState.update { it.copy(isCalendarSynced = true) }
+        viewModelScope.launch {
+            syncCalendarEventsUseCase()
+        }
         completeSetup()
     }
 
@@ -167,6 +174,7 @@ class PreferencesViewModel @Inject constructor(
                 currentState.studyHours,
                 currentState.selectedDays.toList()
             )
+            setPreferencesOnboardingCompletedUseCase(true)
             _uiState.update { it.copy(isLoading = false, isSetupComplete = true) }
             _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = false))
         }

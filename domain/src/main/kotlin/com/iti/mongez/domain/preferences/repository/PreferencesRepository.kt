@@ -8,4 +8,5 @@ interface PreferencesRepository {
     suspend fun savePreferencesLocally(preferences: UserPreferences): Result<Unit>
     suspend fun getPreferences(): Result<UserPreferences>
     suspend fun isPreferencesSet(): Result<Boolean>
+    suspend fun setPreferencesOnboardingCompleted(completed: Boolean): Result<Unit>
 }

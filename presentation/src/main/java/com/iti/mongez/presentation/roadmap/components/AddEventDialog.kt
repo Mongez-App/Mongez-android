@@ -28,6 +28,7 @@ import androidx.compose.ui.window.Dialog
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import androidx.compose.ui.res.stringResource
+import com.iti.mongez.presentation.roadmap.uiState.CourseUiModel
 import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.components.dialog.AppTimePickerDialog
 import java.time.Instant
@@ -41,13 +42,14 @@ enum class AddEventStep {
 
 @Composable
 fun AddEventDialog(
+    availableCourses: List<CourseUiModel>,
     onDismiss: () -> Unit,
-    onEventCreated: (type: String, course: String, name: String, date: String, time: String, notes: String) -> Unit
+    onEventCreated: (type: String, courseId: String, name: String, date: String, time: String, notes: String) -> Unit
 ) {
     var currentStep by remember { mutableStateOf(AddEventStep.TYPE) }
 
     var selectedType by remember { mutableStateOf<String?>(null) }
-    var selectedCourse by remember { mutableStateOf<String?>(null) }
+    var selectedCourseId by remember { mutableStateOf<String?>(null) }
     var eventName by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
     var eventTime by remember { mutableStateOf("") }
@@ -119,8 +121,9 @@ fun AddEventDialog(
                         }
                         AddEventStep.COURSE -> {
                             StepTwoCourse(
-                                selectedCourse = selectedCourse,
-                                onCourseSelected = { selectedCourse = it },
+                                availableCourses = availableCourses,
+                                selectedCourseId = selectedCourseId,
+                                onCourseSelected = { selectedCourseId = it },
                                 onBack = { currentStep = AddEventStep.TYPE },
                                 onContinue = { currentStep = AddEventStep.DETAILS }
                             )
@@ -138,8 +141,8 @@ fun AddEventDialog(
                                 onBack = { currentStep = AddEventStep.COURSE },
                                 onCreate = {
                                     selectedType?.let { type ->
-                                        selectedCourse?.let { course ->
-                                            onEventCreated(type, course, eventName, eventDate, eventTime, eventNotes)
+                                        selectedCourseId?.let { courseId ->
+                                            onEventCreated(type, courseId, eventName, eventDate, eventTime, eventNotes)
                                         }
                                     }
                                 }
@@ -333,13 +336,12 @@ private fun StepOneType(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun StepTwoCourse(
-    selectedCourse: String?,
+    availableCourses: List<CourseUiModel>,
+    selectedCourseId: String?,
     onCourseSelected: (String) -> Unit,
     onBack: () -> Unit,
     onContinue: () -> Unit
 ) {
-    val courses = listOf("Math", "Physics", "Programming", "Chemistry", "English", "Biology", "Database Systems", "Operating Systems")
-
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = stringResource(R.string.add_event_choose_course),
@@ -354,14 +356,14 @@ private fun StepTwoCourse(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            courses.forEach { course ->
-                val isSelected = selectedCourse == course
+            availableCourses.forEach { course ->
+                val isSelected = selectedCourseId == course.id
                 FilterChip(
                     selected = isSelected,
-                    onClick = { onCourseSelected(course) },
+                    onClick = { onCourseSelected(course.id) },
                     label = {
                         Text(
-                            text = course,
+                            text = course.name,
                             color = if (isSelected) Color.White else Theme.colorScheme.text.primary,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                         )
@@ -394,7 +396,7 @@ private fun StepTwoCourse(
             }
             Button(
                 onClick = onContinue,
-                enabled = selectedCourse != null,
+                enabled = selectedCourseId != null,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Theme.colorScheme.brand.primary),
                 shape = RoundedCornerShape(100)

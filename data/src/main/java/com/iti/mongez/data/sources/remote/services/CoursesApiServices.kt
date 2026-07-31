@@ -49,6 +49,12 @@ interface CoursesApiService {
         @Path("material_id") materialId: String
     ): ActionStatusResponseDto
 
+    @POST("courses/{course_id}/events")
+    suspend fun addCourseEvent(
+        @Path("course_id") courseId: String,
+        @Body request: AddEventRequestDto
+    ): AddEventResponseDto
+
     @Multipart
     @POST
     suspend fun uploadMaterialFile(

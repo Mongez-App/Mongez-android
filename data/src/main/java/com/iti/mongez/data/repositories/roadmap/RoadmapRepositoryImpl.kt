@@ -2,14 +2,17 @@ package com.iti.mongez.data.repositories.roadmap
 
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.remote.services.ApiService
+import com.iti.mongez.data.sources.remote.services.CoursesApiService
 import com.iti.mongez.data.dtos.toDomain
+import com.iti.mongez.data.dtos.coursesdtos.AddEventRequestDto
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.roadmap.model.WeeklyRoadmap
 import com.iti.mongez.domain.roadmap.repository.RoadmapRepository
 import javax.inject.Inject
 
 class RoadmapRepositoryImpl @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val coursesApiService: CoursesApiService
 ) : RoadmapRepository {
 
     override suspend fun getWeeklyRoadmap(startDate: String?): Result<WeeklyRoadmap> = safeApi {
@@ -22,5 +25,15 @@ class RoadmapRepositoryImpl @Inject constructor(
             "reason" to reason
         )
         apiService.rescheduleBlocks(request).toDomain()
+    }
+
+    override suspend fun addEvent(
+        courseId: String,
+        title: String,
+        eventType: String,
+        eventDate: String
+    ): Result<String> = safeApi {
+        val request = AddEventRequestDto(title, eventType, eventDate)
+        coursesApiService.addCourseEvent(courseId, request).message
     }
 }
