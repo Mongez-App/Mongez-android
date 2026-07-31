@@ -18,8 +18,7 @@ interface CoursesRepository {
         materialUrl: String?
     ): Result<CourseCreationResult>
     suspend fun getCourseDetails(courseId: String): Result<Course>
-    suspend fun updateCourse(courseId: String, name: String, isHidden: Boolean): Result<CourseActionResponse<Course>>
-    suspend fun deleteCourse(courseId: String): Result<CourseActionResponse<Unit>>
+    suspend fun updateCourse(courseId: String, name: String, imageUrl: String, isHidden: Boolean): Result<CourseActionResponse<Course>>    suspend fun deleteCourse(courseId: String): Result<CourseActionResponse<Unit>>
     
     suspend fun getCourseMaterials(courseId: String): Result<List<CourseMaterial>>
     suspend fun uploadCourseMaterial(

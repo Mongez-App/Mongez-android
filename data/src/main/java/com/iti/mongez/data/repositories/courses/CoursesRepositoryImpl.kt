@@ -53,8 +53,8 @@ class CoursesRepositoryImpl @Inject constructor(
         response.toDomain()
     }
 
-    override suspend fun updateCourse(courseId: String, name: String, isHidden: Boolean): Result<CourseActionResponse<Course>> = safeApi {
-        val response = apiService.updateCourse(courseId, UpdateCourseRequestDto(name, isHidden))
+    override suspend fun updateCourse(courseId: String, name: String, imageUrl: String, isHidden: Boolean): Result<CourseActionResponse<Course>> = safeApi {
+        val response = apiService.updateCourse(courseId, UpdateCourseRequestDto(name, imageUrl, isHidden))
         CourseActionResponse(data = response.toDomain(), alert = null)
     }
 

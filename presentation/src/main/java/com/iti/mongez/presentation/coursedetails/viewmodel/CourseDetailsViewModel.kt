@@ -11,13 +11,7 @@ import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 import com.iti.mongez.presentation.coursedetails.uistate.CourseDetailsUiState
 import com.iti.mongez.presentation.coursedetails.uistate.DocumentItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +21,8 @@ class CourseDetailsViewModel @Inject constructor(
     private val getCourseMaterialsUseCase: GetCourseMaterialsUseCase,
     private val deleteCourseUseCase: DeleteCourseUseCase,
     private val deleteCourseMaterialUseCase: DeleteCourseMaterialUseCase,
-    private val uploadCourseMaterialUseCase: UploadCourseMaterialUseCase
+    private val uploadCourseMaterialUseCase: UploadCourseMaterialUseCase,
+    private val updateCourseUseCase: UpdateCourseUseCase // Added
 ) : ViewModel() {
 
     private var courseId: String = ""
@@ -44,15 +39,36 @@ class CourseDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
+            // 1. Fetch Course Details (Fixes Problem 1)
+            when (val detailsResult = getCourseDetailsUseCase(courseId)) {
+                is Result.Success -> {
+                    val course = detailsResult.data
+                    _uiState.update { state ->
+                        state.copy(
+                            courseTitle = course.name,
+                            courseCode = course.courseCode,
+                            courseType = course.courseType,
+                            startDate = course.startDate,
+                            examDate = course.examDate,
+                            materialUrl = course.materialUrl,
+                            imageUrl = course.imageUrl ?: ""
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    Log.e("CourseDebug", "Failed to load details: ${detailsResult.exception?.message}")
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar("Failed to load course details", AppSnackbarType.Error))
+                }
+                else -> {}
+            }
+
+            // 2. Fetch Course Materials
             when (val materialsResult = getCourseMaterialsUseCase(courseId)) {
                 is Result.Success -> {
                     val documents = materialsResult.data.map { mat ->
                         val finalId = if (mat.id.isBlank()) {
-                            Log.e("CourseDebug", "WARNING: Backend sent a blank ID for file: ${mat.name}. Generating fake UUID.")
                             java.util.UUID.randomUUID().toString()
-                        } else {
-                            mat.id
-                        }
+                        } else mat.id
 
                         DocumentItem(
                             id = finalId,
@@ -83,31 +99,34 @@ class CourseDetailsViewModel @Inject constructor(
                     loadCourseData()
                 }
             }
-            is CourseDetailsIntent.SelectTab -> {
-                _uiState.update { it.copy(selectedTabIndex = intent.index) }
-            }
-            is CourseDetailsIntent.DeleteDocument -> {
-                deleteDocument(intent.documentId)
-            }
-            is CourseDetailsIntent.ShowDeleteDialog -> {
-                _uiState.update { it.copy(isDeleteDialogVisible = true) }
-            }
-            is CourseDetailsIntent.DismissDeleteDialog -> {
-                _uiState.update { it.copy(isDeleteDialogVisible = false) }
-            }
-            is CourseDetailsIntent.DeleteCourse -> {
-                deleteCourse()
-            }
-            is CourseDetailsIntent.SelectTaskFilter -> {
-                _uiState.update { it.copy(selectedTaskFilterIndex = intent.index) }
-            }
-            is CourseDetailsIntent.ClickTask -> {
-                // Toggle task completion
-            }
+            is CourseDetailsIntent.SelectTab -> _uiState.update { it.copy(selectedTabIndex = intent.index) }
+            is CourseDetailsIntent.DeleteDocument -> deleteDocument(intent.documentId)
+            is CourseDetailsIntent.ShowDeleteDialog -> _uiState.update { it.copy(isDeleteDialogVisible = true) }
+            is CourseDetailsIntent.DismissDeleteDialog -> _uiState.update { it.copy(isDeleteDialogVisible = false) }
+            is CourseDetailsIntent.DeleteCourse -> deleteCourse()
+            is CourseDetailsIntent.SelectTaskFilter -> _uiState.update { it.copy(selectedTaskFilterIndex = intent.index) }
+            is CourseDetailsIntent.ClickTask -> { /* Toggle task completion */ }
+            is CourseDetailsIntent.UpdateCourse -> updateCourse(intent.name, intent.imageUrl) // Added handler
             else -> {}
         }
     }
 
+    private fun updateCourse(name: String, imageUrl: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            when (val result = updateCourseUseCase(courseId, name, imageUrl, false)) {
+                is Result.Success -> {
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar("Course updated successfully", AppSnackbarType.Success))
+                    loadCourseData() // Refresh details
+                }
+                is Result.Failure -> {
+                    _uiState.update { it.copy(isLoading = false) }
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception?.message ?: "Update failed", AppSnackbarType.Error))
+                }
+                else -> { _uiState.update { it.copy(isLoading = false) } }
+            }
+        }
+    }
     private fun deleteDocument(documentId: String) {
         viewModelScope.launch {
             when (val result = deleteCourseMaterialUseCase(courseId, documentId)) {
