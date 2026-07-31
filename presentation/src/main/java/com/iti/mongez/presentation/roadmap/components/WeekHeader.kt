@@ -77,7 +77,7 @@ fun WeekHeaderPreview() {
             week = RoadmapWeekUiModel(
                 weekNumber = 1,
                 dateRange = UiText.DynamicString("Oct 21 - Oct 27"),
-                days = emptyList()
+                blocks = emptyList()
             )
         )
     }

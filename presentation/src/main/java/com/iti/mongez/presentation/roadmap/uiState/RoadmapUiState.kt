@@ -1,6 +1,7 @@
 package com.iti.mongez.presentation.roadmap.uiState
 
 import com.iti.mongez.presentation.utils.UiText
+import java.time.LocalDate
 
 data class RoadmapUiState(
     val isLoading: Boolean = false,
@@ -12,18 +13,18 @@ data class RoadmapUiState(
 
     val activeFilterState: RoadmapFilterState = RoadmapFilterState(),
 
-    val availableCourses: List<String> = listOf("Algorithms", "Database Systems", "Networks", "Operating Systems", "Math", "Physics"),
+    val availableCourses: List<CourseUiModel> = emptyList(),
     val availableEventTypes: List<String> = listOf("Study", "Assignment", "Quiz", "Exam", "Reminder")
 )
+
+data class CourseUiModel(
+    val id: String,
+    val name: String
+)
+
 data class RoadmapWeekUiModel(
     val weekNumber: Int,
     val dateRange: UiText,
-    val days: List<RoadmapDayUiModel>
-)
-
-data class RoadmapDayUiModel(
-    val date: String,
-    val dayName: UiText,
     val blocks: List<StudyBlockUiModel>
 )
 
@@ -48,10 +49,12 @@ enum class StudyBlockColor {
 data class RoadmapEventUiModel(
     val title: UiText,
     val type: String,
-    val dateTime: UiText? = null
+    val dateTime: UiText? = null,
+    val date: LocalDate? = null
 )
 
 data class RoadmapTaskUiModel(
     val title: UiText,
-    val dateTime: UiText? = null
+    val dateTime: UiText? = null,
+    val date: LocalDate? = null
 )

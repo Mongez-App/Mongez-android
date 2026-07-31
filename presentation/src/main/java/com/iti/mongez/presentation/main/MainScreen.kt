@@ -11,11 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -52,6 +54,8 @@ fun MainScreen(
     var activeSnackbarType by remember {
         mutableStateOf(AppSnackbarType.Info)
     }
+
+    val coroutineScope = rememberCoroutineScope()
 
     var isDefaultScheduleDialogOpen by rememberSaveable {
         mutableStateOf(showDefaultAlert)
@@ -108,8 +112,11 @@ fun MainScreen(
             onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
             onNavigateToAllTasks = onNavigateToAllTasks,
-            onShowSnackBar = { message ->
-                // Use the snackbarHostState to show a snackbar
+            onShowSnackBar = { message, type ->
+                activeSnackbarType = type ?: AppSnackbarType.Info
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
             }
         )
     }
@@ -124,10 +131,9 @@ private fun MainScreenContent(
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit,
-    onShowSnackBar: (String) -> Unit,
+    onShowSnackBar: (String, AppSnackbarType?) -> Unit,
 ) {
     when (tab) {
-
         MainTab.Home -> {
             DashboardScreen(
                 innerPadding = innerPadding,
@@ -160,7 +166,7 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 viewModel = hiltViewModel(),
                 onNavigateToLogin = onNavigateToLogin,
-                onShowSnackBar = onShowSnackBar
+                onShowSnackBar = { message -> onShowSnackBar(message, null) }
             )
         }
     }

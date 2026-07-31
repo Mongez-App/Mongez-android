@@ -30,7 +30,6 @@ import com.iti.mongez.presentation.roadmap.components.FilterBottomSheet
 import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
-import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
@@ -72,6 +71,10 @@ fun RoadmapScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(RoadmapEvent.LoadRoadmap())
+    }
+
     RoadmapContent(
         state = state,
         innerPadding = innerPadding,
@@ -85,12 +88,13 @@ fun RoadmapScreen(
 
     if (state.isAddEventDialogVisible) {
         AddEventDialog(
+            availableCourses = state.availableCourses,
             onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleAddEventDialog(false)) },
-            onEventCreated = { type, course, name, date, time, notes ->
+            onEventCreated = { type, courseId, name, date, time, notes ->
                 viewModel.onEvent(
                     RoadmapEvent.AddEvent(
                         type = type,
-                        course = course,
+                        course = courseId,
                         name = name,
                         date = date,
                         time = time,
@@ -203,13 +207,14 @@ fun RoadmapContent(
                         item {
                             WeekHeader(week)
                         }
-                        week.days.forEach { day ->
-                            itemsIndexed(day.blocks) { _, block ->
-                                TimelineBlockItem(
-                                    block = block,
-                                    onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
-                                )
-                            }
+                        itemsIndexed(
+                            items = week.blocks,
+                            key = { _, block -> "${week.weekNumber}_${block.id}" }
+                        ) { _, block ->
+                            TimelineBlockItem(
+                                block = block,
+                                onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
+                            )
                         }
                     }
                 }
@@ -225,48 +230,36 @@ fun RoadmapScreenPreview() {
         RoadmapWeekUiModel(
             weekNumber = 1,
             dateRange = UiText.DynamicString("May 6 - May 12"),
-            days = listOf(
-                RoadmapDayUiModel(
-                    date = "2024-05-06",
-                    dayName = UiText.DynamicString("Monday"),
-                    blocks = listOf(
-                        StudyBlockUiModel(
-                            id = "1",
-                            courseName = UiText.DynamicString("Algorithms"),
-                            topic = UiText.DynamicString("Graph Theory"),
-                            durationMinutes = 60,
-                            isCompleted = true,
-                            color = StudyBlockColor.PURPLE
-                        )
-                    )
+            blocks = listOf(
+                StudyBlockUiModel(
+                    id = "1",
+                    courseName = UiText.DynamicString("Algorithms"),
+                    topic = UiText.DynamicString("Graph Theory"),
+                    durationMinutes = 60,
+                    isCompleted = true,
+                    color = StudyBlockColor.PURPLE
                 )
             )
         ),
         RoadmapWeekUiModel(
             weekNumber = 2,
             dateRange = UiText.DynamicString("May 13 - May 19"),
-            days = listOf(
-                RoadmapDayUiModel(
-                    date = "2024-05-13",
-                    dayName = UiText.DynamicString("Monday"),
-                    blocks = listOf(
-                        StudyBlockUiModel(
-                            id = "2",
-                            courseName = UiText.DynamicString("Database Systems"),
-                            topic = UiText.DynamicString("SQL Optimization"),
-                            durationMinutes = 90,
-                            isCompleted = true,
-                            color = StudyBlockColor.BLUE
-                        ),
-                        StudyBlockUiModel(
-                            id = "3",
-                            courseName = UiText.DynamicString("Networks"),
-                            topic = UiText.DynamicString("OSI Model"),
-                            durationMinutes = 45,
-                            isCompleted = false,
-                            color = StudyBlockColor.GREEN
-                        )
-                    )
+            blocks = listOf(
+                StudyBlockUiModel(
+                    id = "2",
+                    courseName = UiText.DynamicString("Database Systems"),
+                    topic = UiText.DynamicString("SQL Optimization"),
+                    durationMinutes = 90,
+                    isCompleted = true,
+                    color = StudyBlockColor.BLUE
+                ),
+                StudyBlockUiModel(
+                    id = "3",
+                    courseName = UiText.DynamicString("Networks"),
+                    topic = UiText.DynamicString("OSI Model"),
+                    durationMinutes = 45,
+                    isCompleted = false,
+                    color = StudyBlockColor.GREEN
                 )
             )
         )
