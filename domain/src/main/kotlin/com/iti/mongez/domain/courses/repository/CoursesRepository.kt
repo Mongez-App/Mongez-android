@@ -14,7 +14,8 @@ interface CoursesRepository {
         imageUrl: String,
         startDate: String,
         examDate: String,
-        hasMaterials: Boolean
+        courseType: String,
+        materialUrl: String?
     ): Result<CourseCreationResult>
     suspend fun getCourseDetails(courseId: String): Result<Course>
     suspend fun updateCourse(courseId: String, name: String, isHidden: Boolean): Result<CourseActionResponse<Course>>

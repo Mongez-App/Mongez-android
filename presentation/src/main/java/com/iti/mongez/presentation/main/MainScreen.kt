@@ -23,6 +23,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
+import com.iti.mongez.presentation.dashboard.TaskItem
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
@@ -39,7 +40,8 @@ fun MainScreen(
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToAllTasks: (List<TaskItem>) -> Unit
 ) {
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
@@ -105,6 +107,7 @@ fun MainScreen(
             onNavigateToCourseDetails = onNavigateToCourseDetails,
             onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
+            onNavigateToAllTasks = onNavigateToAllTasks,
             onShowSnackBar = { message ->
                 // Use the snackbarHostState to show a snackbar
             }
@@ -120,7 +123,8 @@ private fun MainScreenContent(
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
-    onShowSnackBar: (String) -> Unit
+    onNavigateToAllTasks: (List<TaskItem>) -> Unit,
+    onShowSnackBar: (String) -> Unit,
 ) {
     when (tab) {
 
@@ -128,9 +132,11 @@ private fun MainScreenContent(
             DashboardScreen(
                 innerPadding = innerPadding,
                 onNavigateToFocus = {},
-                onViewAllTasks = {},
                 onViewAllDeadlines = {},
-                onNavigateToStudyRoom = onNavigateToStudyRoom
+                onNavigateToStudyRoom = onNavigateToStudyRoom,
+                onViewAllTasks = { tasks ->
+                    onNavigateToAllTasks(tasks)
+                }
             )
         }
 

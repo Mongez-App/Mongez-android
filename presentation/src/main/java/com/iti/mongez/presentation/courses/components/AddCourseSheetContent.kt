@@ -42,7 +42,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddCourseSheetContent(
     isLoading: Boolean,
-    onAddCourse: (name: String, code: String, imageUrl: String, startDate: String, examDate: String, materials: List<Uri>, isOnlineCourse: Boolean) -> Unit
+    onAddCourse: (name: String, code: String, imageUrl: String, startDate: String, examDate: String, materials: List<Uri>, isOnlineCourse: Boolean, materialUrl: String?) -> Unit
 ) {
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -52,6 +52,7 @@ fun AddCourseSheetContent(
 
     var courseName by remember { mutableStateOf("") }
     var courseCode by remember { mutableStateOf("") }
+    var courseUrl by remember { mutableStateOf("") }
 
     var startDateUi by remember { mutableStateOf("") }
     var examDateUi by remember { mutableStateOf("") }
@@ -108,9 +109,18 @@ fun AddCourseSheetContent(
             AppTextField(
                 value = courseName,
                 onValueChange = { courseName = it },
-                label = if (isOnlineCourse) "Course URL" else stringResource(R.string.label_course_name),
-                placeholder = if (isOnlineCourse) "https://..." else stringResource(R.string.hint_course_name)
+                label = stringResource(R.string.label_course_name),
+                placeholder = stringResource(R.string.hint_course_name)
             )
+
+            if (isOnlineCourse) {
+                AppTextField(
+                    value = courseUrl,
+                    onValueChange = { courseUrl = it },
+                    label = stringResource(R.string.label_course_url),
+                    placeholder = "https://..."
+                )
+            }
 
             AppTextField(
                 value = courseCode,
@@ -243,7 +253,8 @@ fun AddCourseSheetContent(
                     startDateIso,
                     examDateIso,
                     if (!isOnlineCourse) selectedFiles else emptyList(),
-                    isOnlineCourse
+                    isOnlineCourse,
+                    if (isOnlineCourse) courseUrl else null
                 )
             },
             variant = AppButtonVariant.Primary,

@@ -271,6 +271,7 @@
         <string name="filter_high">High</string>
         <string name="filter_medium">Medium</string>
         <string name="filter_low">Low</string>
+    <string name="label_course_url">Course URL</string>
 
 </resources>
 

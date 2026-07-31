@@ -130,11 +130,11 @@ fun CoursesScreenContent(
 
                     AddCourseSheetContent(
                         isLoading = state.isCreatingCourse,
-                        onAddCourse = { name, code, imageUrl, startDate, examDate, materials, isOnlineCourse ->
-                            // Validate using Android's built-in URL matcher
-                            val isUrlValid = android.util.Patterns.WEB_URL.matcher(name).matches()
+                        onAddCourse = { name, code, imageUrl, startDate, examDate, materials, isOnlineCourse, materialUrl ->
 
-                            if (name.isBlank() || code.isBlank() || startDate.isBlank() || examDate.isBlank()) {
+                            val isUrlValid = materialUrl?.let { android.util.Patterns.WEB_URL.matcher(it).matches() } ?: true
+
+                            if (name.isBlank() || code.isBlank() || startDate.isBlank() || examDate.isBlank() || (isOnlineCourse && materialUrl.isNullOrBlank())) {
                                 onIntent(CoursesIntent.ShowSnackbar(message = emptyFieldsError, type = AppSnackbarType.Error))
                             } else if (isOnlineCourse && !isUrlValid) {
                                 onIntent(CoursesIntent.ShowSnackbar(message = "Please enter a valid Course URL", type = AppSnackbarType.Error))
@@ -146,7 +146,9 @@ fun CoursesScreenContent(
                                         imageUrl = imageUrl,
                                         startDate = startDate,
                                         examDate = examDate,
-                                        materials = materials
+                                        materials = materials,
+                                        courseType = if (isOnlineCourse) "URL_COURSE" else "MATERIAL_COURSE",
+                                        materialUrl = if (isOnlineCourse) materialUrl else null
                                     )
                                 )
                             }
