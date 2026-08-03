@@ -44,7 +44,7 @@ enum class AddEventStep {
 fun AddEventDialog(
     availableCourses: List<CourseUiModel>,
     onDismiss: () -> Unit,
-    onEventCreated: (type: String, courseId: String, name: String, date: String, time: String, notes: String) -> Unit
+    onEventCreated: (type: String, courseId: String, name: String, date: String, time: String) -> Unit
 ) {
     var currentStep by remember { mutableStateOf(AddEventStep.TYPE) }
 
@@ -53,7 +53,6 @@ fun AddEventDialog(
     var eventName by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
     var eventTime by remember { mutableStateOf("") }
-    var eventNotes by remember { mutableStateOf("") }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -136,13 +135,11 @@ fun AddEventDialog(
                                 onDateChange = { eventDate = it },
                                 eventTime = eventTime,
                                 onTimeChange = { eventTime = it },
-                                eventNotes = eventNotes,
-                                onNotesChange = { eventNotes = it },
                                 onBack = { currentStep = AddEventStep.COURSE },
                                 onCreate = {
                                     selectedType?.let { type ->
                                         selectedCourseId?.let { courseId ->
-                                            onEventCreated(type, courseId, eventName, eventDate, eventTime, eventNotes)
+                                            onEventCreated(type, courseId, eventName, eventDate, eventTime)
                                         }
                                     }
                                 }
@@ -416,8 +413,6 @@ private fun StepThreeDetails(
     onDateChange: (String) -> Unit,
     eventTime: String,
     onTimeChange: (String) -> Unit,
-    eventNotes: String,
-    onNotesChange: (String) -> Unit,
     onBack: () -> Unit,
     onCreate: () -> Unit
 ) {
@@ -480,37 +475,28 @@ private fun StepThreeDetails(
                     }
                 }
             )
-
-            AppTextField(
-                value = eventNotes,
-                onValueChange = onNotesChange,
-                label = stringResource(R.string.add_event_notes_label),
-                placeholder = stringResource(R.string.add_event_notes_hint),
-                singleLine = false,
-                modifier = Modifier.height(120.dp)
-            )
         }
 
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = Theme.spacing.lg),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing.md)
         ) {
-            TextButton(
-                onClick = onBack,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(R.string.add_event_back), color = Theme.colorScheme.text.secondary)
-            }
             Button(
                 onClick = onCreate,
                 enabled = eventName.isNotBlank() && eventDate.isNotBlank() && eventTime.isNotBlank(),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Theme.colorScheme.brand.primary),
                 shape = RoundedCornerShape(100)
             ) {
-                Text(stringResource(R.string.add_event_create))
+                Text(stringResource(R.string.add_event_create), modifier = Modifier.padding(vertical = 8.dp))
+            }
+            TextButton(
+                onClick = onBack,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.add_event_back), color = Theme.colorScheme.text.secondary)
             }
         }
     }
