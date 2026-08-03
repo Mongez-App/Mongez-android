@@ -90,15 +90,14 @@ fun RoadmapScreen(
         AddEventDialog(
             availableCourses = state.availableCourses,
             onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleAddEventDialog(false)) },
-            onEventCreated = { type, courseId, name, date, time, notes ->
+            onEventCreated = { type, courseId, name, date, time ->
                 viewModel.onEvent(
                     RoadmapEvent.AddEvent(
                         type = type,
                         course = courseId,
                         name = name,
                         date = date,
-                        time = time,
-                        notes = notes
+                        time = time
                     )
                 )
             }

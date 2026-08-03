@@ -19,8 +19,7 @@ sealed class RoadmapEvent {
         val course: String,
         val name: String,
         val date: String,
-        val time: String,
-        val notes: String
+        val time: String
     ) : RoadmapEvent()
 }
 
