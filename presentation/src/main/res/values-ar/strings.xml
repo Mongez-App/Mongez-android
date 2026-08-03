@@ -198,6 +198,12 @@
     <string name="profile_logout">تسجيل الخروج</string>
     <string name="profile_studying_preferences">تفضيلات الدراسة</string>
     <string name="profile_edit">تعديل</string>
+    <string name="logout_confirmation_title">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+    <string name="logout_confirmation_desc">ستحتاج إلى إدخال اسم المستخدم وكلمة المرور لتسجيل الدخول مرة أخرى.</string>
+    <string name="logout_action">تسجيل الخروج</string>
+    <string name="sync_off_confirmation_title">إيقاف مزامنة التقويم؟</string>
+    <string name="sync_off_confirmation_desc">ستتوقف جلسات الدراسة الخاصة بك عن المزامنة مع التقويم الخاص بك. يمكنك إعادة تشغيل هذا في أي وقت.</string>
+    <string name="sync_off_action">قطع الاتصال</string>
     <string name="edit_preferences_title">تعديل التفضيلات</string>
     <string name="edit_profile_title">تعديل الملف الشخصي</string>
     <string name="choose_avatar_title">اختر صورتك الرمزية</string>
