@@ -78,7 +78,17 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ToggleCalendarSync -> toggleCalendarSync(intent.enabled)
             is ProfileIntent.ToggleDarkMode -> toggleDarkMode(intent.enabled)
             is ProfileIntent.ChangeLanguage -> changeLanguage(intent.language)
-            is ProfileIntent.Logout -> logout()
+            is ProfileIntent.Logout -> {
+                _viewState.update { it.copy(isLogoutDialogVisible = true) }
+            }
+            is ProfileIntent.ConfirmLogout -> logout()
+            is ProfileIntent.ToggleLogoutDialog -> {
+                _viewState.update { it.copy(isLogoutDialogVisible = intent.visible) }
+            }
+            is ProfileIntent.ToggleCalendarSyncDialog -> {
+                _viewState.update { it.copy(isCalendarSyncDialogVisible = intent.visible) }
+            }
+            is ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(false)
             is ProfileIntent.ToggleEditPreferencesSheet -> {
                 if (intent.visible) {
                     loadPreferences()
@@ -278,7 +288,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun toggleCalendarSync(enabled: Boolean) {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
+            _viewState.update { it.copy(isLoading = true, isCalendarSyncDialogVisible = false) }
             val result = if (enabled) connectCalendarUseCase() else disconnectCalendarUseCase()
             
             when (result) {
