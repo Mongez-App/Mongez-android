@@ -36,17 +36,24 @@ interface CoursesApiService {
     @GET("courses/{course_id}/materials")
     suspend fun getCourseMaterials(@Path("course_id") courseId: String): List<CourseMaterialDto>
 
+    @Multipart
     @POST("courses/{course_id}/materials")
-    suspend fun requestMaterialUploadUrl(
+    suspend fun uploadCourseMaterial(
         @Path("course_id") courseId: String,
-        @Body request: MaterialUploadRequestDto
-    ): MaterialUploadResponseDto
+        @Part file: MultipartBody.Part
+    ): Response<Unit>
 
     @DELETE("courses/{course_id}/materials/{material_id}")
     suspend fun deleteMaterial(
         @Path("course_id") courseId: String,
         @Path("material_id") materialId: String
     ): ActionStatusResponseDto
+
+    @POST("courses/{course_id}/events")
+    suspend fun addCourseEvent(
+        @Path("course_id") courseId: String,
+        @Body request: AddEventRequestDto
+    ): AddEventResponseDto
 
     @Multipart
     @POST

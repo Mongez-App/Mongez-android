@@ -11,12 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -24,6 +26,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
+import com.iti.mongez.presentation.dashboard.TaskItem
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
@@ -41,7 +44,8 @@ fun MainScreen(
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToAllTasks: (List<TaskItem>) -> Unit
 ) {
     val preferences by viewModel.preferences.collectAsState()
     
@@ -54,6 +58,8 @@ fun MainScreen(
     var activeSnackbarType by remember {
         mutableStateOf(AppSnackbarType.Info)
     }
+
+    val coroutineScope = rememberCoroutineScope()
 
     var isDefaultScheduleDialogOpen by rememberSaveable {
         mutableStateOf(showDefaultAlert)
@@ -113,8 +119,12 @@ fun MainScreen(
             onNavigateToCourseDetails = onNavigateToCourseDetails,
             onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
-            onShowSnackBar = { message ->
-                // Use the snackbarHostState to show a snackbar
+            onNavigateToAllTasks = onNavigateToAllTasks,
+            onShowSnackBar = { message, type ->
+                activeSnackbarType = type ?: AppSnackbarType.Info
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
             }
         )
     }
@@ -128,17 +138,19 @@ private fun MainScreenContent(
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
-    onShowSnackBar: (String) -> Unit
+    onNavigateToAllTasks: (List<TaskItem>) -> Unit,
+    onShowSnackBar: (String, AppSnackbarType?) -> Unit,
 ) {
     when (tab) {
-
         MainTab.Home -> {
             DashboardScreen(
                 innerPadding = innerPadding,
                 onNavigateToFocus = {},
-                onViewAllTasks = {},
                 onViewAllDeadlines = {},
-                onNavigateToStudyRoom = onNavigateToStudyRoom
+                onNavigateToStudyRoom = onNavigateToStudyRoom,
+                onViewAllTasks = { tasks ->
+                    onNavigateToAllTasks(tasks)
+                }
             )
         }
 
@@ -162,7 +174,7 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 viewModel = hiltViewModel(),
                 onNavigateToLogin = onNavigateToLogin,
-                onShowSnackBar = onShowSnackBar
+                onShowSnackBar = { message -> onShowSnackBar(message, null) }
             )
         }
     }

@@ -20,6 +20,7 @@ import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
 import com.iti.mongez.domain.calendar.usecase.ConnectCalendarUseCase
 import com.iti.mongez.domain.calendar.usecase.DisconnectCalendarUseCase
 import com.iti.mongez.domain.calendar.usecase.GetCalendarStatusUseCase
+import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
 import com.iti.mongez.domain.profile.usecase.UploadProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,6 +48,7 @@ class ProfileViewModel @Inject constructor(
     private val connectCalendarUseCase: ConnectCalendarUseCase,
     private val disconnectCalendarUseCase: DisconnectCalendarUseCase,
     private val getCalendarStatusUseCase: GetCalendarStatusUseCase,
+    private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase,
     private val uploadProfileImageUseCase: UploadProfileImageUseCase
 ) : ViewModel() {
 
@@ -80,7 +82,17 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ToggleCalendarSync -> toggleCalendarSync(intent.enabled)
             is ProfileIntent.ToggleDarkMode -> toggleDarkMode(intent.enabled)
             is ProfileIntent.ChangeLanguage -> changeLanguage(intent.language)
-            is ProfileIntent.Logout -> logout()
+            is ProfileIntent.Logout -> {
+                _viewState.update { it.copy(isLogoutDialogVisible = true) }
+            }
+            is ProfileIntent.ConfirmLogout -> logout()
+            is ProfileIntent.ToggleLogoutDialog -> {
+                _viewState.update { it.copy(isLogoutDialogVisible = intent.visible) }
+            }
+            is ProfileIntent.ToggleCalendarSyncDialog -> {
+                _viewState.update { it.copy(isCalendarSyncDialogVisible = intent.visible) }
+            }
+            is ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(false)
             is ProfileIntent.ToggleEditPreferencesSheet -> {
                 if (intent.visible) {
                     loadPreferences()
@@ -281,7 +293,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun toggleCalendarSync(enabled: Boolean) {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
+            _viewState.update { it.copy(isLoading = true, isCalendarSyncDialogVisible = false) }
             val result = if (enabled) connectCalendarUseCase() else disconnectCalendarUseCase()
             
             when (result) {
@@ -298,6 +310,11 @@ class ProfileViewModel @Inject constructor(
                             }
                             // Also update local settings to stay in sync
                             updateSettings { it.copy(isCalendarSyncEnabled = statusResult.data.isConnected) }
+
+                            // If enabled, trigger events sync (Assuming permission is handled in UI)
+                            if (enabled) {
+                                syncCalendarEvents()
+                            }
                         }
                         is Result.Failure -> {
                             _viewState.update { it.copy(isLoading = false) }
@@ -312,6 +329,12 @@ class ProfileViewModel @Inject constructor(
                 }
                 is Result.Loading -> {}
             }
+        }
+    }
+
+    private fun syncCalendarEvents() {
+        viewModelScope.launch {
+            syncCalendarEventsUseCase()
         }
     }
 

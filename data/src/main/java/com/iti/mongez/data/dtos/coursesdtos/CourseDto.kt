@@ -11,5 +11,7 @@ data class CourseDto(
     @SerializedName("exam_date") val examDate: String?,
     @SerializedName("has_materials") val hasMaterials: Boolean?,
     @SerializedName("is_hidden") val isHidden: Boolean?,
-    @SerializedName("completion_percentage") val completionPercentage: Float?
+    @SerializedName("completion_percentage") val completionPercentage: Float?,
+    @SerializedName("course_type") val courseType: String?,   // Added
+    @SerializedName("material_url") val materialUrl: String?  // Added
 )

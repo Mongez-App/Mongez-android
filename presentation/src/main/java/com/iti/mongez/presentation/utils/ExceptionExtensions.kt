@@ -41,7 +41,7 @@ fun AppException.toFriendlyMessage(): String = when (this) {
         "No internet connection. Please check your network and try again."
 
     is NetworkException.ServerError ->
-        "Something went wrong on our end (Error ${this.code}). Please try again later."
+        this.message ?: "Something went wrong on our end (Error ${this.code}). Please try again later."
 
     // --- Generic errors ---
     is AppException.TooManyRequests ->

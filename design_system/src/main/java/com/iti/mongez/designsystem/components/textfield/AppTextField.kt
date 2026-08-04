@@ -68,6 +68,7 @@ fun AppTextField(
     singleLine: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Column(modifier = modifier) {
         if (label != null) {
@@ -108,6 +109,7 @@ fun AppTextField(
             },
             trailingIcon = trailingIcon,
             isError = isError,
+            visualTransformation = visualTransformation,
             singleLine = singleLine,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
@@ -190,6 +192,7 @@ fun AppPasswordTextField(
             imeAction = imeAction,
         ),
         keyboardActions = keyboardActions,
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
     )
 }
 

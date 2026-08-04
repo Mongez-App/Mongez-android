@@ -30,7 +30,12 @@ class AuthInterceptor @Inject constructor(
             requestBuilder.addHeader("Authorization", "Bearer $token")
         }
 
-        // 2. Handle Accept-Language Header (en or ar)
+        // 2. Add X-User-Id Header
+        firebaseAuth.currentUser?.uid?.let { uid ->
+            requestBuilder.addHeader("X-User-Id", uid)
+        }
+
+        // 3. Handle Accept-Language Header (en or ar)
         val currentLanguage = Locale.getDefault().language
         val apiLanguage = if (currentLanguage == "ar") "ar" else "en"
         requestBuilder.addHeader("Accept-Language", apiLanguage)

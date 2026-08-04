@@ -13,12 +13,13 @@ import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
+import com.iti.mongez.presentation.roadmap.uiState.CourseUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
     initialState: RoadmapFilterState,
-    availableCourses: List<String>,
+    availableCourses: List<CourseUiModel>,
     availableEventTypes: List<String>,
     onDismiss: () -> Unit,
     onApply: (RoadmapFilterState) -> Unit
@@ -45,7 +46,7 @@ fun FilterBottomSheet(
 @Composable
 fun FilterBottomSheetContent(
     localState: RoadmapFilterState,
-    availableCourses: List<String>,
+    availableCourses: List<CourseUiModel>,
     availableEventTypes: List<String>,
     onApply: (RoadmapFilterState) -> Unit,
     onStateChange: (RoadmapFilterState) -> Unit,
@@ -116,7 +117,12 @@ fun FilterBottomSheetPreview() {
         Surface(color = Theme.colorScheme.surface.background) {
             FilterBottomSheetContent(
                 localState = RoadmapFilterState(),
-                availableCourses = listOf("Algorithms", "Database Systems", "Networks", "Operating Systems"),
+                availableCourses = listOf(
+                    CourseUiModel("1", "Algorithms"),
+                    CourseUiModel("2", "Database Systems"),
+                    CourseUiModel("3", "Networks"),
+                    CourseUiModel("4", "Operating Systems")
+                ),
                 availableEventTypes = listOf("Study", "Assignment", "Quiz", "Exam"),
                 onApply = {},
                 onStateChange = {},

@@ -15,11 +15,12 @@ import androidx.compose.ui.text.font.FontWeight
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
+import com.iti.mongez.presentation.roadmap.uiState.CourseUiModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CourseFilterSection(
-    availableCourses: List<String>,
+    availableCourses: List<CourseUiModel>,
     state: RoadmapFilterState,
     onStateChange: (RoadmapFilterState) -> Unit,
 ) {
@@ -36,14 +37,14 @@ fun CourseFilterSection(
         modifier = Modifier.fillMaxWidth()
     ) {
         availableCourses.forEach { course ->
-            val isSelected = state.selectedCourses.contains(course)
+            val isSelected = state.selectedCourses.contains(course.name)
             FilterChip(
                 selected = isSelected,
                 onClick = {
-                    val updated = if (isSelected) state.selectedCourses - course else state.selectedCourses + course
+                    val updated = if (isSelected) state.selectedCourses - course.name else state.selectedCourses + course.name
                     onStateChange(state.copy(selectedCourses = updated))
                 },
-                label = { Text(course) },
+                label = { Text(course.name) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = Theme.colorScheme.brand.primaryContainer,
                     selectedLabelColor = Theme.colorScheme.brand.primary

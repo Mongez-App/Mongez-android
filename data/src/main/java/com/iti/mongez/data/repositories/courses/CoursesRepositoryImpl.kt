@@ -36,7 +36,8 @@ class CoursesRepositoryImpl @Inject constructor(
         imageUrl: String,
         startDate: String,
         examDate: String,
-        hasMaterials: Boolean
+        courseType: String,
+        materialUrl: String?
     ): Result<CourseCreationResult> = safeApi {
         val request = CreateCourseRequestDto(
             name = name,
@@ -44,13 +45,16 @@ class CoursesRepositoryImpl @Inject constructor(
             imageUrl = imageUrl,
             startDate = startDate,
             examDate = examDate,
-            hasMaterials = hasMaterials
+            courseType = courseType,
+            materialUrl = materialUrl
         )
-        apiService.createCourse(request).toDomain()
+
+        val response = apiService.createCourse(request)
+        response.toDomain()
     }
 
-    override suspend fun updateCourse(courseId: String, name: String, isHidden: Boolean): Result<CourseActionResponse<Course>> = safeApi {
-        val response = apiService.updateCourse(courseId, UpdateCourseRequestDto(name, isHidden))
+    override suspend fun updateCourse(courseId: String, name: String, imageUrl: String, isHidden: Boolean): Result<CourseActionResponse<Course>> = safeApi {
+        val response = apiService.updateCourse(courseId, UpdateCourseRequestDto(name, imageUrl, isHidden))
         CourseActionResponse(data = response.toDomain(), alert = null)
     }
 
@@ -67,45 +71,28 @@ class CoursesRepositoryImpl @Inject constructor(
         courseId: String,
         fileName: String,
         contentType: String,
-        fileSizeBytes: Long,
-        pageCount: Int,
+        fileSizeBytes: Long, // Kept for interface compatibility, even if unused by API
+        pageCount: Int,      // Kept for interface compatibility
         fileBytes: ByteArray
     ): Result<CourseActionResponse<Unit>> {
+        return try {
+            // 1. Create the request body from the file bytes
+            val mediaType = MediaType.parse(contentType) ?: MediaType.parse("application/octet-stream")
+            val requestBody = RequestBody.create(mediaType, fileBytes)
 
-        val step1Response = safeApi {
-            apiService.requestMaterialUploadUrl(
-                courseId,
-                MaterialUploadRequestDto(fileName, contentType, fileSizeBytes, pageCount)
-            )
-        }
+            // 2. Wrap it in a Multipart part matching the "file" key in your Postman request
+            val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody)
 
-        return when (step1Response) {
-            is Result.Success -> {
-                val uploadUrl = step1Response.data.uploadUrl
-                    ?: return Result.Failure(Exception("Server did not return an upload URL"))
+            // 3. Send the direct POST request
+            val uploadResponse = apiService.uploadCourseMaterial(courseId, multipartBody)
 
-                val baseUrl = "https://api-gateway-production-3fd0.up.railway.app"
-                val finalUrl = if (uploadUrl.startsWith("/")) "$baseUrl$uploadUrl" else uploadUrl
-
-                try {
-                    val mediaType = MediaType.parse(contentType)
-                    val requestBody = RequestBody.create(mediaType, fileBytes)
-                    val multipartBody =
-                        MultipartBody.Part.createFormData("file", fileName, requestBody)
-
-                    val uploadResponse = apiService.uploadMaterialFile(finalUrl, multipartBody)
-
-                    if (uploadResponse.isSuccessful) {
-                        Result.Success(CourseActionResponse(data = Unit, alert = null))
-                    } else {
-                        Result.Failure(Exception("Upload failed: Error ${uploadResponse.code()}"))
-                    }
-                } catch (e: Exception) {
-                    Result.Failure(e)
-                }
+            if (uploadResponse.isSuccessful) {
+                Result.Success(CourseActionResponse(data = Unit, alert = null))
+            } else {
+                Result.Failure(Exception("Upload failed: Error ${uploadResponse.code()}"))
             }
-            is Result.Failure -> step1Response
-            else -> Result.Failure(Exception("Unknown error occurred during upload initialization"))
+        } catch (e: Exception) {
+            Result.Failure(e)
         }
     }
 

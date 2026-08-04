@@ -18,7 +18,9 @@ fun CourseDto.toDomain() = Course(
     examDate = this.examDate.orEmpty(),
     hasMaterials = this.hasMaterials ?: false,
     completionPercentage = this.completionPercentage ?: 0f,
-    isHidden = this.isHidden ?: false
+    isHidden = this.isHidden ?: false,
+    courseType = this.courseType.orEmpty(),
+    materialUrl = this.materialUrl
 )
 
 fun CourseCreationResponseDto.toDomain() = CourseCreationResult(

@@ -10,7 +10,9 @@ data class Course(
     val examDate: String,
     val hasMaterials: Boolean,
     val completionPercentage: Float,
-    val isHidden: Boolean = false
+    val isHidden: Boolean = false,
+    val courseType: String = "",     // Added
+    val materialUrl: String? = null
 )
 
 data class CourseCreationResult(

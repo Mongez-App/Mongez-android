@@ -39,9 +39,9 @@ fun DashboardScreen(
     innerPadding: PaddingValues,
     viewModel: DashboardViewModel = hiltViewModel(),
     onNavigateToFocus: () -> Unit,
-    onViewAllTasks: () -> Unit,
     onViewAllDeadlines: () -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
+    onViewAllTasks: (List<TaskItem>) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     var topSnackbarMessageRes by remember { mutableStateOf<Int?>(null) }
@@ -57,7 +57,7 @@ fun DashboardScreen(
                     topSnackbarMessageRes = null
                 }
                 is DashboardEffect.NavigateToFocusSession -> onNavigateToFocus()
-                is DashboardEffect.NavigateToAllTasks -> onViewAllTasks()
+                is DashboardEffect.NavigateToAllTasks -> onViewAllTasks(state.tasks)
                 is DashboardEffect.NavigateToAllDeadlines -> onViewAllDeadlines()
                 else -> {}
             }
@@ -158,17 +158,20 @@ fun DashboardScreen(
             }
 
             // 4. Today's Tasks Section Header
+            val tasksToShow = state.tasks.take(3) // Limit to top 3 tasks
+
             item {
                 AppSectionHeader(
                     title = stringResource(R.string.dashboard_todays_tasks),
-                    actionText = if (state.tasks.isNotEmpty()) stringResource(R.string.dashboard_view_all) else "",
+                    // Only show "View all" if the actual total tasks are more than what we are showing
+                    actionText = if (state.tasks.size > tasksToShow.size) stringResource(R.string.dashboard_view_all) else "",
                     onAction = { viewModel.onEvent(DashboardEvent.OnViewAllTasksClicked) },
                     modifier = Modifier.padding(horizontal = Theme.spacing.xl)
                 )
             }
 
             // Tasks List OR Empty State
-            if (state.tasks.isEmpty()) {
+            if (tasksToShow.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
@@ -184,7 +187,7 @@ fun DashboardScreen(
                     }
                 }
             } else {
-                items(state.tasks, key = { it.id }) { task ->
+                items(tasksToShow, key = { it.id }) { task ->
                     Box(modifier = Modifier.padding(horizontal = Theme.spacing.xl)) {
                         AppTaskCard(
                             title = task.title,

@@ -22,22 +22,22 @@ To prevent repository bloat, data coordination is handled per *App Flow* rather 
 
 ## 3. AI & Business Logic Agents
 
-The AI Smart Study Planner relies on specialized intelligent agents to handle dynamic scheduling and contextual learning[cite: 2].
+The AI Smart Study Planner relies on specialized intelligent agents to handle dynamic scheduling and contextual learning
 
 ### Dynamic Roadmap Engine
-This algorithmic agent recalculates and reschedules remaining tasks to ensure adequate preparation time[cite: 2]. 
+This algorithmic agent recalculates and reschedules remaining tasks to ensure adequate preparation time
 
 | Trigger | Action | Result |
 | :--- | :--- | :--- |
-| Injection of upcoming assessment (e.g., pop quiz)[cite: 2] | Increases priority weight of the corresponding course[cite: 2] | Reactive rescheduling of the semester timeline[cite: 2] |
+| Injection of upcoming assessment (e.g., pop quiz) | Increases priority weight of the corresponding course| Reactive rescheduling of the semester timeline |
 
 ### Contextual AI Assistant
-This active learning agent operates within the Study Room to provide grounded explanations without breaking user focus[cite: 2].
+This active learning agent operates within the Study Room to provide grounded explanations without breaking user focus
 
 | Capability | Constraint | Output |
 | :--- | :--- | :--- |
-| Pedagogical Summaries | Based solely on uploaded materials[cite: 2] | Auto-generated, simplified topic breakdowns[cite: 2] |
-| Deep-dive Q&A | Disabled for Custom Courses (Online/External)[cite: 2] | Contextual answers to reduce cognitive load[cite: 2] |
+| Pedagogical Summaries | Based solely on uploaded materials | Auto-generated, simplified topic breakdowns |
+| Deep-dive Q&A | Disabled for Custom Courses (Online/External) | Contextual answers to reduce cognitive load |
 
 ---
 

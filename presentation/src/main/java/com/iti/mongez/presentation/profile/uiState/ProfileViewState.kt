@@ -22,5 +22,7 @@ data class ProfileViewState(
     val isEditProfileDialogVisible: Boolean = false,
     val editingName: String = "",
     val selectedAvatarUrl: String? = null,
-    val isAvatarPickerVisible: Boolean = false
+    val isAvatarPickerVisible: Boolean = false,
+    val isLogoutDialogVisible: Boolean = false,
+    val isCalendarSyncDialogVisible: Boolean = false
 )

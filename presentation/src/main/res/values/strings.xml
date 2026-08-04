@@ -201,6 +201,12 @@
     <string name="profile_logout">Logout</string>
     <string name="profile_studying_preferences">Studying Preferences</string>
     <string name="profile_edit">Edit</string>
+    <string name="logout_confirmation_title">Are sure you want to log out?</string>
+    <string name="logout_confirmation_desc">You will need to enter your username and password to sign back in.</string>
+    <string name="logout_action">Logout</string>
+    <string name="sync_off_confirmation_title">Turn off Calendar Sync?</string>
+    <string name="sync_off_confirmation_desc">Your study sessions will stop syncing to your calendar. You can turn this back on anytime.</string>
+    <string name="sync_off_action">Disconnect</string>
     <string name="edit_preferences_title">Edit Preferences</string>
     <string name="edit_profile_title">Edit Profile</string>
     <string name="choose_avatar_title">Choose Avatar</string>
@@ -272,6 +278,7 @@
         <string name="filter_high">High</string>
         <string name="filter_medium">Medium</string>
         <string name="filter_low">Low</string>
+    <string name="label_course_url">Course URL</string>
 
 </resources>
 

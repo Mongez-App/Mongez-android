@@ -73,12 +73,28 @@ private fun Throwable.toDomainException(): AppException {
 
         // --- Retrofit / HTTP Exceptions ---
         is HttpException -> {
+            val errorBodyString = try {
+                this.response()?.errorBody()?.string()
+            } catch (e: Exception) {
+                null
+            }
+            
+            val parsedMessage = try {
+                if (!errorBodyString.isNullOrEmpty()) {
+                    org.json.JSONObject(errorBodyString).optString("message", errorBodyString)
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                errorBodyString
+            }
+
             when (this.code()) {
                 401 -> AuthException.UnauthorizedAccess()
                 429 -> AppException.TooManyRequests()
                 else -> NetworkException.ServerError(
                     code = this.code(),
-                    message = this.message()
+                    message = parsedMessage ?: this.message()
                 )
             }
         }

@@ -1,5 +1,7 @@
 package com.iti.mongez.data.sources.remote.services
 
+import com.iti.mongez.data.dtos.CalendarEventDto
+import com.iti.mongez.data.dtos.SyncCalendarEventsRequestDto
 import com.iti.mongez.data.dtos.profile.FullProfileDto
 import com.iti.mongez.data.dtos.profile.UpdateProfileRequestDto
 import com.iti.mongez.data.dtos.profile.UpdateProfileResponseDto
@@ -51,6 +53,9 @@ interface ApiService {
     @GET("auth/calendar/status")
     suspend fun getCalendarStatus(): CalendarStatusDto
 
-    @DELETE("auth/calendar/disconnect")
+    @POST("auth/calendar/disconnect")
     suspend fun disconnectCalendar(): Unit
+
+    @POST("auth/calendar/sync-events")
+    suspend fun syncCalendarEvents(@Body request: SyncCalendarEventsRequestDto): Unit
 }
