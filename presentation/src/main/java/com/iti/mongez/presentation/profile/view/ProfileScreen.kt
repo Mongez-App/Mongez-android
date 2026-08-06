@@ -122,6 +122,32 @@ fun ProfileScreen(
             onDismiss = { viewModel.processIntent(ProfileIntent.ToggleAvatarPicker(false)) }
         )
     }
+
+    if (viewState.isLogoutDialogVisible) {
+        AppConfirmationDialog(
+            title = stringResource(R.string.logout_confirmation_title),
+            description = stringResource(R.string.logout_confirmation_desc),
+            primaryActionText = stringResource(R.string.logout_action),
+            onPrimaryAction = { viewModel.processIntent(ProfileIntent.ConfirmLogout) },
+            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleLogoutDialog(false)) },
+            secondaryActionText = stringResource(R.string.action_cancel),
+            onSecondaryAction = { viewModel.processIntent(ProfileIntent.ToggleLogoutDialog(false)) },
+            isHorizontal = true
+        )
+    }
+
+    if (viewState.isCalendarSyncDialogVisible) {
+        AppConfirmationDialog(
+            title = stringResource(R.string.sync_off_confirmation_title),
+            description = stringResource(R.string.sync_off_confirmation_desc),
+            primaryActionText = stringResource(R.string.sync_off_action),
+            onPrimaryAction = { viewModel.processIntent(ProfileIntent.ConfirmCalendarSyncDisconnect) },
+            onDismiss = { viewModel.processIntent(ProfileIntent.ToggleCalendarSyncDialog(false)) },
+            secondaryActionText = stringResource(R.string.action_cancel),
+            onSecondaryAction = { viewModel.processIntent(ProfileIntent.ToggleCalendarSyncDialog(false)) },
+            isHorizontal = true
+        )
+    }
 }
 
 @Composable
