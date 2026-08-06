@@ -17,11 +17,4 @@ interface PreferencesDao {
     @Query("SELECT * FROM user_preferences WHERE id = 0")
     suspend fun getPreferences(): PreferencesEntity?
 
-    @JvmSuppressWildcards
-    @Query("SELECT * FROM user_preferences WHERE id = 0")
-    fun getPreferencesFlow(): Flow<PreferencesEntity?>
-
-    @JvmSuppressWildcards
-    @Query("DELETE FROM user_preferences")
-    suspend fun clearPreferences(): Int
 }
