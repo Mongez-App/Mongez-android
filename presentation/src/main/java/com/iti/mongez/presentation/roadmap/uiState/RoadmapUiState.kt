@@ -10,6 +10,7 @@ data class RoadmapUiState(
 
     val isFilterSheetVisible: Boolean = false,
     val isAddEventDialogVisible: Boolean = false,
+    val isNoCoursesDialogVisible: Boolean = false,
 
     val activeFilterState: RoadmapFilterState = RoadmapFilterState(),
 

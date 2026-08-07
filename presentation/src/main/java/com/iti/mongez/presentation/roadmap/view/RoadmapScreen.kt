@@ -23,12 +23,15 @@ import java.time.LocalDate
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.designsystem.components.common.AppEmptyState
+import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
+import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.components.ActiveFiltersRow
 import com.iti.mongez.presentation.roadmap.components.AddEventDialog
 import com.iti.mongez.presentation.roadmap.components.FilterBottomSheet
 import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
+import com.iti.mongez.presentation.roadmap.contract.RoadmapEffect
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
@@ -67,7 +70,8 @@ private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehi
 fun RoadmapScreen(
     innerPadding: PaddingValues,
     viewModel: RoadmapViewModel = hiltViewModel(),
-    onNavigateToBlockDetails: (String) -> Unit
+    onNavigateToCourses: () -> Unit,
+    onShowSnackBar: (String, AppSnackbarType?) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -75,15 +79,24 @@ fun RoadmapScreen(
         viewModel.onEvent(RoadmapEvent.LoadRoadmap())
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is RoadmapEffect.ShowNoCoursesDialog -> {
+                    viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(true))
+                }
+                is RoadmapEffect.ShowSnackBar -> {
+                    onShowSnackBar(effect.message, effect.type)
+                }
+                else -> {}
+            }
+        }
+    }
+
     RoadmapContent(
         state = state,
         innerPadding = innerPadding,
-        onEvent = { event ->
-            when (event) {
-                is RoadmapEvent.OnBlockClicked -> onNavigateToBlockDetails(event.blockId)
-                else -> viewModel.onEvent(event)
-            }
-        }
+        onEvent = viewModel::onEvent
     )
 
     if (state.isAddEventDialogVisible) {
@@ -112,8 +125,23 @@ fun RoadmapScreen(
             onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleFilterSheet(false)) },
             onApply = { 
                 viewModel.onEvent(RoadmapEvent.ApplyFilter(it))
-                viewModel.onEvent(RoadmapEvent.ToggleFilterSheet(false))
             }
+        )
+    }
+
+    if (state.isNoCoursesDialogVisible) {
+        AppConfirmationDialog(
+            title = stringResource(R.string.no_courses_dialog_title),
+            description = stringResource(R.string.no_courses_dialog_description),
+            primaryActionText = stringResource(R.string.button_add_course),
+            onPrimaryAction = {
+                viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(false))
+                onNavigateToCourses()
+            },
+            onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(false)) },
+            secondaryActionText = stringResource(R.string.action_cancel),
+            onSecondaryAction = { viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(false)) },
+            isHorizontal = true
         )
     }
 }
@@ -211,8 +239,7 @@ fun RoadmapContent(
                             key = { _, block -> "${week.weekNumber}_${block.id}" }
                         ) { _, block ->
                             TimelineBlockItem(
-                                block = block,
-                                onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
+                                block = block
                             )
                         }
                     }

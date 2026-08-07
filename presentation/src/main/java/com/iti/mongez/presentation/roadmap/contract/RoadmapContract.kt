@@ -5,10 +5,10 @@ import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 
 sealed class RoadmapEvent {
     data class LoadRoadmap(val startDate: String? = null) : RoadmapEvent()
-    data class OnBlockClicked(val blockId: String) : RoadmapEvent()
     object OnAddEventClicked : RoadmapEvent()
     data class ToggleFilterSheet(val isVisible: Boolean) : RoadmapEvent()
     data class ToggleAddEventDialog(val isVisible: Boolean) : RoadmapEvent()
+    data class ToggleNoCoursesDialog(val isVisible: Boolean) : RoadmapEvent()
     data class ApplyFilter(val filterState: RoadmapFilterState) : RoadmapEvent()
     object ClearAllFilters : RoadmapEvent()
     object RemoveDateFilter : RoadmapEvent()

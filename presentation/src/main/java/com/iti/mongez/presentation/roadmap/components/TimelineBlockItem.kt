@@ -34,8 +34,7 @@ import com.iti.mongez.presentation.utils.UiText
 
 @Composable
 fun TimelineBlockItem(
-    block: StudyBlockUiModel,
-    onClick: () -> Unit
+    block: StudyBlockUiModel
 ) {
     val lineColor = Theme.colorScheme.brand.roadmapTimeline
     val blockColor = when (block.color) {
@@ -76,11 +75,7 @@ fun TimelineBlockItem(
                 isExpanded = isExpanded,
                 isExpandable = isExpandable,
                 onClick = {
-                    if (isExpandable) {
-                        isExpanded = !isExpanded
-                    } else {
-                        onClick()
-                    }
+                    isExpanded = !isExpanded
                 }
             )
 
@@ -168,41 +163,39 @@ fun TimelineBlockItem(
 fun TimelineBlockItemPreview() {
     MongezTheme {
         Column(modifier = Modifier.padding(16.dp)) {
-            TimelineBlockItem(
-                block = StudyBlockUiModel(
-                    id = "1",
-                    courseName = UiText.DynamicString("Algorithms"),
-                    topic = UiText.DynamicString("Dynamic Programming"),
-                    durationMinutes = 60,
-                    isCompleted = true,
-                    color = StudyBlockColor.PURPLE,
-                    events = listOf(
-                        RoadmapEventUiModel(
-                            title = UiText.DynamicString("Algorithms Exam"),
-                            type = "Exam",
-                            dateTime = UiText.DynamicString("May 8 - 3:00 PM")
-                        )
-                    ),
-                    tasks = listOf(
-                        RoadmapTaskUiModel(
-                            title = UiText.DynamicString("Finish DP Exercises"),
-                            dateTime = UiText.DynamicString("May 7 - 10:00 PM")
+                    TimelineBlockItem(
+                        block = StudyBlockUiModel(
+                            id = "1",
+                            courseName = UiText.DynamicString("Algorithms"),
+                            topic = UiText.DynamicString("Dynamic Programming"),
+                            durationMinutes = 60,
+                            isCompleted = true,
+                            color = StudyBlockColor.PURPLE,
+                            events = listOf(
+                                RoadmapEventUiModel(
+                                    title = UiText.DynamicString("Algorithms Exam"),
+                                    type = "Exam",
+                                    dateTime = UiText.DynamicString("May 8 - 3:00 PM")
+                                )
+                            ),
+                            tasks = listOf(
+                                RoadmapTaskUiModel(
+                                    title = UiText.DynamicString("Finish DP Exercises"),
+                                    dateTime = UiText.DynamicString("May 7 - 10:00 PM")
+                                )
+                            )
                         )
                     )
-                ),
-                onClick = {}
-            )
-            TimelineBlockItem(
-                block = StudyBlockUiModel(
-                    id = "2",
-                    courseName = UiText.DynamicString("Algorithms"),
-                    topic = UiText.DynamicString("Dynamic Programming"),
-                    durationMinutes = 90,
-                    isCompleted = false,
-                    color = StudyBlockColor.GREEN
-                ),
-                onClick = {}
-            )
+                    TimelineBlockItem(
+                        block = StudyBlockUiModel(
+                            id = "2",
+                            courseName = UiText.DynamicString("Algorithms"),
+                            topic = UiText.DynamicString("Dynamic Programming"),
+                            durationMinutes = 90,
+                            isCompleted = false,
+                            color = StudyBlockColor.GREEN
+                        )
+                    )
         }
     }
 }
