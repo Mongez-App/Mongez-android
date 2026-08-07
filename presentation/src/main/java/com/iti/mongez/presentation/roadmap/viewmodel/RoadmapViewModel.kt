@@ -167,24 +167,53 @@ class RoadmapViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is RoadmapEvent.LoadRoadmap -> loadRoadmap(event.startDate)
-                is RoadmapEvent.OnBlockClicked -> {
-                    _effect.emit(RoadmapEffect.NavigateToBlockDetails(event.blockId))
-                }
                 is RoadmapEvent.OnAddEventClicked -> {
-                    _state.value = _state.value.copy(isAddEventDialogVisible = true)
+                    if (_state.value.availableCourses.isEmpty()) {
+                        _effect.emit(RoadmapEffect.ShowNoCoursesDialog)
+                    } else {
+                        _state.value = _state.value.copy(isAddEventDialogVisible = true)
+                    }
                 }
                 is RoadmapEvent.ToggleFilterSheet -> {
-                    _state.value = _state.value.copy(isFilterSheetVisible = event.isVisible)
+                    if (event.isVisible && _state.value.availableCourses.isEmpty()) {
+                        _effect.emit(RoadmapEffect.ShowNoCoursesDialog)
+                    } else {
+                        _state.value = _state.value.copy(isFilterSheetVisible = event.isVisible)
+                    }
                 }
                 is RoadmapEvent.ToggleAddEventDialog -> {
                     _state.value = _state.value.copy(isAddEventDialogVisible = event.isVisible)
                 }
+                is RoadmapEvent.ToggleNoCoursesDialog -> {
+                    _state.value = _state.value.copy(isNoCoursesDialogVisible = event.isVisible)
+                }
                 is RoadmapEvent.ApplyFilter -> {
+                    val filterState = event.filterState
+                    val currentStartDate = _state.value.roadmapStartDate
+
+                    if (filterState.startDate != null && currentStartDate.isNotEmpty()) {
+                        try {
+                            val selectedDate = filterState.startDate
+                            val roadmapDate = LocalDate.parse(currentStartDate)
+
+                            if (selectedDate.isBefore(roadmapDate)) {
+                                _state.value = _state.value.copy(
+                                    isFilterSheetVisible = false,
+                                    activeFilterState = filterState
+                                )
+                                loadRoadmap(selectedDate.toString())
+                                return@launch
+                            }
+                        } catch (e: Exception) {
+                            android.util.Log.e("RoadmapViewModel", "Error parsing roadmap date", e)
+                        }
+                    }
+
                     _state.value = _state.value.copy(
                         isFilterSheetVisible = false,
-                        activeFilterState = event.filterState
+                        activeFilterState = filterState
                     )
-                    applyFilters(event.filterState)
+                    applyFilters(filterState)
                 }
                 is RoadmapEvent.ClearAllFilters -> {
                     val clearedState = RoadmapFilterState()

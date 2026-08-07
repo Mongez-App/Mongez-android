@@ -154,8 +154,8 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
             is AppRoute.Roadmap -> NavEntry(AppRoute.Roadmap) {
                 RoadmapScreen(
                     innerPadding = PaddingValues(),
-                    onNavigateToBlockDetails = {
-                        //To-Do
+                    onNavigateToCourses = {
+                        backStack.add(AppRoute.Dashboard())
                     }
                 )
             }

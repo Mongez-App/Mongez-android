@@ -268,6 +268,8 @@
         <string name="delete_course_title">Delete Course?</string>
         <string name="delete_course_dialog_description">This action cannot be undone. All data related to this course will be permanently removed.</string>
         <string name="action_delete">Delete</string>
+        <string name="no_courses_dialog_title">No Courses Added</string>
+        <string name="no_courses_dialog_description">You need to add at least one course to your study plan before you can filter the roadmap or add events.</string>
         <string name="tab_materials">Materials</string>
 
         <string name="today_tasks">Today Tasks</string>

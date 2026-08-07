@@ -120,6 +120,7 @@ fun MainScreen(
             onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
             onNavigateToAllTasks = onNavigateToAllTasks,
+            onNavigateToCourses = { selectedTabIndex = 1 },
             onShowSnackBar = { message, type ->
                 activeSnackbarType = type ?: AppSnackbarType.Info
                 coroutineScope.launch {
@@ -139,6 +140,7 @@ private fun MainScreenContent(
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit,
+    onNavigateToCourses: () -> Unit,
     onShowSnackBar: (String, AppSnackbarType?) -> Unit,
 ) {
     when (tab) {
@@ -165,7 +167,8 @@ private fun MainScreenContent(
         MainTab.Roadmap -> {
             RoadmapScreen(
                 innerPadding = innerPadding,
-                onNavigateToBlockDetails = { /* TODO */ }
+                onNavigateToCourses = onNavigateToCourses,
+                onShowSnackBar = onShowSnackBar
             )
         }
 
