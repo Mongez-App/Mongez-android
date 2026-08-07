@@ -17,38 +17,35 @@ class CalendarLocalDataSource @Inject constructor(
         val contentResolver: ContentResolver = context.contentResolver
 
         val projection = arrayOf(
-            CalendarContract.Events.TITLE,
-            CalendarContract.Events.DTSTART,
-            CalendarContract.Events.DTEND,
-            CalendarContract.Events.EVENT_LOCATION,
-            CalendarContract.Events.ALL_DAY
+            CalendarContract.Instances.TITLE,
+            CalendarContract.Instances.BEGIN,
+            CalendarContract.Instances.END,
+            CalendarContract.Instances.EVENT_LOCATION,
+            CalendarContract.Instances.ALL_DAY
         )
 
         // Fetch events from 30 days ago to 90 days ahead
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -30)
-        val startMillis = calendar.timeInMillis
-        
-        calendar.add(Calendar.DAY_OF_YEAR, 120) // 30 + 90
-        val endMillis = calendar.timeInMillis
+        val rangeStart = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -30) }.timeInMillis
+        val rangeEnd = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 90) }.timeInMillis
 
-        val selection = "(${CalendarContract.Events.DTSTART} >= ?) AND (${CalendarContract.Events.DTSTART} <= ?)"
-        val selectionArgs = arrayOf(startMillis.toString(), endMillis.toString())
+        val builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+        android.content.ContentUris.appendId(builder, rangeStart)
+        android.content.ContentUris.appendId(builder, rangeEnd)
 
         try {
-            Log.d("CalendarSync", "Fetching events from $startMillis to $endMillis")
+            Log.d("CalendarSync", "Fetching all instances from $rangeStart to $rangeEnd")
             contentResolver.query(
-                CalendarContract.Events.CONTENT_URI,
+                builder.build(),
                 projection,
-                selection,
-                selectionArgs,
-                null
+                null,
+                null,
+                "${CalendarContract.Instances.BEGIN} ASC"
             )?.use { cursor ->
-                val titleIdx = cursor.getColumnIndex(CalendarContract.Events.TITLE)
-                val startIdx = cursor.getColumnIndex(CalendarContract.Events.DTSTART)
-                val endIdx = cursor.getColumnIndex(CalendarContract.Events.DTEND)
-                val locationIdx = cursor.getColumnIndex(CalendarContract.Events.EVENT_LOCATION)
-                val allDayIdx = cursor.getColumnIndex(CalendarContract.Events.ALL_DAY)
+                val titleIdx = cursor.getColumnIndex(CalendarContract.Instances.TITLE)
+                val startIdx = cursor.getColumnIndex(CalendarContract.Instances.BEGIN)
+                val endIdx = cursor.getColumnIndex(CalendarContract.Instances.END)
+                val locationIdx = cursor.getColumnIndex(CalendarContract.Instances.EVENT_LOCATION)
+                val allDayIdx = cursor.getColumnIndex(CalendarContract.Instances.ALL_DAY)
 
                 while (cursor.moveToNext()) {
                     events.add(
@@ -63,10 +60,10 @@ class CalendarLocalDataSource @Inject constructor(
                 }
             }
         } catch (e: SecurityException) {
-            Log.e("CalendarSync", "Permission denied for calendar access", e)
+            Log.e("CalendarSync", "Permission denied for calendar instances access", e)
         }
 
-        Log.d("CalendarSync", "Total events found: ${events.size}")
+        Log.d("CalendarSync", "Total event instances found: ${events.size}")
         return events
     }
 }

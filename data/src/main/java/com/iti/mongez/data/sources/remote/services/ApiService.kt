@@ -47,15 +47,6 @@ interface ApiService {
     @POST("auth/handshake")
     suspend fun handshake(@Body request: HandshakeRequestDto): AuthResponseDto
 
-    @POST("auth/calendar/connect")
-    suspend fun connectCalendar(): Unit
-
-    @GET("auth/calendar/status")
-    suspend fun getCalendarStatus(): CalendarStatusDto
-
-    @POST("auth/calendar/disconnect")
-    suspend fun disconnectCalendar(): Unit
-
-    @POST("auth/calendar/sync-events")
+    @POST("calendar/events")
     suspend fun syncCalendarEvents(@Body request: SyncCalendarEventsRequestDto): Unit
 }

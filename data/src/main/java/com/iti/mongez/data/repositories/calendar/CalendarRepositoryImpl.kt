@@ -10,6 +10,7 @@ import com.iti.mongez.domain.calendar.model.CalendarEvent
 import com.iti.mongez.domain.calendar.model.CalendarStatus
 import com.iti.mongez.domain.calendar.repository.CalendarRepository
 import com.iti.mongez.domain.core.Result
+import java.time.Instant
 import javax.inject.Inject
 
 class CalendarRepositoryImpl @Inject constructor(
@@ -17,21 +18,13 @@ class CalendarRepositoryImpl @Inject constructor(
     private val localDataSource: CalendarLocalDataSource
 ) : CalendarRepository {
 
-    override suspend fun connect(): Result<Unit> = safeApi {
-        apiService.connectCalendar()
-    }
+    override suspend fun connect(): Result<Unit> = Result.Success(Unit)
 
-    override suspend fun disconnect(): Result<Unit> = safeApi {
-        apiService.disconnectCalendar()
-    }
+    override suspend fun disconnect(): Result<Unit> = Result.Success(Unit)
 
-    override suspend fun getStatus(): Result<CalendarStatus> = safeApi {
-        val dto = apiService.getCalendarStatus()
-        CalendarStatus(
-            isConnected = dto.isConnected,
-            email = dto.email
-        )
-    }
+    override suspend fun getStatus(): Result<CalendarStatus> = Result.Success(
+        CalendarStatus(isConnected = true, email = null)
+    )
 
     override suspend fun getLocalEvents(): Result<List<CalendarEvent>> {
         return try {
@@ -42,22 +35,22 @@ class CalendarRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncEvents(events: List<CalendarEvent>): Result<Unit> = safeApi {
-        Log.d("CalendarSync", "Syncing ${events.size} events to backend placeholder...")
+        Log.d("CalendarSync", "Syncing ${events.size} events to backend...")
+        
         val request = SyncCalendarEventsRequestDto(
             events = events.map {
                 CalendarEventDto(
                     title = it.title,
-                    startTime = it.startTimeMillis,
-                    endTime = it.endTimeMillis,
-                    location = it.location,
-                    isAllDay = it.isAllDay
+                    startDate = Instant.ofEpochMilli(it.startTimeMillis).toString(),
+                    endDate = Instant.ofEpochMilli(it.endTimeMillis).toString(),
+                    eventType = "CALENDAR"
                 )
             }
         )
-        // Log a preview of the first event if available
+        
         if (request.events.isNotEmpty()) {
             val first = request.events.first()
-            Log.d("CalendarSync", "Payload preview: First event is '${first.title}' at ${first.startTime}")
+            Log.d("CalendarSync", "Payload preview: '${first.title}' from ${first.startDate} to ${first.endDate}")
         }
         
         apiService.syncCalendarEvents(request)
