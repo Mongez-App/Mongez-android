@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,12 +40,15 @@ import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showDefaultAlert: Boolean = false,
+    viewModel: MainViewModel = hiltViewModel(),
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit
 ) {
+    val preferences by viewModel.preferences.collectAsState()
+    
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -62,15 +66,19 @@ fun MainScreen(
     }
 
     if (isDefaultScheduleDialogOpen) {
-        DefaultScheduleDialog(
-            onDismiss = {
-                isDefaultScheduleDialogOpen = false
-            },
-            onGoToProfile = {
-                isDefaultScheduleDialogOpen = false
-                selectedTabIndex = 3 // Index of Profile tab
-            }
-        )
+        preferences?.let { prefs ->
+            DefaultScheduleDialog(
+                studyHours = prefs.dailyStudyHours,
+                selectedDays = prefs.availableDays,
+                onDismiss = {
+                    isDefaultScheduleDialogOpen = false
+                },
+                onGoToProfile = {
+                    isDefaultScheduleDialogOpen = false
+                    selectedTabIndex = 3
+                }
+            )
+        }
     }
 
     Scaffold(
