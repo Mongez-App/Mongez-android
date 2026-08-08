@@ -42,6 +42,7 @@ enum class GoalType {
 data class DashboardUiState(
     val isLoading: Boolean = false,
     val userName: String = "Abdullah",
+    val avatarUrl: String? = null,
     val welcomeMessage: String = "",
     @StringRes val greetingSubtext: Int = R.string.dashboard_greeting_subtext,
     val streakCount: Int = 0,

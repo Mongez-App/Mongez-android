@@ -44,6 +44,8 @@ class DashboardViewModel @Inject constructor(
                     val summary = aggregatedData.summary
                     _state.value = _state.value.copy(
                         isLoading = false,
+                        userName = aggregatedData.userName.ifEmpty { "User" },
+                        avatarUrl = aggregatedData.avatarUrl,
                         welcomeMessage = summary.welcomeMessage,
                         streakCount = if (summary.streakDays > 0) summary.streakDays else aggregatedData.streak,
                         isStreakActive = (summary.streakDays > 0 || aggregatedData.streak > 0),
@@ -122,5 +124,8 @@ class DashboardViewModel @Inject constructor(
                 viewModelScope.launch { _effect.emit(DashboardEffect.NavigateToAllDeadlines) }
             }
         }
+    }
+    fun refreshData() {
+        loadDashboardData()
     }
 }

@@ -1,6 +1,8 @@
 package com.iti.mongez.domain.dashboard.model
 
 data class UserProfile(
+    val name: String,
+    val avatarUrl: String?,
     val currentStreakDays: Int
 )
 
@@ -47,6 +49,8 @@ data class DashboardSummary(
 
 // The combined result to pass to the Presentation Layer
 data class DashboardAggregatedData(
+    val userName: String,
+    val avatarUrl: String?,
     val streak: Int,
     val summary: DashboardSummary
 )

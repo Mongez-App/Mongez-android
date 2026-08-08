@@ -1,6 +1,7 @@
 package com.iti.mongez.data.core.network
 
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.runBlocking
@@ -28,6 +29,7 @@ class AuthInterceptor @Inject constructor(
 
         if (!token.isNullOrEmpty()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")
+            Log.e("token",token)
         }
 
         // 2. Add X-User-Id Header

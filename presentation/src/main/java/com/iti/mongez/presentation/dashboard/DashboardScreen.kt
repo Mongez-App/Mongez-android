@@ -23,6 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.iti.mongez.designsystem.components.avatar.AppAvatar
 import com.iti.mongez.designsystem.components.section.AppSectionHeader
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -46,6 +49,22 @@ fun DashboardScreen(
     val state by viewModel.state.collectAsState()
     var topSnackbarMessageRes by remember { mutableStateOf<Int?>(null) }
     var topSnackbarType by remember { mutableStateOf<AppSnackbarType?>(null) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Trigger refresh every time the screen comes into the foreground
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshData()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collectLatest { effect ->
@@ -75,6 +94,7 @@ fun DashboardScreen(
         ) {
 
             // 1. Profile Header
+            // 1. Profile Header
             item {
                 Row(
                     modifier = Modifier
@@ -84,30 +104,50 @@ fun DashboardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AppAvatar(
                             size = 56.dp,
+                            imageUrl = state.avatarUrl,
                             initials = state.userName
                         )
 
-                        Column {
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            // Greeting line (e.g. "Good day")
+                            if (state.welcomeMessage.isNotBlank()) {
+                                Text(
+                                    text = state.welcomeMessage,
+                                    style = Theme.typography.body.medium,
+                                    color = Theme.colorScheme.text.secondary
+                                )
+                            }
+
+                            // Name line on its own line (e.g. "Mahmoud Tarek")
                             Text(
-                                text = state.welcomeMessage.ifEmpty {
-                                    stringResource(R.string.dashboard_greeting, state.userName)
-                                },
+                                text = state.userName,
                                 style = Theme.typography.title.large,
                                 fontWeight = FontWeight.Bold,
-                                color = Theme.colorScheme.text.primary
+                                color = Theme.colorScheme.text.primary,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
+
+                            // Subtext line (e.g. "Let's hit today's tasks")
                             Text(
                                 text = stringResource(state.greetingSubtext),
-                                style = Theme.typography.body.medium,
-                                color = Theme.colorScheme.text.secondary
+                                style = Theme.typography.body.small,
+                                color = Theme.colorScheme.text.secondary,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.width(Theme.spacing.sm))
 
                     AppStreakBadge(
                         streakCount = state.streakCount,

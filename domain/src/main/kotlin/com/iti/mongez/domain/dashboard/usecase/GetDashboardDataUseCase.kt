@@ -24,6 +24,8 @@ class GetDashboardDataUseCase @Inject constructor(
         if (profileResult is Result.Success && dashboardResult is Result.Success) {
             Result.Success(
                 DashboardAggregatedData(
+                    userName = profileResult.data.name,
+                    avatarUrl = profileResult.data.avatarUrl,
                     streak = profileResult.data.currentStreakDays,
                     summary = dashboardResult.data
                 )
