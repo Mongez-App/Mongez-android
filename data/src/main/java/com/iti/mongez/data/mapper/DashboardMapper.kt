@@ -13,6 +13,8 @@ import com.iti.mongez.domain.dashboard.model.UserProfile
 
 fun ProfileResponseDto.toDomain(): UserProfile {
     return UserProfile(
+        name = this.name ?: "",
+        avatarUrl = this.avatarUrl,
         currentStreakDays = this.stats?.currentStreakDays ?: 0
     )
 }
