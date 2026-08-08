@@ -12,5 +12,7 @@ data class PreferencesUiState(
     val studyHours: Int = 4,
     val selectedDays: Set<String> = emptySet(),
     val isCalendarSynced: Boolean = false,
-    val isSetupComplete: Boolean = false
+    val isSetupComplete: Boolean = false,
+    val hoursChosen: Boolean = false,
+    val daysChosen: Boolean = false
 )
