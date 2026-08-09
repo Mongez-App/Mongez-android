@@ -25,14 +25,21 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -50,14 +57,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.iti.mongez.designsystem.components.button.AppButton
+import com.iti.mongez.designsystem.components.button.AppButtonVariant
 import com.iti.mongez.designsystem.components.button.AppGlowButton
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.menu.AppPopupMenu
 import com.iti.mongez.designsystem.components.menu.PopupMenuItem
+import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
 import com.iti.mongez.designsystem.components.chip.AppChip
+import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.screens.courses.AppDocumentCard
 import com.iti.mongez.designsystem.screens.courses.AppTaskCard
 import com.iti.mongez.designsystem.screens.courses.CourseProgressCard
@@ -69,7 +80,12 @@ import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseDetailsScreen(
     courseId: String,
@@ -82,6 +98,7 @@ fun CourseDetailsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     var isCourseMenuExpanded by remember { mutableStateOf(false) }
+    var isEditBottomSheetOpen by remember { mutableStateOf(false) }
 
     var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
     var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
@@ -146,16 +163,19 @@ fun CourseDetailsScreen(
         Scaffold(
             containerColor = Theme.colorScheme.surface.background,
             bottomBar = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
-                        .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.xl)
-                ) {
-                    AppGlowButton(
-                        text = stringResource(R.string.upload_course_material),
-                        onClick = { filePickerLauncher.launch(arrayOf("application/pdf")) }
-                    )
+                // Ensure state.courseType exists in your UI State
+                if (state.courseType != "URL_COURSE") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Transparent)
+                            .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.xl)
+                    ) {
+                        AppGlowButton(
+                            text = stringResource(R.string.upload_course_material),
+                            onClick = { filePickerLauncher.launch(arrayOf("application/pdf")) }
+                        )
+                    }
                 }
             }
         ) { paddingValues ->
@@ -213,7 +233,7 @@ fun CourseDetailsScreen(
                                         ),
                                         onClick = {
                                             isCourseMenuExpanded = false
-                                            viewModel.processIntent(CourseDetailsIntent.EditCourse)
+                                            isEditBottomSheetOpen = true
                                         }
                                     ),
                                     PopupMenuItem(
@@ -288,8 +308,9 @@ fun CourseDetailsScreen(
                                                 style = Theme.typography.headline.large,
                                                 modifier = Modifier.padding(bottom = Theme.spacing.sm)
                                             )
+                                            // Problem 2 Fix: Dynamic empty state messaging
                                             Text(
-                                                text = stringResource(R.string.no_materials_empty_state),
+                                                text = if (state.courseType == "URL_COURSE") "This course's material is on the platform" else stringResource(R.string.no_materials_empty_state),
                                                 style = Theme.typography.body.large,
                                                 color = Theme.colorScheme.text.secondary
                                             )
@@ -416,7 +437,6 @@ fun CourseDetailsScreen(
             }
         }
 
-        // Confirmation Dialog for Course Deletion
         if (state.isDeleteDialogVisible) {
             AppConfirmationDialog(
                 title = stringResource(R.string.delete_course_title),
@@ -435,6 +455,30 @@ fun CourseDetailsScreen(
             )
         }
 
+        // Edit Course Bottom Sheet
+        if (isEditBottomSheetOpen) {
+            AppBottomSheet(
+                onDismiss = { isEditBottomSheetOpen = false },
+                title = stringResource(R.string.edit_course)
+            ) {
+                EditCourseSheetContent(
+                    initialName = state.courseTitle,
+                    initialImageUrl = state.imageUrl,
+                    courseCode = state.courseCode,
+                    startDateIso = state.startDate,
+                    examDateIso = state.examDate,
+                    courseUrl = state.materialUrl ?: "",
+                    isOnline = state.courseType == "URL_COURSE",
+                    isLoading = state.isLoading,
+                    onCancel = { isEditBottomSheetOpen = false },
+                    onSave = { name, imageUrl ->
+                        isEditBottomSheetOpen = false
+                        viewModel.processIntent(CourseDetailsIntent.UpdateCourse(name = name, imageUrl = imageUrl))
+                    }
+                )
+            }
+        }
+
         // Animated Snackbar
         AnimatedVisibility(
             visible = topSnackbarMessage != null,
@@ -451,6 +495,111 @@ fun CourseDetailsScreen(
                     type = topSnackbarType
                 )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditCourseSheetContent(
+    initialName: String,
+    initialImageUrl: String,
+    courseCode: String,
+    startDateIso: String,
+    examDateIso: String,
+    courseUrl: String,
+    isOnline: Boolean,
+    isLoading: Boolean,
+    onCancel: () -> Unit,
+    onSave: (name: String, imageUrl: String) -> Unit
+) {
+    var courseName by remember { mutableStateOf(initialName) }
+    var imageUrl by remember { mutableStateOf(initialImageUrl) }
+
+    fun formatIsoToUi(isoString: String): String {
+        return try {
+            val instant = Instant.parse(isoString)
+            instant.atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        } catch (e: Exception) {
+            isoString
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing.lg)
+    ) {
+        // Editable fields
+        AppTextField(
+            value = courseName,
+            onValueChange = { courseName = it },
+            label = stringResource(R.string.label_course_name),
+            placeholder = stringResource(R.string.hint_course_name)
+        )
+
+        AppTextField(
+            value = imageUrl,
+            onValueChange = { imageUrl = it },
+            label = "Course Image URL",
+            placeholder = "https://..."
+        )
+
+        // Read-only fields
+        if (isOnline) {
+            AppTextField(
+                value = courseUrl,
+                onValueChange = {},
+                label = stringResource(R.string.label_course_url),
+                readOnly = true,
+                placeholder = "https://..."
+            )
+        }
+
+        AppTextField(
+            value = courseCode,
+            onValueChange = {},
+            label = stringResource(R.string.label_course_code),
+            readOnly = true
+        )
+
+        AppTextField(
+            value = formatIsoToUi(startDateIso),
+            onValueChange = {},
+            label = stringResource(R.string.label_start_date),
+            readOnly = true
+        )
+
+        AppTextField(
+            value = formatIsoToUi(examDateIso),
+            onValueChange = {},
+            label = stringResource(R.string.label_exam_date),
+            readOnly = true
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing.md))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(
+                onClick = onCancel,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = stringResource(R.string.action_cancel),
+                    color = Theme.colorScheme.text.secondary
+                )
+            }
+
+            AppButton(
+                text = "Save Changes",
+                onClick = { onSave(courseName, imageUrl) },
+                modifier = Modifier.weight(1f),
+                variant = AppButtonVariant.Primary,
+                isLoading = isLoading
+            )
         }
     }
 }

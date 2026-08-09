@@ -15,10 +15,9 @@ import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
+import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
 import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
-import com.iti.mongez.domain.calendar.usecase.ConnectCalendarUseCase
-import com.iti.mongez.domain.calendar.usecase.DisconnectCalendarUseCase
-import com.iti.mongez.domain.calendar.usecase.GetCalendarStatusUseCase
+import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
 import com.iti.mongez.domain.profile.usecase.UploadProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,10 +40,9 @@ class ProfileViewModel @Inject constructor(
     private val getPreferencesUseCase: GetPreferencesUseCase,
     private val savePreferencesUseCase: SavePreferencesUseCase,
     private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
+    private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
-    private val connectCalendarUseCase: ConnectCalendarUseCase,
-    private val disconnectCalendarUseCase: DisconnectCalendarUseCase,
-    private val getCalendarStatusUseCase: GetCalendarStatusUseCase,
+    private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase,
     private val uploadProfileImageUseCase: UploadProfileImageUseCase
 ) : ViewModel() {
 
@@ -78,7 +76,17 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ToggleCalendarSync -> toggleCalendarSync(intent.enabled)
             is ProfileIntent.ToggleDarkMode -> toggleDarkMode(intent.enabled)
             is ProfileIntent.ChangeLanguage -> changeLanguage(intent.language)
-            is ProfileIntent.Logout -> logout()
+            is ProfileIntent.Logout -> {
+                _viewState.update { it.copy(isLogoutDialogVisible = true) }
+            }
+            is ProfileIntent.ConfirmLogout -> logout()
+            is ProfileIntent.ToggleLogoutDialog -> {
+                _viewState.update { it.copy(isLogoutDialogVisible = intent.visible) }
+            }
+            is ProfileIntent.ToggleCalendarSyncDialog -> {
+                _viewState.update { it.copy(isCalendarSyncDialogVisible = intent.visible) }
+            }
+            is ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(false)
             is ProfileIntent.ToggleEditPreferencesSheet -> {
                 if (intent.visible) {
                     loadPreferences()
@@ -168,6 +176,7 @@ class ProfileViewModel @Inject constructor(
             val state = _viewState.value
             when (val result = savePreferencesUseCase(state.selectedStudyHours, state.selectedDays.toList())) {
                 is Result.Success -> {
+                    setPreferencesOnboardingCompletedUseCase(true)
                     _viewState.update {
                         it.copy(
                             isLoading = false,
@@ -191,7 +200,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true, errorMessage = null) }
             
-            // Load Profile and Calendar Status concurrently
+            // Load Profile concurrently
             val profileJob = launch {
                 when (val result = getUserProfileUseCase()) {
                     is Result.Success -> {
@@ -221,26 +230,7 @@ class ProfileViewModel @Inject constructor(
                 }
             }
 
-            val calendarJob = launch {
-                when (val result = getCalendarStatusUseCase()) {
-                    is Result.Success -> {
-                        _viewState.update {
-                            it.copy(
-                                isCalendarSyncEnabled = result.data.isConnected,
-                                calendarEmail = result.data.email
-                            )
-                        }
-                    }
-                    is Result.Failure -> {
-                        // We don't necessarily want to block the whole UI if just calendar status fails
-                        android.util.Log.e("ProfileViewModel", "Failed to load calendar status", result.exception)
-                    }
-                    is Result.Loading -> {}
-                }
-            }
-
             profileJob.join()
-            calendarJob.join()
             _viewState.update { it.copy(isLoading = false) }
         }
     }
@@ -278,37 +268,27 @@ class ProfileViewModel @Inject constructor(
 
     private fun toggleCalendarSync(enabled: Boolean) {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
-            val result = if (enabled) connectCalendarUseCase() else disconnectCalendarUseCase()
+            _viewState.update { it.copy(isLoading = true, isCalendarSyncDialogVisible = false) }
             
-            when (result) {
-                is Result.Success -> {
-                    // Refresh status to get the updated email/state from server
-                    when (val statusResult = getCalendarStatusUseCase()) {
-                        is Result.Success -> {
-                            _viewState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    isCalendarSyncEnabled = statusResult.data.isConnected,
-                                    calendarEmail = statusResult.data.email
-                                )
-                            }
-                            // Also update local settings to stay in sync
-                            updateSettings { it.copy(isCalendarSyncEnabled = statusResult.data.isConnected) }
-                        }
-                        is Result.Failure -> {
-                            _viewState.update { it.copy(isLoading = false) }
-                            _effect.emit(ProfileEffect.ShowError("Sync succeeded but failed to fetch status"))
-                        }
-                        is Result.Loading -> {}
-                    }
-                }
-                is Result.Failure -> {
-                    _viewState.update { it.copy(isLoading = false) }
-                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Calendar sync update failed"))
-                }
-                is Result.Loading -> {}
+            // Update local settings immediately
+            updateSettings { it.copy(isCalendarSyncEnabled = enabled) }
+            
+            _viewState.update { 
+                it.copy(
+                    isLoading = false,
+                    isCalendarSyncEnabled = enabled
+                )
             }
+
+            if (enabled) {
+                syncCalendarEvents()
+            }
+        }
+    }
+
+    private fun syncCalendarEvents() {
+        viewModelScope.launch {
+            syncCalendarEventsUseCase()
         }
     }
 

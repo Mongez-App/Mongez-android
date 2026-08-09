@@ -132,7 +132,8 @@ class CoursesViewModel @Inject constructor(
                 imageUrl = intent.imageUrl,
                 startDate = intent.startDate,
                 examDate = intent.examDate,
-                hasMaterials = intent.materials.isNotEmpty()
+                courseType = intent.courseType,
+                materialUrl = intent.materialUrl
             )
 
             when (result) {

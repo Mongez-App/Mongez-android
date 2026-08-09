@@ -3,6 +3,7 @@ package com.iti.mongez.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.iti.mongez.data.local.dao.PreferencesDao
 import com.iti.mongez.data.local.dao.UserDao
 import com.iti.mongez.data.local.db.MongezDatabase
 import dagger.Module
@@ -30,5 +31,11 @@ object DatabaseModule {
     @Singleton
     fun provideUserDao(database: MongezDatabase): UserDao {
         return database.userDao
+    }
+
+    @Provides
+    @Singleton
+    fun providePreferencesDao(database: MongezDatabase): PreferencesDao {
+        return database.preferencesDao
     }
 }

@@ -4,11 +4,11 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 
 sealed class RoadmapEvent {
-    object LoadRoadmap : RoadmapEvent()
-    data class OnBlockClicked(val blockId: String) : RoadmapEvent()
+    data class LoadRoadmap(val startDate: String? = null) : RoadmapEvent()
     object OnAddEventClicked : RoadmapEvent()
     data class ToggleFilterSheet(val isVisible: Boolean) : RoadmapEvent()
     data class ToggleAddEventDialog(val isVisible: Boolean) : RoadmapEvent()
+    data class ToggleNoCoursesDialog(val isVisible: Boolean) : RoadmapEvent()
     data class ApplyFilter(val filterState: RoadmapFilterState) : RoadmapEvent()
     object ClearAllFilters : RoadmapEvent()
     object RemoveDateFilter : RoadmapEvent()
@@ -19,8 +19,7 @@ sealed class RoadmapEvent {
         val course: String,
         val name: String,
         val date: String,
-        val time: String,
-        val notes: String
+        val time: String
     ) : RoadmapEvent()
 }
 

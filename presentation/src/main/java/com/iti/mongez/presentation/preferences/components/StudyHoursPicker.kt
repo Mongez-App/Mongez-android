@@ -33,137 +33,160 @@ fun StudyHoursPicker(
 ) {
     val hours = (1..12).toList()
     val scope = rememberCoroutineScope()
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = (selectedHours - 1).coerceIn(0, hours.size - 1))
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
-
-    val currentCenterIndex by remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val visibleItems = layoutInfo.visibleItemsInfo
-            if (visibleItems.isEmpty()) {
-                (selectedHours - 1).coerceIn(0, hours.size - 1)
-            } else {
-                val viewportCenter = (layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset) / 2
-                visibleItems.minByOrNull {
-                    kotlin.math.abs((it.offset + it.size / 2) - viewportCenter)
-                }?.index ?: 0
-            }
-        }
-    }
-
-    LaunchedEffect(currentCenterIndex) {
-        if (currentCenterIndex in hours.indices) {
-            onHoursChanged(hours[currentCenterIndex])
-        }
-    }
-
-    val shadowColorValue = Theme.colorScheme.brand.primary.copy(alpha = 0.7f)
-    val strokeColorValue = Theme.colorScheme.brand.primary.copy(alpha = 0.2f)
-    val backgroundColorValue = Theme.colorScheme.surface.background
-
-    Box(
+    
+    BoxWithConstraints(
         modifier = modifier
             .width(200.dp)
-            .height(350.dp)
-            .drawBehind {
-                drawIntoCanvas { canvas ->
-                    val shadowPaint = Paint().apply {
-                        color = Color.Transparent
-                    }
-                    val frameworkPaint = shadowPaint.asFrameworkPaint()
-                    val blurRadiusPx = 10.dp.toPx()
-
-                    frameworkPaint.setShadowLayer(
-                        blurRadiusPx,
-                        0f,
-                        0f,
-                        shadowColorValue.toArgb()
-                    )
-                    
-                    val rectRadius = 100.dp.toPx()
-                    canvas.drawRoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        radiusX = rectRadius,
-                        radiusY = rectRadius,
-                        paint = shadowPaint
-                    )
-
-                    val fillPaint = Paint().apply {
-                        style = PaintingStyle.Fill
-                        color = backgroundColorValue
-                    }
-                    canvas.drawRoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        radiusX = rectRadius,
-                        radiusY = rectRadius,
-                        paint = fillPaint
-                    )
-
-                    val strokePaint = Paint().apply {
-                        style = PaintingStyle.Stroke
-                        strokeWidth = 1.dp.toPx()
-                        color = strokeColorValue
-                    }
-                    canvas.drawRoundRect(
-                        left = 0.5.dp.toPx(),
-                        top = 0.5.dp.toPx(),
-                        right = size.width - 0.5.dp.toPx(),
-                        bottom = size.height - 0.5.dp.toPx(),
-                        radiusX = rectRadius,
-                        radiusY = rectRadius,
-                        paint = strokePaint
-                    )
-                }
-            },
-        contentAlignment = Alignment.Center
+            .heightIn(min = 150.dp, max = 350.dp)
     ) {
+        val totalHeight = maxHeight
+        val itemHeight = 70.dp
+        val verticalPadding = (totalHeight - itemHeight) / 2
+
+        val listState = rememberLazyListState(
+            initialFirstVisibleItemIndex = (selectedHours - 1).coerceIn(0, hours.size - 1)
+        )
+        val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+        // Sync from external state (e.g. when sheet opens)
+        LaunchedEffect(selectedHours) {
+            val targetIndex = (selectedHours - 1).coerceIn(0, hours.size - 1)
+            if (listState.firstVisibleItemIndex != targetIndex) {
+                listState.scrollToItem(targetIndex)
+            }
+        }
+
+        val currentCenterIndex by remember {
+            derivedStateOf {
+                val layoutInfo = listState.layoutInfo
+                val visibleItems = layoutInfo.visibleItemsInfo
+                if (visibleItems.isEmpty()) {
+                    (selectedHours - 1).coerceIn(0, hours.size - 1)
+                } else {
+                    val viewportCenter = (layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset) / 2
+                    visibleItems.minByOrNull {
+                        kotlin.math.abs((it.offset + it.size / 2) - viewportCenter)
+                    }?.index ?: 0
+                }
+            }
+        }
+
+        LaunchedEffect(currentCenterIndex) {
+            if (currentCenterIndex in hours.indices) {
+                val newHours = hours[currentCenterIndex]
+                if (newHours != selectedHours) {
+                    onHoursChanged(newHours)
+                }
+            }
+        }
+
+        val shadowColorValue = Theme.colorScheme.brand.primary.copy(alpha = 0.7f)
+        val strokeColorValue = Theme.colorScheme.brand.primary.copy(alpha = 0.2f)
+        val backgroundColorValue = Theme.colorScheme.surface.background
+
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .background(Theme.colorScheme.brand.primary.copy(alpha = 0.1f))
-        )
+                .fillMaxSize()
+                .drawBehind {
+                    drawIntoCanvas { canvas ->
+                        val shadowPaint = Paint().apply {
+                            color = Color.Transparent
+                        }
+                        val frameworkPaint = shadowPaint.asFrameworkPaint()
+                        val blurRadiusPx = 10.dp.toPx()
 
-        LazyColumn(
-            state = listState,
-            flingBehavior = flingBehavior,
-            contentPadding = PaddingValues(vertical = 140.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+                        frameworkPaint.setShadowLayer(
+                            blurRadiusPx,
+                            0f,
+                            0f,
+                            shadowColorValue.toArgb()
+                        )
+                        
+                        val rectRadius = 100.dp.toPx()
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = rectRadius,
+                            radiusY = rectRadius,
+                            paint = shadowPaint
+                        )
+
+                        val fillPaint = Paint().apply {
+                            style = PaintingStyle.Fill
+                            color = backgroundColorValue
+                        }
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = rectRadius,
+                            radiusY = rectRadius,
+                            paint = fillPaint
+                        )
+
+                        val strokePaint = Paint().apply {
+                            style = PaintingStyle.Stroke
+                            strokeWidth = 1.dp.toPx()
+                            color = strokeColorValue
+                        }
+                        canvas.drawRoundRect(
+                            left = 0.5.dp.toPx(),
+                            top = 0.5.dp.toPx(),
+                            right = size.width - 0.5.dp.toPx(),
+                            bottom = size.height - 0.5.dp.toPx(),
+                            radiusX = rectRadius,
+                            radiusY = rectRadius,
+                            paint = strokePaint
+                        )
+                    }
+                },
+            contentAlignment = Alignment.Center
         ) {
-            items(hours.size) { index ->
-                val hour = hours[index]
-                val isSelected = index == currentCenterIndex
-                
-                Box(
-                    modifier = Modifier
-                        .height(70.dp)
-                        .fillMaxWidth()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            scope.launch {
-                                listState.animateScrollToItem(index)
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "${hour}h",
-                        style = Theme.typography.title.medium.copy(
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Theme.colorScheme.brand.primary 
-                                    else Theme.colorScheme.text.tertiary
-                        ),
-                        modifier = Modifier.alpha(if (isSelected) 1f else 0.5f)
-                    )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(itemHeight)
+                    .background(Theme.colorScheme.brand.primary.copy(alpha = 0.1f))
+            )
+
+            LazyColumn(
+                state = listState,
+                flingBehavior = flingBehavior,
+                contentPadding = PaddingValues(vertical = verticalPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(hours.size) { index ->
+                    val hour = hours[index]
+                    val isSelected = index == currentCenterIndex
+                    
+                    Box(
+                        modifier = Modifier
+                            .height(itemHeight)
+                            .fillMaxWidth()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                scope.launch {
+                                    listState.animateScrollToItem(index)
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${hour}h",
+                            style = Theme.typography.title.medium.copy(
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) Theme.colorScheme.brand.primary 
+                                        else Theme.colorScheme.text.tertiary
+                            ),
+                            modifier = Modifier.alpha(if (isSelected) 1f else 0.5f)
+                        )
+                    }
                 }
             }
         }

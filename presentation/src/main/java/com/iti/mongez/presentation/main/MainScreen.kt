@@ -11,11 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBar
 import com.iti.mongez.designsystem.components.navigation.AppNavigationBarItem
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -37,12 +40,15 @@ import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 fun MainScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showDefaultAlert: Boolean = false,
+    viewModel: MainViewModel = hiltViewModel(),
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit
 ) {
+    val preferences by viewModel.preferences.collectAsState()
+    
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -53,20 +59,26 @@ fun MainScreen(
         mutableStateOf(AppSnackbarType.Info)
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     var isDefaultScheduleDialogOpen by rememberSaveable {
         mutableStateOf(showDefaultAlert)
     }
 
     if (isDefaultScheduleDialogOpen) {
-        DefaultScheduleDialog(
-            onDismiss = {
-                isDefaultScheduleDialogOpen = false
-            },
-            onGoToProfile = {
-                isDefaultScheduleDialogOpen = false
-                selectedTabIndex = 3 // Index of Profile tab
-            }
-        )
+        preferences?.let { prefs ->
+            DefaultScheduleDialog(
+                studyHours = prefs.dailyStudyHours,
+                selectedDays = prefs.availableDays,
+                onDismiss = {
+                    isDefaultScheduleDialogOpen = false
+                },
+                onGoToProfile = {
+                    isDefaultScheduleDialogOpen = false
+                    selectedTabIndex = 3
+                }
+            )
+        }
     }
 
     Scaffold(
@@ -108,8 +120,12 @@ fun MainScreen(
             onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
             onNavigateToAllTasks = onNavigateToAllTasks,
-            onShowSnackBar = { message ->
-                // Use the snackbarHostState to show a snackbar
+            onNavigateToCourses = { selectedTabIndex = 1 },
+            onShowSnackBar = { message, type ->
+                activeSnackbarType = type ?: AppSnackbarType.Info
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
             }
         )
     }
@@ -124,10 +140,10 @@ private fun MainScreenContent(
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit,
-    onShowSnackBar: (String) -> Unit,
+    onNavigateToCourses: () -> Unit,
+    onShowSnackBar: (String, AppSnackbarType?) -> Unit,
 ) {
     when (tab) {
-
         MainTab.Home -> {
             DashboardScreen(
                 innerPadding = innerPadding,
@@ -151,7 +167,8 @@ private fun MainScreenContent(
         MainTab.Roadmap -> {
             RoadmapScreen(
                 innerPadding = innerPadding,
-                onNavigateToBlockDetails = { /* TODO */ }
+                onNavigateToCourses = onNavigateToCourses,
+                onShowSnackBar = onShowSnackBar
             )
         }
 
@@ -160,7 +177,7 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 viewModel = hiltViewModel(),
                 onNavigateToLogin = onNavigateToLogin,
-                onShowSnackBar = onShowSnackBar
+                onShowSnackBar = { message -> onShowSnackBar(message, null) }
             )
         }
     }

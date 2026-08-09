@@ -9,12 +9,17 @@ import com.iti.mongez.presentation.preferences.uiState.PreferencesUiState
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
+import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
+import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
+import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
+import com.iti.mongez.domain.settings.usecase.UpdateAppSettingsUseCase
 import com.iti.mongez.domain.core.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +28,11 @@ import javax.inject.Inject
 class PreferencesViewModel @Inject constructor(
     private val savePreferencesUseCase: SavePreferencesUseCase,
     private val savePreferencesLocallyUseCase: SavePreferencesLocallyUseCase,
-    private val getPreferencesUseCase: GetPreferencesUseCase
+    private val getPreferencesUseCase: GetPreferencesUseCase,
+    private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
+    private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase,
+    private val getAppSettingsUseCase: GetAppSettingsUseCase,
+    private val updateAppSettingsUseCase: UpdateAppSettingsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -36,6 +45,7 @@ class PreferencesViewModel @Inject constructor(
 
     init {
         loadInitialPreferences()
+        loadInitialSettings()
     }
 
     private fun loadInitialPreferences() {
@@ -45,12 +55,22 @@ class PreferencesViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             studyHours = result.data.dailyStudyHours,
-                            selectedDays = result.data.availableDays.toSet()
+                            selectedDays = result.data.availableDays.toSet(),
+                            // If they have preferences on server, consider them chosen if they differ from defaults
+                            hoursChosen = result.data.dailyStudyHours != DEFAULT_STUDY_HOURS,
+                            daysChosen = result.data.availableDays.isNotEmpty() && result.data.availableDays != DEFAULT_AVAILABLE_DAYS
                         )
                     }
                 }
                 else -> { /* Use defaults already in state */ }
             }
+        }
+    }
+
+    private fun loadInitialSettings() {
+        viewModelScope.launch {
+            val settings = getAppSettingsUseCase().first()
+            _uiState.update { it.copy(isCalendarSynced = settings.isCalendarSyncEnabled) }
         }
     }
 
@@ -65,7 +85,7 @@ class PreferencesViewModel @Inject constructor(
     fun processIntent(intent: PreferencesIntent) {
         when (intent) {
             is PreferencesIntent.OnStudyHoursChanged -> {
-                _uiState.update { it.copy(studyHours = intent.hours) }
+                _uiState.update { it.copy(studyHours = intent.hours, hoursChosen = true) }
                 saveLocally()
             }
             is PreferencesIntent.OnDaySelected -> {
@@ -75,7 +95,7 @@ class PreferencesViewModel @Inject constructor(
                     } else {
                         state.selectedDays + intent.day
                     }
-                    state.copy(selectedDays = newDays)
+                    state.copy(selectedDays = newDays, daysChosen = true)
                 }
                 saveLocally()
             }
@@ -135,7 +155,8 @@ class PreferencesViewModel @Inject constructor(
 
     private fun handleSkip() {
         if (_uiState.value.currentStep == PreferencesStep.SyncCalendar) {
-            saveDefaultPreferencesAndComplete()
+            updateCalendarSyncStatus(false)
+            saveDefaultPreferencesAndComplete(showDialog = false)
         } else {
             _uiState.update { it.copy(currentStep = PreferencesStep.SyncCalendar) }
             viewModelScope.launch {
@@ -144,18 +165,29 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
-    private fun saveDefaultPreferencesAndComplete() {
+    private fun saveDefaultPreferencesAndComplete(showDialog: Boolean) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             savePreferencesUseCase(DEFAULT_STUDY_HOURS, DEFAULT_AVAILABLE_DAYS)
+            setPreferencesOnboardingCompletedUseCase(true)
             _uiState.update { it.copy(isLoading = false, isSetupComplete = true) }
-            _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = true))
+            _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = showDialog))
+        }
+    }
+
+    private fun updateCalendarSyncStatus(enabled: Boolean) {
+        viewModelScope.launch {
+            val currentSettings = getAppSettingsUseCase().first()
+            updateAppSettingsUseCase(currentSettings.copy(isCalendarSyncEnabled = enabled))
         }
     }
 
     private fun syncCalendar() {
-        // Mock sync
         _uiState.update { it.copy(isCalendarSynced = true) }
+        updateCalendarSyncStatus(true)
+        viewModelScope.launch {
+            syncCalendarEventsUseCase()
+        }
         completeSetup()
     }
 
@@ -167,8 +199,12 @@ class PreferencesViewModel @Inject constructor(
                 currentState.studyHours,
                 currentState.selectedDays.toList()
             )
+            setPreferencesOnboardingCompletedUseCase(true)
+            
+            val showDefaultAlert = !currentState.hoursChosen || !currentState.daysChosen
+            
             _uiState.update { it.copy(isLoading = false, isSetupComplete = true) }
-            _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = false))
+            _effect.emit(PreferencesEffect.NavigateToDashboard(showDefaultAlert = showDefaultAlert))
         }
     }
 }

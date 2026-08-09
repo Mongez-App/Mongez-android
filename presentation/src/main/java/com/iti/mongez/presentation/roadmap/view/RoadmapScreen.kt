@@ -23,14 +23,16 @@ import java.time.LocalDate
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.designsystem.components.common.AppEmptyState
+import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
+import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.roadmap.components.ActiveFiltersRow
 import com.iti.mongez.presentation.roadmap.components.AddEventDialog
 import com.iti.mongez.presentation.roadmap.components.FilterBottomSheet
 import com.iti.mongez.presentation.roadmap.components.TimelineBlockItem
 import com.iti.mongez.presentation.roadmap.components.WeekHeader
+import com.iti.mongez.presentation.roadmap.contract.RoadmapEffect
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
-import com.iti.mongez.presentation.roadmap.uiState.RoadmapDayUiModel
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapFilterState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapUiState
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapWeekUiModel
@@ -68,33 +70,47 @@ private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehi
 fun RoadmapScreen(
     innerPadding: PaddingValues,
     viewModel: RoadmapViewModel = hiltViewModel(),
-    onNavigateToBlockDetails: (String) -> Unit
+    onNavigateToCourses: () -> Unit,
+    onShowSnackBar: (String, AppSnackbarType?) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(RoadmapEvent.LoadRoadmap())
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is RoadmapEffect.ShowNoCoursesDialog -> {
+                    viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(true))
+                }
+                is RoadmapEffect.ShowSnackBar -> {
+                    onShowSnackBar(effect.message, effect.type)
+                }
+                else -> {}
+            }
+        }
+    }
 
     RoadmapContent(
         state = state,
         innerPadding = innerPadding,
-        onEvent = { event ->
-            when (event) {
-                is RoadmapEvent.OnBlockClicked -> onNavigateToBlockDetails(event.blockId)
-                else -> viewModel.onEvent(event)
-            }
-        }
+        onEvent = viewModel::onEvent
     )
 
     if (state.isAddEventDialogVisible) {
         AddEventDialog(
+            availableCourses = state.availableCourses,
             onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleAddEventDialog(false)) },
-            onEventCreated = { type, course, name, date, time, notes ->
+            onEventCreated = { type, courseId, name, date, time ->
                 viewModel.onEvent(
                     RoadmapEvent.AddEvent(
                         type = type,
-                        course = course,
+                        course = courseId,
                         name = name,
                         date = date,
-                        time = time,
-                        notes = notes
+                        time = time
                     )
                 )
             }
@@ -109,8 +125,23 @@ fun RoadmapScreen(
             onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleFilterSheet(false)) },
             onApply = { 
                 viewModel.onEvent(RoadmapEvent.ApplyFilter(it))
-                viewModel.onEvent(RoadmapEvent.ToggleFilterSheet(false))
             }
+        )
+    }
+
+    if (state.isNoCoursesDialogVisible) {
+        AppConfirmationDialog(
+            title = stringResource(R.string.no_courses_dialog_title),
+            description = stringResource(R.string.no_courses_dialog_description),
+            primaryActionText = stringResource(R.string.button_add_course),
+            onPrimaryAction = {
+                viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(false))
+                onNavigateToCourses()
+            },
+            onDismiss = { viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(false)) },
+            secondaryActionText = stringResource(R.string.action_cancel),
+            onSecondaryAction = { viewModel.onEvent(RoadmapEvent.ToggleNoCoursesDialog(false)) },
+            isHorizontal = true
         )
     }
 }
@@ -203,13 +234,13 @@ fun RoadmapContent(
                         item {
                             WeekHeader(week)
                         }
-                        week.days.forEach { day ->
-                            itemsIndexed(day.blocks) { _, block ->
-                                TimelineBlockItem(
-                                    block = block,
-                                    onClick = { onEvent(RoadmapEvent.OnBlockClicked(block.id)) }
-                                )
-                            }
+                        itemsIndexed(
+                            items = week.blocks,
+                            key = { _, block -> "${week.weekNumber}_${block.id}" }
+                        ) { _, block ->
+                            TimelineBlockItem(
+                                block = block
+                            )
                         }
                     }
                 }
@@ -225,48 +256,36 @@ fun RoadmapScreenPreview() {
         RoadmapWeekUiModel(
             weekNumber = 1,
             dateRange = UiText.DynamicString("May 6 - May 12"),
-            days = listOf(
-                RoadmapDayUiModel(
-                    date = "2024-05-06",
-                    dayName = UiText.DynamicString("Monday"),
-                    blocks = listOf(
-                        StudyBlockUiModel(
-                            id = "1",
-                            courseName = UiText.DynamicString("Algorithms"),
-                            topic = UiText.DynamicString("Graph Theory"),
-                            durationMinutes = 60,
-                            isCompleted = true,
-                            color = StudyBlockColor.PURPLE
-                        )
-                    )
+            blocks = listOf(
+                StudyBlockUiModel(
+                    id = "1",
+                    courseName = UiText.DynamicString("Algorithms"),
+                    topic = UiText.DynamicString("Graph Theory"),
+                    durationMinutes = 60,
+                    isCompleted = true,
+                    color = StudyBlockColor.PURPLE
                 )
             )
         ),
         RoadmapWeekUiModel(
             weekNumber = 2,
             dateRange = UiText.DynamicString("May 13 - May 19"),
-            days = listOf(
-                RoadmapDayUiModel(
-                    date = "2024-05-13",
-                    dayName = UiText.DynamicString("Monday"),
-                    blocks = listOf(
-                        StudyBlockUiModel(
-                            id = "2",
-                            courseName = UiText.DynamicString("Database Systems"),
-                            topic = UiText.DynamicString("SQL Optimization"),
-                            durationMinutes = 90,
-                            isCompleted = true,
-                            color = StudyBlockColor.BLUE
-                        ),
-                        StudyBlockUiModel(
-                            id = "3",
-                            courseName = UiText.DynamicString("Networks"),
-                            topic = UiText.DynamicString("OSI Model"),
-                            durationMinutes = 45,
-                            isCompleted = false,
-                            color = StudyBlockColor.GREEN
-                        )
-                    )
+            blocks = listOf(
+                StudyBlockUiModel(
+                    id = "2",
+                    courseName = UiText.DynamicString("Database Systems"),
+                    topic = UiText.DynamicString("SQL Optimization"),
+                    durationMinutes = 90,
+                    isCompleted = true,
+                    color = StudyBlockColor.BLUE
+                ),
+                StudyBlockUiModel(
+                    id = "3",
+                    courseName = UiText.DynamicString("Networks"),
+                    topic = UiText.DynamicString("OSI Model"),
+                    durationMinutes = 45,
+                    isCompleted = false,
+                    color = StudyBlockColor.GREEN
                 )
             )
         )

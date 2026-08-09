@@ -74,6 +74,7 @@
     <string name="schedule_default_title">Schedule set to default</string>
     <string name="schedule_default_description">We\'ve built your tasks schedule using default study preferences.</string>
     <string name="study_time_label">Study Time</string>
+    <string name="hours_per_day">%1$d hours / day</string>
     <string name="default_study_hours_value">8 hours / day</string>
     <string name="study_days_label">Study Days</string>
     <string name="change_settings_hint">Want to change this? Head to Profile to customize your study hours and days.</string>
@@ -200,6 +201,12 @@
     <string name="profile_logout">Logout</string>
     <string name="profile_studying_preferences">Studying Preferences</string>
     <string name="profile_edit">Edit</string>
+    <string name="logout_confirmation_title">Are sure you want to log out?</string>
+    <string name="logout_confirmation_desc">You will need to enter your username and password to sign back in.</string>
+    <string name="logout_action">Logout</string>
+    <string name="sync_off_confirmation_title">Turn off Calendar Sync?</string>
+    <string name="sync_off_confirmation_desc">Your study sessions will stop syncing to your calendar. You can turn this back on anytime.</string>
+    <string name="sync_off_action">Disconnect</string>
     <string name="edit_preferences_title">Edit Preferences</string>
     <string name="edit_profile_title">Edit Profile</string>
     <string name="choose_avatar_title">Choose Avatar</string>
@@ -261,6 +268,8 @@
         <string name="delete_course_title">Delete Course?</string>
         <string name="delete_course_dialog_description">This action cannot be undone. All data related to this course will be permanently removed.</string>
         <string name="action_delete">Delete</string>
+        <string name="no_courses_dialog_title">No Courses Added</string>
+        <string name="no_courses_dialog_description">You need to add at least one course to your study plan before you can filter the roadmap or add events.</string>
         <string name="tab_materials">Materials</string>
 
         <string name="today_tasks">Today Tasks</string>
@@ -271,6 +280,7 @@
         <string name="filter_high">High</string>
         <string name="filter_medium">Medium</string>
         <string name="filter_low">Low</string>
+    <string name="label_course_url">Course URL</string>
 
 </resources>
 

@@ -18,6 +18,11 @@ sealed interface ProfileIntent {
 
     data class OnAvatarSelected(val avatarUrl: String) : ProfileIntent
     data class ToggleAvatarPicker(val visible: Boolean) : ProfileIntent
+    data class ToggleLogoutDialog(val visible: Boolean) : ProfileIntent
+    data class ToggleCalendarSyncDialog(val visible: Boolean) : ProfileIntent
+
+    data object ConfirmLogout : ProfileIntent
+    data object ConfirmCalendarSyncDisconnect : ProfileIntent
 
     data object SubmitProfileUpdate : ProfileIntent
 }

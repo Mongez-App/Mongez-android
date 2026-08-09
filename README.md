@@ -42,49 +42,44 @@
 
 ## 🖼️ Screenshots
 
+<p align="center">
+  <img src="docs/screenshots/Mongez%20Cover.png" alt="Mongez Cover" width="100%" />
+</p>
+
 ### Authentication
 <p align="center">
-  <img src="docs/screenshots/Auth%20Screens.png" alt="Auth Screens" width="100%" /><br />
+  <img src="docs/screenshots/Auth.png" alt="Auth Screens" width="100%" /><br />
   <sub><b>Register · Login · Google One Tap Sign-In</b></sub>
 </p>
 
 ### Onboarding
 <p align="center">
-  <img src="docs/screenshots/Onboarding%20Screens.png" alt="Onboarding Screens" width="100%" /><br />
+  <img src="docs/screenshots/Onboarding.png" alt="Onboarding Screens" width="100%" /><br />
   <sub><b>AI Study Introduction · Time Optimization · Personal AI Tutor</b></sub>
 </p>
 
 ### Preferences
 <p align="center">
-  <img src="docs/screenshots/Preferences%20Screens.png" alt="Preferences Screens" width="100%" /><br />
+  <img src="docs/screenshots/Preferences.png" alt="Preferences Screens" width="100%" /><br />
   <sub><b>Daily Study Hours · Available Days · Google Calendar Sync</b></sub>
 </p>
 
 ### Profile
 <p align="center">
-  <img src="docs/screenshots/Profile%20Screens.png" alt="Profile Screens" width="100%" /><br />
+  <img src="docs/screenshots/Profile.png" alt="Profile Screens" width="100%" /><br />
   <sub><b>Profile Overview · Edit Profile · Edit Preferences</b></sub>
-</p>
-
-### Courses & Course Details
-<p align="center">
-  <img src="docs/screenshots/Courses.png" alt="Courses Screen" width="32%" />
-  <img src="docs/screenshots/Materials.png" alt="Course Details Materials" width="32%" />
-  <img src="docs/screenshots/Tasks.png" alt="Course Details Tasks" width="32%" /><br />
-  <sub><b>My Courses · Materials Tab · Tasks Tab</b></sub>
 </p>
 
 ### Roadmap
 <p align="center">
-  <img src="docs/screenshots/Roadmap%20Screens.png" alt="Roadmap Screens" width="100%" /><br />
+  <img src="docs/screenshots/Roadmap.png" alt="Roadmap Screens" width="100%" /><br />
   <sub><b>Timeline · Filter · Add Event (Type · Details · Course)</b></sub>
 </p>
 
-### AI Study Room
+### Courses, Tasks & AI Study Room
 <p align="center">
-  <img src="docs/screenshots/AI%20Study%20Room.png" alt="Study Room Chat" width="32%" />
-  <img src="docs/screenshots/End%20Session%20Alert.png" alt="Study Room End Session" width="32%" /><br />
-  <sub><b>AI Chat with Material Summaries & Q&A · End Session Dialog</b></sub>
+  <img src="docs/screenshots/Tasks%20-%20Courses%20-%20Chat.png" alt="Courses, Tasks, and AI Chat" width="100%" /><br />
+  <sub><b>My Courses · Tasks · AI Chat with Material Summaries & Q&A</b></sub>
 </p>
 
 ---

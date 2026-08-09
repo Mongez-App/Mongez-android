@@ -1,5 +1,6 @@
 package com.iti.mongez.data.di
 
+import com.iti.mongez.data.BuildConfig
 import com.iti.mongez.data.core.network.AuthInterceptor
 import com.iti.mongez.data.sources.remote.services.ApiService
 import dagger.Module
@@ -16,8 +17,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://api-gateway-production-3fd0.up.railway.app/api/v1/"
-
     @Provides
     @Singleton
     fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
@@ -33,7 +32,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
