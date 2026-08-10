@@ -47,7 +47,7 @@ import com.iti.mongez.designsystem.theme.Theme
 @Composable
 fun AppConfirmationDialog(
     title: String,
-    description: String,
+    description: String? = null,
     primaryActionText: String,
     onPrimaryAction: () -> Unit,
     onDismiss: () -> Unit,
@@ -55,6 +55,7 @@ fun AppConfirmationDialog(
     onSecondaryAction: (() -> Unit)? = null,
     primaryActionVariant: AppButtonVariant = AppButtonVariant.Primary,
     secondaryActionVariant: AppButtonVariant = AppButtonVariant.Text,
+    primaryActionShowShadow: Boolean = true,
     secondaryActionContainerColor: Color? = null,
     isHorizontal: Boolean = false,
     illustration: @Composable (() -> Unit)? = null,
@@ -70,6 +71,7 @@ fun AppConfirmationDialog(
             onSecondaryAction = onSecondaryAction,
             primaryActionVariant = primaryActionVariant,
             secondaryActionVariant = secondaryActionVariant,
+            primaryActionShowShadow = primaryActionShowShadow,
             secondaryActionContainerColor = secondaryActionContainerColor,
             isHorizontal = isHorizontal,
             illustration = illustration,
@@ -84,13 +86,14 @@ fun AppConfirmationDialog(
 @Composable
 fun AppConfirmationDialogContent(
     title: String,
-    description: String,
+    description: String? = null,
     primaryActionText: String,
     onPrimaryAction: () -> Unit,
     secondaryActionText: String? = null,
     onSecondaryAction: (() -> Unit)? = null,
     primaryActionVariant: AppButtonVariant = AppButtonVariant.Primary,
     secondaryActionVariant: AppButtonVariant = AppButtonVariant.Text,
+    primaryActionShowShadow: Boolean = true,
     secondaryActionContainerColor: Color? = null,
     isHorizontal: Boolean = false,
     illustration: @Composable (() -> Unit)? = null,
@@ -120,15 +123,17 @@ fun AppConfirmationDialogContent(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Spacer(modifier = Modifier.height(Theme.spacing.sm))
+            if (description != null) {
+                Spacer(modifier = Modifier.height(Theme.spacing.sm))
 
-            Text(
-                text = description,
-                style = Theme.typography.body.medium,
-                color = Theme.colorScheme.text.secondary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
+                Text(
+                    text = description,
+                    style = Theme.typography.body.medium,
+                    color = Theme.colorScheme.text.secondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
             if (content != null) {
                 content()
@@ -152,7 +157,7 @@ fun AppConfirmationDialogContent(
                         text = primaryActionText,
                         onClick = onPrimaryAction,
                         variant = primaryActionVariant,
-                        innerModifier = Modifier.appShadow(),
+                        innerModifier = if (primaryActionShowShadow) Modifier.appShadow() else Modifier,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -161,7 +166,7 @@ fun AppConfirmationDialogContent(
                     text = primaryActionText,
                     onClick = onPrimaryAction,
                     variant = primaryActionVariant,
-                    innerModifier = Modifier.appShadow()
+                    innerModifier = if (primaryActionShowShadow) Modifier.appShadow() else Modifier
                 )
 
                 if (secondaryActionText != null && onSecondaryAction != null) {
@@ -174,6 +179,20 @@ fun AppConfirmationDialogContent(
                     )
                 }
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "No Description")
+@Composable
+private fun ConfirmationDialogNoDescriptionPreview() {
+    MongezTheme {
+        Box(modifier = Modifier.padding(20.dp), contentAlignment = Alignment.Center) {
+            AppConfirmationDialogContent(
+                title = "No Description Dialog",
+                primaryActionText = "Confirm",
+                onPrimaryAction = {},
+            )
         }
     }
 }

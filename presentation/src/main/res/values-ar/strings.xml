@@ -69,7 +69,7 @@
     <string name="preferences_next">التالي</string>
 
     <!-- Default Schedule Dialog -->
-    <string name="schedule_default_title">تم ضبط الجدول على الوضع الافتراضي</string>
+    <string name="schedule_default_title">تم ضبط جدولك على الوضع الافتراضي</string>
     <string name="schedule_default_description">لقد قمنا ببناء جدول مهامك باستخدام تفضيلات الدراسة الافتراضية.</string>
     <string name="study_time_label">وقت الدراسة</string>
     <string name="hours_per_day">%1$d ساعات / يوم</string>

@@ -26,6 +26,7 @@ data class TextColors(
     val hint: Color,
     val disabled: Color,
     val inverse: Color,
+    val dialogLabel: Color,
 )
 
 @Immutable
@@ -161,6 +162,7 @@ val LightColorScheme = AppColorScheme(
         hint = PrimitiveColors.Gray500,
         disabled = PrimitiveColors.Gray400,
         inverse = PrimitiveColors.White,
+        dialogLabel = PrimitiveColors.Gray450,
     ),
     surface = SurfaceColors(
         background = PrimitiveColors.White,
@@ -268,6 +270,7 @@ val DarkColorScheme = AppColorScheme(
         hint = PrimitiveColors.Gray500,
         disabled = PrimitiveColors.Gray600,
         inverse = PrimitiveColors.Gray900,
+        dialogLabel = PrimitiveColors.Gray450,
     ),
     surface = SurfaceColors(
         background = DarkBackground,

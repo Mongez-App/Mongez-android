@@ -14,5 +14,6 @@ data class AppRadius(
     val xxl: Dp = 24.dp,
     val sheet: Dp = 28.dp,
     val dialog: Dp = 32.dp,
+    val background: Dp = 56.dp,
     val full: Dp = 999.dp,
 )

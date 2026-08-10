@@ -31,6 +31,7 @@ internal object PrimitiveColors {
     val Gray300 = Color(0xFFEAECF0)
     val Gray350 = Color(0xFFD1D5DB)
     val Gray400 = Color(0xFFD0D5DD)
+    val Gray450 = Color(0xFFBCBCBE)
     val Gray500 = Color(0xFF98A2B3)
     val Gray600 = Color(0xFF667085)
     val Gray700 = Color(0xFF475467)
