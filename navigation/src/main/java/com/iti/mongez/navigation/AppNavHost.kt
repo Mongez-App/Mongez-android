@@ -76,6 +76,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
 
     NavDisplay(
         backStack = backStack,
+        onBack = { backStack.removeLastOrNull() }
     ) { key ->
         when (key) {
             is AppRoute.Onboarding -> NavEntry(AppRoute.Onboarding) {
