@@ -23,6 +23,7 @@ import java.time.LocalDate
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.designsystem.components.common.AppEmptyState
+import com.iti.mongez.designsystem.components.loading.AppCircularLoading
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.presentation.R
@@ -218,7 +219,9 @@ fun RoadmapContent(
                 )
             }
 
-            if (state.weeks.isEmpty()) {
+            if (state.isLoading && state.weeks.isEmpty()) {
+                AppCircularLoading()
+            } else if (state.weeks.isEmpty()) {
                 AppEmptyState(
                     title = stringResource(id = R.string.roadmap_empty_state_title),
                     description = stringResource(id = R.string.roadmap_empty_state_desc),
