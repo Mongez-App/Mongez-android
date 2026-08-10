@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.domain.roadmap.usecase.GetWeeklyRoadmapUseCase
+import com.iti.mongez.domain.courses.usecase.GetCoursesUseCase
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEffect
 import com.iti.mongez.presentation.roadmap.contract.RoadmapEvent
 import com.iti.mongez.presentation.roadmap.uiState.RoadmapEventUiModel
@@ -37,7 +38,8 @@ import java.time.ZoneId
 @HiltViewModel
 class RoadmapViewModel @Inject constructor(
     private val getWeeklyRoadmapUseCase: GetWeeklyRoadmapUseCase,
-    private val addEventUseCase: AddEventUseCase
+    private val addEventUseCase: AddEventUseCase,
+    private val getCoursesUseCase: GetCoursesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoadmapUiState(isLoading = true))
@@ -50,14 +52,29 @@ class RoadmapViewModel @Inject constructor(
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
 
     init {
+        fetchCourses()
         loadRoadmap()
     }
 
-    private fun loadRoadmap(startDate: String? = null) {
+    private fun fetchCourses() {
+        viewModelScope.launch {
+            getCoursesUseCase().fold(
+                onSuccess = { courses ->
+                    _state.value = _state.value.copy(
+                        availableCourses = courses.map { CourseUiModel(it.id, it.name) }
+                    )
+                },
+                onFailure = { /* Ignore and rely on loadRoadmap courses if needed */ },
+                onLoading = {}
+            )
+        }
+    }
+
+    private fun loadRoadmap(startDate: String? = null, forceDefault: Boolean = false) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             
-            val fetchDate = startDate ?: _state.value.roadmapStartDate.ifEmpty { null }
+            val fetchDate = if (forceDefault) null else (startDate ?: _state.value.roadmapStartDate.ifEmpty { null })
 
             getWeeklyRoadmapUseCase(fetchDate).fold(
                 onSuccess = { roadmap ->
@@ -131,8 +148,6 @@ class RoadmapViewModel @Inject constructor(
                         )
                     }
 
-                    val allCourses = roadmap.weeks.flatMap { it.studyBlocks.map { block -> CourseUiModel(block.courseId, block.courseName) } }.distinctBy { it.id }.sortedBy { it.name }
-
                     val allEventTypes = uiWeeks.flatMap { week ->
                         week.blocks.flatMap { it.events.map { event -> event.type } }
                     }.distinct().sorted().ifEmpty { listOf("Study", "Assignment", "Quiz", "Exam", "Reminder") }
@@ -142,7 +157,6 @@ class RoadmapViewModel @Inject constructor(
                         isLoading = false,
                         roadmapStartDate = roadmap.roadmapStartDate,
                         weeks = uiWeeks,
-                        availableCourses = allCourses,
                         availableEventTypes = allEventTypes
                     )
                     applyFilters(_state.value.activeFilterState)
@@ -218,12 +232,12 @@ class RoadmapViewModel @Inject constructor(
                 is RoadmapEvent.ClearAllFilters -> {
                     val clearedState = RoadmapFilterState()
                     _state.value = _state.value.copy(activeFilterState = clearedState)
-                    applyFilters(clearedState)
+                    loadRoadmap(forceDefault = true)
                 }
                 is RoadmapEvent.RemoveDateFilter -> {
                     val newState = _state.value.activeFilterState.copy(startDate = null, endDate = null)
                     _state.value = _state.value.copy(activeFilterState = newState)
-                    applyFilters(newState)
+                    loadRoadmap(forceDefault = true)
                 }
                 is RoadmapEvent.RemoveCourseFilter -> {
                     val newState = _state.value.activeFilterState.copy(
