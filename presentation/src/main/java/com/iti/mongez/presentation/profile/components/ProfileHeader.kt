@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -26,13 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.components.avatar.AppAvatar
 import com.iti.mongez.designsystem.components.button.appShadow
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
@@ -51,9 +45,8 @@ fun ProfileHeader(
         Box(
             contentAlignment = Alignment.BottomEnd
         ) {
-            Box(
+            AppAvatar(
                 modifier = Modifier
-                    .size(Theme.spacing.huge * 2)
                     .appShadow(
                         color = Theme.colorScheme.brand.primary.copy(alpha = 0.75f),
                         borderRadius = Theme.spacing.huge,
@@ -61,33 +54,13 @@ fun ProfileHeader(
                         spread = -Theme.spacing.xs,
                         offsetX = 0.dp,
                         offsetY = 0.dp
-                    )
-                    .clip(CircleShape)
-                    .background(Theme.colorScheme.surface.surfaceLow)
-                    .clickable { onEditClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                val personPainter = rememberVectorPainter(Icons.Rounded.Person)
-                val isUrlValid = !profilePictureUrl.isNullOrBlank() && profilePictureUrl != "null"
-                
-                if (isUrlValid) {
-                    AsyncImage(
-                        model = profilePictureUrl,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                        placeholder = personPainter,
-                        error = personPainter
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Rounded.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(Theme.spacing.huge),
-                        tint = Theme.colorScheme.text.secondary
-                    )
-                }
-            }
+                    ),
+                imageUrl = profilePictureUrl,
+                initials = name,
+                size = Theme.spacing.huge * 2,
+                textStyle = Theme.typography.display.small,
+                onClick = onEditClick
+            )
 
             IconButton(
                 onClick = onEditClick,

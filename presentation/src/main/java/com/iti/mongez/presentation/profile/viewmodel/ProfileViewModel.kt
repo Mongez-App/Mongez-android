@@ -84,9 +84,14 @@ class ProfileViewModel @Inject constructor(
                 _viewState.update { it.copy(isLogoutDialogVisible = intent.visible) }
             }
             is ProfileIntent.ToggleCalendarSyncDialog -> {
-                _viewState.update { it.copy(isCalendarSyncDialogVisible = intent.visible) }
+                _viewState.update { 
+                    it.copy(
+                        isCalendarSyncDialogVisible = intent.visible,
+                        calendarSyncDialogTargetState = intent.targetState
+                    ) 
+                }
             }
-            is ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(false)
+            is ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(_viewState.value.calendarSyncDialogTargetState)
             is ProfileIntent.ToggleEditPreferencesSheet -> {
                 if (intent.visible) {
                     loadPreferences()
@@ -115,7 +120,7 @@ class ProfileViewModel @Inject constructor(
                     it.copy(
                         isEditProfileDialogVisible = intent.visible,
                         editingName = it.name,
-                        selectedAvatarUrl = it.profilePictureUrl
+                        selectedAvatarUrl = null
                     )
                 }
             }
@@ -133,7 +138,17 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ToggleAvatarPicker -> {
                 _viewState.update { it.copy(isAvatarPickerVisible = intent.visible) }
             }
+            ProfileIntent.RemoveProfileImage -> removeProfileImage()
             ProfileIntent.SubmitProfileUpdate -> submitProfileUpdate()
+        }
+    }
+
+    private fun removeProfileImage() {
+        _viewState.update {
+            it.copy(
+                selectedAvatarUrl = "",
+                isAvatarPickerVisible = false
+            )
         }
     }
 

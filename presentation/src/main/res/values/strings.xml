@@ -207,6 +207,9 @@
     <string name="sync_off_confirmation_title">Turn off Calendar Sync?</string>
     <string name="sync_off_confirmation_desc">Your study sessions will stop syncing to your calendar. You can turn this back on anytime.</string>
     <string name="sync_off_action">Disconnect</string>
+    <string name="sync_on_confirmation_title">Turn on Calendar Sync?</string>
+    <string name="sync_on_confirmation_desc">Your study sessions will start syncing to your calendar to avoid conflicts.</string>
+    <string name="sync_on_action">Connect</string>
     <string name="edit_preferences_title">Edit Preferences</string>
     <string name="edit_profile_title">Edit Profile</string>
     <string name="choose_avatar_title">Choose Avatar</string>

@@ -12,6 +12,8 @@ import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.settings.repository.AppSettingsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.firstOrNull
 import java.util.Locale.getDefault
 import javax.inject.Inject
@@ -104,5 +106,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getCurrentUser(): User? {
         return userDao.getUser()?.toDomain()
+    }
+
+    override fun getCurrentUserFlow(): Flow<User?> {
+        return userDao.getUserFlow().map { it?.toDomain() }
     }
 }

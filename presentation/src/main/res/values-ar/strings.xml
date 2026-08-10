@@ -205,6 +205,9 @@
     <string name="sync_off_confirmation_title">إيقاف مزامنة التقويم؟</string>
     <string name="sync_off_confirmation_desc">ستتوقف جلسات الدراسة الخاصة بك عن المزامنة مع التقويم الخاص بك. يمكنك إعادة تشغيل هذا في أي وقت.</string>
     <string name="sync_off_action">قطع الاتصال</string>
+    <string name="sync_on_confirmation_title">تشغيل مزامنة التقويم؟</string>
+    <string name="sync_on_confirmation_desc">ستبدأ جلسات الدراسة الخاصة بك في المزامنة مع التقويم الخاص بك لتجنب التعارضات.</string>
+    <string name="sync_on_action">توصيل</string>
     <string name="edit_preferences_title">تعديل التفضيلات</string>
     <string name="edit_profile_title">تعديل الملف الشخصي</string>
     <string name="choose_avatar_title">اختر صورتك الرمزية</string>

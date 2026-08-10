@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.iti.mongez.designsystem.components.button.AppButtonVariant
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.divider.AppDivider
 import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
@@ -78,11 +80,7 @@ fun ProfileScreen(
         viewState = viewState,
         onIntent = viewModel::processIntent,
         onToggleCalendarSync = { enabled ->
-            if (enabled) {
-                calendarPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
-            } else {
-                viewModel.processIntent(ProfileIntent.ToggleCalendarSync(false))
-            }
+            viewModel.processIntent(ProfileIntent.ToggleCalendarSyncDialog(true, enabled))
         }
     )
 
@@ -119,6 +117,7 @@ fun ProfileScreen(
         AvatarPickerDialog(
             selectedAvatarUrl = viewState.selectedAvatarUrl,
             onAvatarSelected = { viewModel.processIntent(ProfileIntent.OnAvatarSelected(it)) },
+            onRemoveAvatar = { viewModel.processIntent(ProfileIntent.RemoveProfileImage) },
             onDismiss = { viewModel.processIntent(ProfileIntent.ToggleAvatarPicker(false)) }
         )
     }
@@ -137,15 +136,55 @@ fun ProfileScreen(
     }
 
     if (viewState.isCalendarSyncDialogVisible) {
+        val isEnabling = viewState.calendarSyncDialogTargetState
         AppConfirmationDialog(
-            title = stringResource(R.string.sync_off_confirmation_title),
-            description = stringResource(R.string.sync_off_confirmation_desc),
-            primaryActionText = stringResource(R.string.sync_off_action),
-            onPrimaryAction = { viewModel.processIntent(ProfileIntent.ConfirmCalendarSyncDisconnect) },
+            title = stringResource(
+                if (isEnabling) R.string.sync_on_confirmation_title
+                else R.string.sync_off_confirmation_title
+            ),
+            description = stringResource(
+                if (isEnabling) R.string.sync_on_confirmation_desc
+                else R.string.sync_off_confirmation_desc
+            ),
+            primaryActionText = stringResource(
+                if (isEnabling) R.string.sync_on_action
+                else R.string.sync_off_action
+            ),
+            onPrimaryAction = {
+                if (isEnabling) {
+                    calendarPermissionLauncher.launch(android.Manifest.permission.READ_CALENDAR)
+                } else {
+                    viewModel.processIntent(ProfileIntent.ConfirmCalendarSyncDisconnect)
+                }
+                viewModel.processIntent(ProfileIntent.ToggleCalendarSyncDialog(false))
+            },
             onDismiss = { viewModel.processIntent(ProfileIntent.ToggleCalendarSyncDialog(false)) },
             secondaryActionText = stringResource(R.string.action_cancel),
             onSecondaryAction = { viewModel.processIntent(ProfileIntent.ToggleCalendarSyncDialog(false)) },
-            isHorizontal = true
+            isHorizontal = true,
+            primaryActionShowShadow = false,
+            primaryActionVariant = if (isEnabling) AppButtonVariant.Primary else AppButtonVariant.Secondary,
+            secondaryActionVariant = if (isEnabling) AppButtonVariant.Text else AppButtonVariant.Primary,
+            illustration = {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = (if (isEnabling) Theme.colorScheme.brand.primaryContainer else Theme.colorScheme.state.errorContainer).copy(
+                                alpha = 0.2f
+                            ),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isEnabling) Icons.Rounded.CalendarMonth else Icons.Rounded.Warning,
+                        contentDescription = null,
+                        tint = if (isEnabling) Theme.colorScheme.brand.primary else Theme.colorScheme.state.error,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
         )
     }
 }
