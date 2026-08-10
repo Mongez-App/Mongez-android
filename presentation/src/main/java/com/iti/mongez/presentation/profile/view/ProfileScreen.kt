@@ -126,12 +126,33 @@ fun ProfileScreen(
         AppConfirmationDialog(
             title = stringResource(R.string.logout_confirmation_title),
             description = stringResource(R.string.logout_confirmation_desc),
-            primaryActionText = stringResource(R.string.logout_action),
-            onPrimaryAction = { viewModel.processIntent(ProfileIntent.ConfirmLogout) },
+            secondaryActionText = stringResource(R.string.logout_action),
+            onSecondaryAction = { viewModel.processIntent(ProfileIntent.ConfirmLogout) },
             onDismiss = { viewModel.processIntent(ProfileIntent.ToggleLogoutDialog(false)) },
-            secondaryActionText = stringResource(R.string.action_cancel),
-            onSecondaryAction = { viewModel.processIntent(ProfileIntent.ToggleLogoutDialog(false)) },
-            isHorizontal = true
+            primaryActionText = stringResource(R.string.action_cancel),
+            onPrimaryAction = { viewModel.processIntent(ProfileIntent.ToggleLogoutDialog(false)) },
+            isHorizontal = true,
+            secondaryActionVariant = AppButtonVariant.Secondary,
+            primaryActionVariant = AppButtonVariant.Primary,
+            primaryActionShowShadow = false,
+            illustration = {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = Theme.colorScheme.state.errorContainer.copy(alpha = 0.2f),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Warning,
+                        contentDescription = null,
+                        tint = Theme.colorScheme.state.error,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
         )
     }
 
