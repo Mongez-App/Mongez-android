@@ -16,6 +16,9 @@ import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+
 @Composable
 fun SyncCalendarView(
     onSyncClick: () -> Unit,
@@ -29,15 +32,18 @@ fun SyncCalendarView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(Theme.spacing.xxxl))
+        Spacer(modifier = Modifier.weight(1f))
 
         Image(
             painter = painterResource(id = R.drawable.google_calendar),
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 200.dp),
+            contentScale = ContentScale.Fit
         )
 
-        Spacer(modifier = Modifier.height(Theme.spacing.xxxl))
+        Spacer(modifier = Modifier.weight(1f))
 
         Text(
             text = stringResource(id = R.string.preferences_sync_calendar_title),
@@ -46,7 +52,7 @@ fun SyncCalendarView(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(Theme.spacing.xl))
+        Spacer(modifier = Modifier.height(Theme.spacing.md))
 
         Text(
             text = stringResource(id = R.string.preferences_sync_calendar_subtitle),
@@ -56,7 +62,7 @@ fun SyncCalendarView(
             modifier = Modifier.padding(horizontal = Theme.spacing.xl)
         )
 
-        Spacer(modifier = Modifier.height(Theme.spacing.giant))
+        Spacer(modifier = Modifier.weight(1.5f))
 
         AppButton(
             text = stringResource(id = R.string.preferences_sync_google_calendar),
