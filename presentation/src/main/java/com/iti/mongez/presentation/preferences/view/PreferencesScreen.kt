@@ -1,8 +1,6 @@
 package com.iti.mongez.presentation.preferences.view
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -96,54 +94,18 @@ private fun PreferencesContent(
         topBar = {
             Column {
                 AppSkipButton(
-                    isVisible = state.currentStep != PreferencesStep.SyncCalendar,
+                    isVisible = pagerState.currentPage < 2,
                     onSkipClick = { onIntent(PreferencesIntent.OnSkipClicked) }
                 )
                 PreferenceStepHeader(
-                    step = when (state.currentStep) {
-                        PreferencesStep.StudyHours -> 1
-                        PreferencesStep.AvailableDays -> 2
-                        PreferencesStep.SyncCalendar -> 3
+                    step = when (pagerState.currentPage) {
+                        0 -> 1
+                        1 -> 2
+                        2 -> 3
+                        else -> 1
                     },
                     modifier = Modifier.padding(bottom = Theme.spacing.md)
                 )
-            }
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .height(100.dp) // Approximate height of the bottom bar buttons + padding
-            ) {
-                AnimatedVisibility(
-                    visible = state.currentStep != PreferencesStep.SyncCalendar,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.xl),
-                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
-                    ) {
-                        if (state.currentStep != PreferencesStep.StudyHours) {
-                            AppButton(
-                                text = stringResource(id = R.string.preferences_previous),
-                                onClick = { onIntent(PreferencesIntent.OnBackClicked) },
-                                variant = AppButtonVariant.Secondary,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        AppButton(
-                            text = stringResource(id = R.string.preferences_next),
-                            onClick = { onIntent(PreferencesIntent.OnNextClicked) },
-                            variant = AppButtonVariant.Primary,
-                            modifier = Modifier.weight(1f),
-                            isLoading = state.isLoading
-                        )
-                    }
-                }
             }
         },
         containerColor = Theme.colorScheme.surface.background
@@ -152,6 +114,7 @@ private fun PreferencesContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .animateContentSize()
         ) {
             HorizontalPager(
                 state = pagerState,
@@ -191,6 +154,35 @@ private fun PreferencesContent(
                         1 -> AvailableDaysStep(state, onIntent)
                         2 -> SyncCalendarStep(onIntent)
                     }
+                }
+            }
+
+            AnimatedVisibility(
+                visible = pagerState.targetPage < 2,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.xl),
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+                ) {
+                    if (pagerState.currentPage != 0) {
+                        AppButton(
+                            text = stringResource(id = R.string.preferences_previous),
+                            onClick = { onIntent(PreferencesIntent.OnBackClicked) },
+                            variant = AppButtonVariant.Secondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    AppButton(
+                        text = stringResource(id = R.string.preferences_next),
+                        onClick = { onIntent(PreferencesIntent.OnNextClicked) },
+                        variant = AppButtonVariant.Primary,
+                        modifier = Modifier.weight(1f),
+                        isLoading = state.isLoading
+                    )
                 }
             }
         }
