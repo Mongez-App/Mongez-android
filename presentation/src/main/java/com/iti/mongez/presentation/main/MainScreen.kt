@@ -1,5 +1,6 @@
 package com.iti.mongez.presentation.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -63,6 +64,10 @@ fun MainScreen(
 
     var isDefaultScheduleDialogOpen by rememberSaveable {
         mutableStateOf(showDefaultAlert)
+    }
+
+    BackHandler(enabled = selectedTabIndex != 0) {
+        selectedTabIndex = 0
     }
 
     if (isDefaultScheduleDialogOpen) {
