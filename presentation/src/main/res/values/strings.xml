@@ -71,7 +71,7 @@
 
 
     <!-- Default Schedule Dialog -->
-    <string name="schedule_default_title">Schedule set to default</string>
+    <string name="schedule_default_title">Your schedule is set to default</string>
     <string name="schedule_default_description">We\'ve built your tasks schedule using default study preferences.</string>
     <string name="study_time_label">Study Time</string>
     <string name="hours_per_day">%1$d hours / day</string>
