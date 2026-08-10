@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.components.button.AppButton
 import com.iti.mongez.designsystem.components.button.AppButtonVariant
@@ -109,32 +110,39 @@ private fun PreferencesContent(
             }
         },
         bottomBar = {
-            AnimatedVisibility(
-                visible = state.currentStep != PreferencesStep.SyncCalendar,
-                enter = fadeIn(),
-                exit = fadeOut()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .height(100.dp) // Approximate height of the bottom bar buttons + padding
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.xl),
-                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+                AnimatedVisibility(
+                    visible = state.currentStep != PreferencesStep.SyncCalendar,
+                    enter = fadeIn(),
+                    exit = fadeOut()
                 ) {
-                    if (state.currentStep != PreferencesStep.StudyHours) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.xl),
+                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+                    ) {
+                        if (state.currentStep != PreferencesStep.StudyHours) {
+                            AppButton(
+                                text = stringResource(id = R.string.preferences_previous),
+                                onClick = { onIntent(PreferencesIntent.OnBackClicked) },
+                                variant = AppButtonVariant.Secondary,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                         AppButton(
-                            text = stringResource(id = R.string.preferences_previous),
-                            onClick = { onIntent(PreferencesIntent.OnBackClicked) },
-                            variant = AppButtonVariant.Secondary,
-                            modifier = Modifier.weight(1f)
+                            text = stringResource(id = R.string.preferences_next),
+                            onClick = { onIntent(PreferencesIntent.OnNextClicked) },
+                            variant = AppButtonVariant.Primary,
+                            modifier = Modifier.weight(1f),
+                            isLoading = state.isLoading
                         )
                     }
-                    AppButton(
-                        text = stringResource(id = R.string.preferences_next),
-                        onClick = { onIntent(PreferencesIntent.OnNextClicked) },
-                        variant = AppButtonVariant.Primary,
-                        modifier = Modifier.weight(1f),
-                        isLoading = state.isLoading
-                    )
                 }
             }
         },
@@ -151,30 +159,32 @@ private fun PreferencesContent(
                 modifier = Modifier.weight(1f)
             ) { pageIndex ->
                 Box(
-                    modifier = Modifier.graphicsLayer {
-                        val pageOffset = (
-                                (pagerState.currentPage - pageIndex) + pagerState
-                                    .currentPageOffsetFraction
-                                ).absoluteValue
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            val pageOffset = (
+                                    (pagerState.currentPage - pageIndex) + pagerState
+                                        .currentPageOffsetFraction
+                                    ).absoluteValue
 
-                        alpha = lerp(
-                            start = 0.5f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
+                            alpha = lerp(
+                                start = 0.5f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
 
-                        scaleY = lerp(
-                            start = 0.9f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
+                            scaleY = lerp(
+                                start = 0.9f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
 
-                        scaleX = lerp(
-                            start = 0.9f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
-                    }
+                            scaleX = lerp(
+                                start = 0.9f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
+                        }
                 ) {
                     when (pageIndex) {
                         0 -> StudyHoursStep(state, onIntent)

@@ -23,13 +23,18 @@ fun SyncCalendarView(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = Theme.spacing.xl),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
+        Spacer(modifier = Modifier.height(Theme.spacing.xxxl))
+
         Image(
             painter = painterResource(id = R.drawable.google_calendar),
             contentDescription = null,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(Theme.spacing.xxxl))
