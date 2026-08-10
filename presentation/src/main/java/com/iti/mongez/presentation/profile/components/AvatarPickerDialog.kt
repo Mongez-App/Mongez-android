@@ -28,6 +28,7 @@ import com.iti.mongez.presentation.R
 fun AvatarPickerDialog(
     selectedAvatarUrl: String?,
     onAvatarSelected: (String) -> Unit,
+    onRemoveAvatar: () -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -85,14 +86,28 @@ fun AvatarPickerDialog(
 
                 Spacer(modifier = Modifier.height(Theme.spacing.xl))
 
-                androidx.compose.material3.TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.End)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(com.iti.mongez.designsystem.R.string.action_cancel),
-                        color = Theme.colorScheme.brand.primary
-                    )
+                    androidx.compose.material3.TextButton(
+                        onClick = onRemoveAvatar
+                    ) {
+                        Text(
+                            text = stringResource(R.string.delete),
+                            color = Theme.colorScheme.state.error
+                        )
+                    }
+
+                    androidx.compose.material3.TextButton(
+                        onClick = onDismiss
+                    ) {
+                        Text(
+                            text = stringResource(com.iti.mongez.designsystem.R.string.action_cancel),
+                            color = Theme.colorScheme.brand.primary
+                        )
+                    }
                 }
             }
         }

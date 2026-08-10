@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.iti.mongez.data.local.entity.UserEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -15,6 +16,10 @@ interface UserDao {
     @JvmSuppressWildcards
     @Query("SELECT * FROM `users` LIMIT 1")
     suspend fun getUser(): UserEntity?
+
+    @JvmSuppressWildcards
+    @Query("SELECT * FROM `users` LIMIT 1")
+    fun getUserFlow(): Flow<UserEntity?>
 
     @JvmSuppressWildcards
     @Query("DELETE FROM `users`")

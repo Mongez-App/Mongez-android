@@ -1,6 +1,7 @@
 package com.iti.mongez.designsystem.components.avatar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,8 @@ import com.iti.mongez.designsystem.theme.Theme
  * @param modifier Modifier.
  * @param initials One or two letter initials to display.
  * @param size Diameter of the avatar.
+ * @param textStyle Style for the initials text.
+ * @param onClick Optional click callback.
  */
 @Composable
 fun AppAvatar(
@@ -35,11 +39,16 @@ fun AppAvatar(
     imageUrl: String? = null,
     initials: String? = null,
     size: Dp = 40.dp,
+    textStyle: TextStyle = Theme.typography.label.medium,
+    onClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
+            .then(
+                if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+            )
             .background(Theme.colorScheme.brand.primaryContainer),
         contentAlignment = Alignment.Center,
     ) {
@@ -53,7 +62,7 @@ fun AppAvatar(
         } else if (initials != null) {
             Text(
                 text = initials.take(2).uppercase(),
-                style = Theme.typography.label.medium,
+                style = textStyle,
                 color = Theme.colorScheme.brand.onPrimaryContainer,
             )
         } else {

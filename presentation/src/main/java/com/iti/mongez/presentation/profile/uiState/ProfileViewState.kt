@@ -24,5 +24,6 @@ data class ProfileViewState(
     val selectedAvatarUrl: String? = null,
     val isAvatarPickerVisible: Boolean = false,
     val isLogoutDialogVisible: Boolean = false,
-    val isCalendarSyncDialogVisible: Boolean = false
+    val isCalendarSyncDialogVisible: Boolean = false,
+    val calendarSyncDialogTargetState: Boolean = false
 )

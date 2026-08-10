@@ -6,6 +6,7 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.dashboard.usecase.GetDashboardDataUseCase
+import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.presentation.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,12 +15,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val getDashboardDataUseCase: GetDashboardDataUseCase
+    private val getDashboardDataUseCase: GetDashboardDataUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DashboardUiState(isLoading = true))
@@ -29,7 +33,21 @@ class DashboardViewModel @Inject constructor(
     val effect: SharedFlow<DashboardEffect> = _effect.asSharedFlow()
 
     init {
+        observeUserProfile()
         loadDashboardData()
+    }
+
+    private fun observeUserProfile() {
+        authRepository.getCurrentUserFlow()
+            .onEach { user ->
+                user?.let {
+                    _state.value = _state.value.copy(
+                        userName = it.name.ifEmpty { "User" },
+                        avatarUrl = it.avatarUrl
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun loadDashboardData() {
