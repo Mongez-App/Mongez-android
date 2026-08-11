@@ -71,29 +71,36 @@ class CoursesRepositoryImpl @Inject constructor(
         courseId: String,
         fileName: String,
         contentType: String,
-        fileSizeBytes: Long, // Kept for interface compatibility, even if unused by API
-        pageCount: Int,      // Kept for interface compatibility
-        fileBytes: ByteArray
-    ): Result<CourseActionResponse<Unit>> {
-        return try {
-            // 1. Create the request body from the file bytes
-            val mediaType = MediaType.parse(contentType) ?: MediaType.parse("application/octet-stream")
-            val requestBody = RequestBody.create(mediaType, fileBytes)
+        fileSizeBytes: Long,
+        pageCount: Int,
+        fileBytes: ByteArray,
+        deviceFileUri: String? // ADDED THIS LINE
+    ): Result<CourseActionResponse<Unit>> = safeApi { // ADDED safeApi {
 
-            // 2. Wrap it in a Multipart part matching the "file" key in your Postman request
-            val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody)
+        // Step 1: Upload metadata
+        val metadataRequest = MaterialUploadRequestDto(
+            fileName = fileName,
+            contentType = contentType,
+            fileSizeBytes = fileSizeBytes,
+            pageCount = pageCount,
+            deviceFileUri = deviceFileUri
+        )
+        val metadataResponse = apiService.createMaterialMetadata(courseId, metadataRequest)
 
-            // 3. Send the direct POST request
-            val uploadResponse = apiService.uploadCourseMaterial(courseId, multipartBody)
+        val materialId = metadataResponse.materialId
+            ?: throw IllegalStateException("Material ID was not returned by the server.")
 
-            if (uploadResponse.isSuccessful) {
-                Result.Success(CourseActionResponse(data = Unit, alert = null))
-            } else {
-                Result.Failure(Exception("Upload failed: Error ${uploadResponse.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.Failure(e)
-        }
+        // Step 2: Upload actual file binary
+        val mediaType = MediaType.parse(contentType) ?: MediaType.parse("application/octet-stream")
+        val requestBody = RequestBody.create(mediaType, fileBytes)
+        val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody)
+
+        val uploadResult = apiService.uploadMaterialFile(materialId, multipartBody)
+
+        CourseActionResponse(
+            data = Unit,
+            alert = uploadResult.message?.let { Alert(it) }
+        )
     }
 
     override suspend fun deleteCourseMaterial(courseId: String, materialId: String): Result<CourseActionResponse<Unit>> = safeApi {

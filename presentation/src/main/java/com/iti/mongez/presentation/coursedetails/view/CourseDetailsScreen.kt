@@ -1,5 +1,7 @@
 package com.iti.mongez.feature.coursedetails.view
 
+import android.content.Intent
+import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -119,6 +121,67 @@ fun CourseDetailsScreen(
                 is CourseDetailsEffect.NavigateBack -> {
                     onNavigateBack()
                 }
+                // ... (keep your other CourseDetailsEffect cases like ShowSnackbar and NavigateBack)
+
+                is CourseDetailsEffect.OpenPdf -> {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        try {
+                            val rawUri = Uri.parse(effect.uriString)
+
+                            // 1. Convert restricted URIs (like content:// or file://) into safe FileProvider URIs
+                            val uriToShare: Uri = when (rawUri.scheme) {
+                                "content" -> {
+                                    // Copy the Storage Access Framework content to a temporary cache file
+                                    val inputStream = context.contentResolver.openInputStream(rawUri)
+                                    val tempFile = java.io.File(context.cacheDir, "temp_document.pdf")
+                                    val outputStream = java.io.FileOutputStream(tempFile)
+                                    inputStream?.copyTo(outputStream)
+                                    inputStream?.close()
+                                    outputStream.close()
+
+                                    // Generate a secure FileProvider URI (using the provider from your Manifest)
+                                    androidx.core.content.FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        tempFile
+                                    )
+                                }
+                                "file" -> {
+                                    val file = java.io.File(rawUri.path ?: "")
+                                    androidx.core.content.FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        file
+                                    )
+                                }
+                                else -> rawUri // Let http/https URLs pass through normally
+                            }
+
+                            // 2. Launch the Intent on the Main Thread
+                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                val pdfIntent = Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uriToShare, "application/pdf")
+                                    // This flag is critical for allowing Adobe to read the FileProvider URI
+                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                }
+                                context.startActivity(pdfIntent)
+                            }
+
+                        } catch (e: android.content.ActivityNotFoundException) {
+                            // ONLY show this message if the system truly cannot find a PDF viewer
+                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                topSnackbarMessage = "No PDF viewer app found to open this document"
+                                topSnackbarType = AppSnackbarType.Error
+                            }
+                        } catch (e: Exception) {
+                            // Display the actual error for debugging if it's a security/IO issue
+                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                topSnackbarMessage = "Failed to load document: ${e.localizedMessage}"
+                                topSnackbarType = AppSnackbarType.Error
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -134,6 +197,17 @@ fun CourseDetailsScreen(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let { selectedUri ->
+
+            // ADDED: Tell Android to permanently keep read access to this URI
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    selectedUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (e: SecurityException) {
+                e.printStackTrace() // Fallback if the specific provider doesn't allow persistable permissions
+            }
+
             coroutineScope.launch(Dispatchers.IO) {
                 val contentResolver = context.contentResolver
                 val mimeType = contentResolver.getType(selectedUri) ?: "application/pdf"
@@ -155,7 +229,7 @@ fun CourseDetailsScreen(
                 inputStream?.close()
 
                 if (bytes.isNotEmpty()) {
-                    viewModel.uploadFile(fileName, mimeType, fileSize, 1, bytes)
+                    viewModel.uploadFile(fileName, mimeType, fileSize, 1, bytes, deviceFileUri = selectedUri.toString())
                 }
             }
         }

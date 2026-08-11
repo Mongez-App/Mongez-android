@@ -2,9 +2,8 @@ package com.iti.mongez.data.dtos.coursesdtos
 
 import com.google.gson.annotations.SerializedName
 
-data class MaterialUploadResponseDto(
+data class FileUploadResponseDto(
     @SerializedName("material_id") val materialId: String?,
-    @SerializedName("upload_url") val uploadUrl: String?,
     @SerializedName("status") val status: String?,
-    @SerializedName("alert") val alert: AlertDto? = null
+    @SerializedName("message") val message: String?
 )

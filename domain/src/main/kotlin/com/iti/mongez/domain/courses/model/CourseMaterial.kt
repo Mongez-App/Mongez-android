@@ -8,5 +8,6 @@ data class CourseMaterial(
     val pageCount: Int,
     val fileSizeMb: Double,
     val status: String,
-    val uploadedAt: Instant
+    val uploadedAt: Instant,
+    val deviceFileUri: String? = null
 )

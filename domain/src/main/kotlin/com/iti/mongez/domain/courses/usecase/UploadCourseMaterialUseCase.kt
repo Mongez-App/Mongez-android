@@ -14,8 +14,9 @@ class UploadCourseMaterialUseCase @Inject constructor(
         contentType: String,
         fileSizeBytes: Long,
         pageCount: Int,
-        fileBytes: ByteArray
+        fileBytes: ByteArray,
+        deviceFileUri: String? = null
     ): Result<CourseActionResponse<Unit>> {
-        return coursesRepository.uploadCourseMaterial(courseId, fileName, contentType, fileSizeBytes, pageCount, fileBytes)
+        return coursesRepository.uploadCourseMaterial(courseId, fileName, contentType, fileSizeBytes, pageCount, fileBytes,deviceFileUri)
     }
 }

@@ -27,6 +27,7 @@ interface CoursesRepository {
         contentType: String,
         fileSizeBytes: Long,
         pageCount: Int,
-        fileBytes: ByteArray // We now pass the physical file to the repository
+        fileBytes: ByteArray,
+        deviceFileUri: String?
     ): Result<CourseActionResponse<Unit>>    suspend fun deleteCourseMaterial(courseId: String, materialId: String): Result<CourseActionResponse<Unit>>
 }

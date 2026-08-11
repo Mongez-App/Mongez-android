@@ -8,7 +8,9 @@ data class DocumentItem(
     val title: String,
     val pageCount: Int,
     val fileSize: String,
-    val fileExtension: String = "PDF"
+    val fileExtension: String = "PDF",
+    val fileUri: String? = null
+
 )
 
 data class TaskItem(
