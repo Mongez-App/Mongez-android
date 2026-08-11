@@ -22,7 +22,7 @@ class CourseDetailsViewModel @Inject constructor(
     private val deleteCourseUseCase: DeleteCourseUseCase,
     private val deleteCourseMaterialUseCase: DeleteCourseMaterialUseCase,
     private val uploadCourseMaterialUseCase: UploadCourseMaterialUseCase,
-    private val updateCourseUseCase: UpdateCourseUseCase // Added
+    private val updateCourseUseCase: UpdateCourseUseCase
 ) : ViewModel() {
 
     private var courseId: String = ""
@@ -39,7 +39,7 @@ class CourseDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            // 1. Fetch Course Details (Fixes Problem 1)
+            // 1. Fetch Course Details
             when (val detailsResult = getCourseDetailsUseCase(courseId)) {
                 is Result.Success -> {
                     val course = detailsResult.data
@@ -74,7 +74,8 @@ class CourseDetailsViewModel @Inject constructor(
                             id = finalId,
                             title = mat.name,
                             pageCount = mat.pageCount,
-                            fileSize = "${mat.fileSizeMb} MB"
+                            fileSize = "${mat.fileSizeMb} MB",
+                            fileUri = mat.deviceFileUri
                         )
                     }
                     _uiState.update { it.copy(materials = documents, isLoading = false) }
@@ -100,14 +101,30 @@ class CourseDetailsViewModel @Inject constructor(
                 }
             }
             is CourseDetailsIntent.SelectTab -> _uiState.update { it.copy(selectedTabIndex = intent.index) }
+            is CourseDetailsIntent.ClickDocument -> openDocument(intent.documentId) // CONNECTED HERE
             is CourseDetailsIntent.DeleteDocument -> deleteDocument(intent.documentId)
             is CourseDetailsIntent.ShowDeleteDialog -> _uiState.update { it.copy(isDeleteDialogVisible = true) }
             is CourseDetailsIntent.DismissDeleteDialog -> _uiState.update { it.copy(isDeleteDialogVisible = false) }
             is CourseDetailsIntent.DeleteCourse -> deleteCourse()
             is CourseDetailsIntent.SelectTaskFilter -> _uiState.update { it.copy(selectedTaskFilterIndex = intent.index) }
             is CourseDetailsIntent.ClickTask -> { /* Toggle task completion */ }
-            is CourseDetailsIntent.UpdateCourse -> updateCourse(intent.name, intent.imageUrl) // Added handler
+            is CourseDetailsIntent.UpdateCourse -> updateCourse(intent.name, intent.imageUrl)
             else -> {}
+        }
+    }
+
+    private fun openDocument(documentId: String) {
+        val document = _uiState.value.materials.find { it.id == documentId }
+        val uri = document?.fileUri
+
+        if (!uri.isNullOrBlank()) {
+            viewModelScope.launch {
+                _effect.emit(CourseDetailsEffect.OpenPdf(uri))
+            }
+        } else {
+            viewModelScope.launch {
+                _effect.emit(CourseDetailsEffect.ShowSnackbar("File URI is unavailable", AppSnackbarType.Error))
+            }
         }
     }
 
@@ -117,7 +134,7 @@ class CourseDetailsViewModel @Inject constructor(
             when (val result = updateCourseUseCase(courseId, name, imageUrl, false)) {
                 is Result.Success -> {
                     _effect.emit(CourseDetailsEffect.ShowSnackbar("Course updated successfully", AppSnackbarType.Success))
-                    loadCourseData() // Refresh details
+                    loadCourseData()
                 }
                 is Result.Failure -> {
                     _uiState.update { it.copy(isLoading = false) }
@@ -127,6 +144,7 @@ class CourseDetailsViewModel @Inject constructor(
             }
         }
     }
+
     private fun deleteDocument(documentId: String) {
         viewModelScope.launch {
             when (val result = deleteCourseMaterialUseCase(courseId, documentId)) {
@@ -170,12 +188,19 @@ class CourseDetailsViewModel @Inject constructor(
         }
     }
 
-    fun uploadFile(fileName: String, contentType: String, fileSizeBytes: Long, pageCount: Int, fileBytes: ByteArray) {
+    fun uploadFile(
+        fileName: String,
+        contentType: String,
+        fileSizeBytes: Long,
+        pageCount: Int,
+        fileBytes: ByteArray,
+        deviceFileUri: String?
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             val result = uploadCourseMaterialUseCase(
-                courseId, fileName, contentType, fileSizeBytes, pageCount, fileBytes
+                courseId, fileName, contentType, fileSizeBytes, pageCount, fileBytes, deviceFileUri
             )
 
             when (result) {

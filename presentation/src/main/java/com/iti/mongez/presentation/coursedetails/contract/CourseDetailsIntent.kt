@@ -26,4 +26,5 @@ sealed class CourseDetailsIntent {
 sealed class CourseDetailsEffect {
     data class ShowSnackbar(val message: String, val type: AppSnackbarType = AppSnackbarType.Info) : CourseDetailsEffect()
     object NavigateBack : CourseDetailsEffect()
+        data class OpenPdf(val uriString: String) : CourseDetailsEffect()
 }

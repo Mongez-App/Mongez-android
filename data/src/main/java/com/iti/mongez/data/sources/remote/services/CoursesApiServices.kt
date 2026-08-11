@@ -36,12 +36,19 @@ interface CoursesApiService {
     @GET("courses/{course_id}/materials")
     suspend fun getCourseMaterials(@Path("course_id") courseId: String): List<CourseMaterialDto>
 
-    @Multipart
     @POST("courses/{course_id}/materials")
-    suspend fun uploadCourseMaterial(
+    suspend fun createMaterialMetadata(
         @Path("course_id") courseId: String,
+        @Body request: MaterialUploadRequestDto
+    ): MaterialUploadResponseDto
+
+    // Step 2: Upload file binary (Multipart)
+    @Multipart
+    @POST("upload/{material_id}")
+    suspend fun uploadMaterialFile(
+        @Path("material_id") materialId: String,
         @Part file: MultipartBody.Part
-    ): Response<Unit>
+    ): FileUploadResponseDto
 
     @DELETE("courses/{course_id}/materials/{material_id}")
     suspend fun deleteMaterial(
@@ -55,10 +62,4 @@ interface CoursesApiService {
         @Body request: AddEventRequestDto
     ): AddEventResponseDto
 
-    @Multipart
-    @POST
-    suspend fun uploadMaterialFile(
-        @Url url: String,
-        @Part file: MultipartBody.Part
-    ): Response<Unit>
 }

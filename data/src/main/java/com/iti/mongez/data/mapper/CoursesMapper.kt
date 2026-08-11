@@ -48,5 +48,6 @@ fun CourseMaterialDto.toDomain() = CourseMaterial(
         Instant.parse(this.uploadedAt)
     } catch (e: Exception) {
         Instant.now()
-    }
+    },
+    deviceFileUri = deviceFileUri
 )

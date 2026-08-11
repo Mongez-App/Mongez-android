@@ -8,5 +8,6 @@ data class CourseMaterialDto(
     @SerializedName("page_count") val pageCount: Int?,
     @SerializedName("file_size_mb") val fileSizeMb: Double?,
     @SerializedName("status") val status: String?,
-    @SerializedName("uploaded_at") val uploadedAt: String?
+    @SerializedName("uploaded_at") val uploadedAt: String?,
+    @SerializedName("device_file_uri") val deviceFileUri: String?
 )

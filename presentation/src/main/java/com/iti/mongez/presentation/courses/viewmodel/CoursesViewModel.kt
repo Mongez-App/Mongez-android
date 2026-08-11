@@ -158,7 +158,8 @@ class CoursesViewModel @Inject constructor(
                                     contentType = fileInfo.mimeType,
                                     fileSizeBytes = fileInfo.sizeBytes,
                                     pageCount = 1,
-                                    fileBytes = fileBytes
+                                    fileBytes = fileBytes,
+                                    deviceFileUri = uri.toString()
                                 )
                                 if (uploadResult is Result.Failure) {
                                     uploadError = true
