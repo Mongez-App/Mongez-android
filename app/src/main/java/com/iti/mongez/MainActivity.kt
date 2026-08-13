@@ -26,8 +26,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.iti.mongez.domain.settings.model.Language
+import com.iti.mongez.worker.CalendarSyncWorker
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -37,6 +44,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        
+        scheduleCalendarSync()
 
         splashScreen.setKeepOnScreenCondition {
             navViewModel.startDestination.value == null
@@ -86,6 +95,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun scheduleCalendarSync() {
+        val syncRequest = PeriodicWorkRequestBuilder<CalendarSyncWorker>(30, TimeUnit.DAYS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "CalendarSync",
+            ExistingPeriodicWorkPolicy.KEEP,
+            syncRequest
+        )
     }
 }
 

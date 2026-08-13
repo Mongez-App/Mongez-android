@@ -2,6 +2,7 @@ package com.iti.mongez.data.repositories.calendar
 
 import android.util.Log
 import com.iti.mongez.data.dtos.CalendarEventDto
+import com.iti.mongez.data.dtos.CalendarSyncRequestDto
 import com.iti.mongez.data.dtos.SyncCalendarEventsRequestDto
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.local.CalendarLocalDataSource
@@ -22,9 +23,27 @@ class CalendarRepositoryImpl @Inject constructor(
 
     override suspend fun disconnect(): Result<Unit> = Result.Success(Unit)
 
-    override suspend fun getStatus(): Result<CalendarStatus> = Result.Success(
-        CalendarStatus(isConnected = true, email = null)
-    )
+    override suspend fun getStatus(): Result<CalendarStatus> = safeApi {
+        val response = apiService.getCalendarSyncStatus()
+        CalendarStatus(
+            isConnected = response.calendarConnected,
+            isSynced = response.calendarSynced,
+            lastSyncedAt = response.lastCalendarSyncAt,
+            email = null
+        )
+    }
+
+    override suspend fun updateSyncStatus(connected: Boolean, synced: Boolean): Result<CalendarStatus> = safeApi {
+        val response = apiService.updateCalendarSyncStatus(
+            CalendarSyncRequestDto(connected, synced)
+        )
+        CalendarStatus(
+            isConnected = response.calendarConnected,
+            isSynced = response.calendarSynced,
+            lastSyncedAt = response.lastCalendarSyncAt,
+            email = null
+        )
+    }
 
     override suspend fun getLocalEvents(): Result<List<CalendarEvent>> {
         return try {
@@ -43,7 +62,7 @@ class CalendarRepositoryImpl @Inject constructor(
                     title = it.title,
                     startDate = Instant.ofEpochMilli(it.startTimeMillis).toString(),
                     endDate = Instant.ofEpochMilli(it.endTimeMillis).toString(),
-                    eventType = "CALENDAR"
+                    eventType = it.type
                 )
             }
         )

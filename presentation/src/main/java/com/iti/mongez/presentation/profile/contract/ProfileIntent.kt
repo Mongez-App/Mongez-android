@@ -24,6 +24,7 @@ sealed interface ProfileIntent {
 
     data object ConfirmLogout : ProfileIntent
     data object ConfirmCalendarSyncDisconnect : ProfileIntent
+    data object ManualSync : ProfileIntent
 
     data object SubmitProfileUpdate : ProfileIntent
 }

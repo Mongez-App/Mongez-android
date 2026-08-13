@@ -11,6 +11,7 @@ import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
 import com.iti.mongez.domain.preferences.usecase.GetPreferencesUseCase
 import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
 import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
+import com.iti.mongez.domain.calendar.usecase.UpdateCalendarSyncStatusUseCase
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import com.iti.mongez.domain.settings.usecase.UpdateAppSettingsUseCase
 import com.iti.mongez.domain.core.Result
@@ -31,6 +32,7 @@ class PreferencesViewModel @Inject constructor(
     private val getPreferencesUseCase: GetPreferencesUseCase,
     private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
     private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase,
+    private val updateCalendarSyncStatusUseCase: UpdateCalendarSyncStatusUseCase,
     private val getAppSettingsUseCase: GetAppSettingsUseCase,
     private val updateAppSettingsUseCase: UpdateAppSettingsUseCase
 ) : ViewModel() {
@@ -156,6 +158,7 @@ class PreferencesViewModel @Inject constructor(
     private fun handleSkip() {
         if (_uiState.value.currentStep == PreferencesStep.SyncCalendar) {
             updateCalendarSyncStatus(false)
+            updateBackendSyncStatus(connected = false, synced = false)
             saveDefaultPreferencesAndComplete(showDialog = false)
         } else {
             _uiState.update { it.copy(currentStep = PreferencesStep.SyncCalendar) }
@@ -182,11 +185,21 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
+    private fun updateBackendSyncStatus(connected: Boolean, synced: Boolean) {
+        viewModelScope.launch {
+            updateCalendarSyncStatusUseCase(connected, synced)
+        }
+    }
+
     private fun syncCalendar() {
         _uiState.update { it.copy(isCalendarSynced = true) }
         updateCalendarSyncStatus(true)
+        updateBackendSyncStatus(connected = true, synced = false)
         viewModelScope.launch {
-            syncCalendarEventsUseCase()
+            val result = syncCalendarEventsUseCase()
+            if (result is Result.Success) {
+                updateBackendSyncStatus(connected = true, synced = true)
+            }
         }
         completeSetup()
     }

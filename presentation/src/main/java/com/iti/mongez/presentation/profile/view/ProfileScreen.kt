@@ -38,6 +38,10 @@ import com.iti.mongez.domain.settings.model.Language
 import com.iti.mongez.presentation.profile.components.EditPreferencesSheetContent
 import com.iti.mongez.presentation.profile.components.EditProfileDialog
 import com.iti.mongez.presentation.profile.components.ProfileHeader
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import com.iti.mongez.presentation.profile.components.SettingItem
 import com.iti.mongez.presentation.profile.components.StatCard
 import com.iti.mongez.presentation.profile.components.AvatarPickerDialog
@@ -217,6 +221,21 @@ private fun ProfileScreenContent(
     onIntent: (ProfileIntent) -> Unit,
     onToggleCalendarSync: (Boolean) -> Unit
 ) {
+    val formattedLastSynced = remember(viewState.lastSyncedAt, viewState.language) {
+        viewState.lastSyncedAt?.let { lastSynced ->
+            try {
+                val instant = Instant.parse(lastSynced)
+                val locale = if (viewState.language == Language.AR) Locale.forLanguageTag("ar") else Locale.ENGLISH
+                val formatter = DateTimeFormatter
+                    .ofPattern("MMM dd, yyyy hh:mm a", locale)
+                    .withZone(ZoneId.systemDefault())
+                formatter.format(instant)
+            } catch (_: Exception) {
+                lastSynced
+            }
+        } ?: ""
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -286,6 +305,51 @@ private fun ProfileScreenContent(
                     )
                 }
             )
+
+            if (viewState.isCalendarSyncEnabled) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 56.dp, top = Theme.spacing.xs)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.xs)
+                    ) {
+                        Surface(
+                            modifier = Modifier.size(8.dp),
+                            shape = CircleShape,
+                            color = if (viewState.isCalendarSynced) Theme.colorScheme.state.success else Theme.colorScheme.state.warning
+                        ) {}
+                        Text(
+                            text = if (viewState.isCalendarSynced) stringResource(R.string.profile_synced) else stringResource(R.string.profile_not_synced),
+                            style = Theme.typography.body.small,
+                            color = Theme.colorScheme.text.secondary
+                        )
+                    }
+
+                    if (viewState.lastSyncedAt != null) {
+                        Text(
+                            text = stringResource(R.string.profile_last_synced, formattedLastSynced),
+                            style = Theme.typography.label.extraSmall,
+                            color = Theme.colorScheme.text.secondary.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(top = Theme.spacing.xxs)
+                        )
+                    }
+
+                    TextButton(
+                        onClick = { onIntent(ProfileIntent.ManualSync) },
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.profile_manual_sync),
+                            style = Theme.typography.body.small.copy(fontWeight = FontWeight.Bold),
+                            color = Theme.colorScheme.brand.primary
+                        )
+                    }
+                }
+            }
 
             AppDivider(modifier = Modifier.padding(vertical = Theme.spacing.md))
 

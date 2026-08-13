@@ -199,6 +199,10 @@
     <string name="profile_logout">تسجيل الخروج</string>
     <string name="profile_studying_preferences">تفضيلات الدراسة</string>
     <string name="profile_edit">تعديل</string>
+    <string name="profile_manual_sync">مزامنة الآن</string>
+    <string name="profile_last_synced">آخر مزامنة: %1$s</string>
+    <string name="profile_synced">تمت المزامنة</string>
+    <string name="profile_not_synced">لم تتم المزامنة</string>
     <string name="logout_confirmation_title">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
     <string name="logout_confirmation_desc">ستحتاج إلى إدخال اسم المستخدم وكلمة المرور لتسجيل الدخول مرة أخرى.</string>
     <string name="logout_action">تسجيل الخروج</string>

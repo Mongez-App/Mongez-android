@@ -2,12 +2,13 @@ package com.iti.mongez.data.sources.remote.services
 
 import com.iti.mongez.data.dtos.CalendarEventDto
 import com.iti.mongez.data.dtos.SyncCalendarEventsRequestDto
+import com.iti.mongez.data.dtos.CalendarSyncRequestDto
+import com.iti.mongez.data.dtos.CalendarSyncResponseDto
 import com.iti.mongez.data.dtos.profile.FullProfileDto
 import com.iti.mongez.data.dtos.profile.UpdateProfileRequestDto
 import com.iti.mongez.data.dtos.profile.UpdateProfileResponseDto
 import com.iti.mongez.data.dtos.AuthResponseDto
 import com.iti.mongez.data.dtos.HandshakeRequestDto
-import com.iti.mongez.data.dtos.CalendarStatusDto
 import com.iti.mongez.data.dtos.WeeklyRoadmapDto
 import com.iti.mongez.data.dtos.UserPreferencesDto
 import com.iti.mongez.data.dtos.dashboarddtos.DashboardResponseDto
@@ -42,11 +43,17 @@ interface ApiService {
     suspend fun getPreferences(): UserPreferencesDto
 
     @PUT("users/me/preferences")
-    suspend fun updatePreferences(@Body preferences: UserPreferencesDto): Unit
+    suspend fun updatePreferences(@Body preferences: UserPreferencesDto)
 
     @POST("auth/handshake")
     suspend fun handshake(@Body request: HandshakeRequestDto): AuthResponseDto
 
     @POST("calendar/events")
-    suspend fun syncCalendarEvents(@Body request: SyncCalendarEventsRequestDto): Unit
+    suspend fun syncCalendarEvents(@Body request: SyncCalendarEventsRequestDto)
+
+    @PATCH("auth/calendar-sync")
+    suspend fun updateCalendarSyncStatus(@Body request: CalendarSyncRequestDto): CalendarSyncResponseDto
+
+    @GET("auth/calendar-sync")
+    suspend fun getCalendarSyncStatus(): CalendarSyncResponseDto
 }
