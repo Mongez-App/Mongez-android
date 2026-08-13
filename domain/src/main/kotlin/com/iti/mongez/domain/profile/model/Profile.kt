@@ -5,6 +5,8 @@ data class Profile(
     val name: String?,
     val email: String,
     val avatarUrl: String?,
+    val appearance: String?,
+    val language: String?,
     val totalStudyHours: Int,
     val completedTasksCount: Int,
     val currentStreakDays: Int

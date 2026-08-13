@@ -7,7 +7,9 @@ interface ProfileRepository {
     suspend fun getFullProfile(): Result<Profile>
     suspend fun updateProfile(
         name: String? = null,
-        avatarUrl: String? = null
+        avatarUrl: String? = null,
+        appearance: String? = null,
+        language: String? = null
     ): Result<Profile>
     suspend fun uploadProfileImage(imageBytes: ByteArray): Result<String>
 }

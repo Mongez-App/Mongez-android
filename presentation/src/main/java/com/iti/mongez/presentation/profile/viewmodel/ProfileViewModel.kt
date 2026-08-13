@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -240,6 +241,19 @@ class ProfileViewModel @Inject constructor(
                                 streakDays = profile.currentStreakDays
                             )
                         }
+
+                        profile.appearance?.let { appearance ->
+                            val isDark = appearance.contains("Dark", ignoreCase = true)
+                            if (isDark != _viewState.value.isDarkModeEnabled) {
+                                updateSettings { it.copy(isDarkModeEnabled = isDark) }
+                            }
+                        }
+                        profile.language?.let { langCode ->
+                            val lang = Language.entries.find { it.code == langCode }
+                            if (lang != null && lang != _viewState.value.language) {
+                                updateSettings { it.copy(language = lang) }
+                            }
+                        }
                     }
                     is Result.Failure -> {
                         _viewState.update {
@@ -278,7 +292,9 @@ class ProfileViewModel @Inject constructor(
 
             val result = updateProfileUseCase(
                 name = state.editingName,
-                avatarUrl = state.selectedAvatarUrl
+                avatarUrl = state.selectedAvatarUrl,
+                appearance = if (state.isDarkModeEnabled) "Dark Mode" else "Light Mode",
+                language = state.language.code
             )
 
             when (result) {
@@ -372,12 +388,14 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateSettings(update: (AppSettings) -> AppSettings) {
         viewModelScope.launch {
-            val currentSettings = AppSettings(
-                isCalendarSyncEnabled = _viewState.value.isCalendarSyncEnabled,
-                isDarkModeEnabled = _viewState.value.isDarkModeEnabled,
-                language = _viewState.value.language
+            val currentSettings = getAppSettingsUseCase().first()
+            val newSettings = update(currentSettings)
+            updateAppSettingsUseCase(newSettings)
+            
+            updateProfileUseCase(
+                appearance = if (newSettings.isDarkModeEnabled) "Dark Mode" else "Light Mode",
+                language = newSettings.language.code
             )
-            updateAppSettingsUseCase(update(currentSettings))
         }
     }
 

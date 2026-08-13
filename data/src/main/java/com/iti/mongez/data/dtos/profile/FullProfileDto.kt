@@ -7,5 +7,7 @@ data class FullProfileDto(
     @SerializedName("name") val name: String?,
     @SerializedName("email") val email: String?,
     @SerializedName("avatar_url") val avatarUrl: String?,
+    @SerializedName("appearance") val appearance: String?,
+    @SerializedName("language") val language: String?,
     @SerializedName("stats") val stats: FullProfileStatsDto?
 )

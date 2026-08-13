@@ -9,6 +9,8 @@ fun FullProfileDto.toDomain(): Profile {
         name = name,
         email = email.orEmpty(),
         avatarUrl = avatarUrl,
+        appearance = appearance,
+        language = language,
         totalStudyHours = stats?.totalStudyHours ?: 0,
         completedTasksCount = stats?.completedTasksCount ?: 0,
         currentStreakDays = stats?.currentStreakDays ?: 0
