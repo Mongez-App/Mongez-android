@@ -120,7 +120,9 @@
     <string name="event_assignment_title">Assignment</string>
     <string name="event_assignment_desc">Homework or project</string>
     <string name="event_midterm_title">Midterm</string>
-    <string name="event_midterm_desc">Important exam</string>
+    <string name="event_midterm_desc">Important midterm exam</string>
+    <string name="event_exam_title">Exam</string>
+    <string name="event_exam_desc">Final or major exam</string>
     <string name="event_project_title">Project</string>
     <string name="event_project_desc">Large project or final work</string>
 

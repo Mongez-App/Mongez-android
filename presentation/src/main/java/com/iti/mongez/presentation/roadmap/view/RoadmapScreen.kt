@@ -42,12 +42,15 @@ import com.iti.mongez.presentation.roadmap.uiState.StudyBlockUiModel
 import com.iti.mongez.presentation.roadmap.viewmodel.RoadmapViewModel
 import com.iti.mongez.presentation.utils.UiText
 
-private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehind {
-    val shadowColor = color.copy(alpha = 0.7f).toArgb()
+private fun Modifier.roadmapActionShadow(
+    shadowColor: Color,
+    backgroundColor: Color
+): Modifier = this.drawBehind {
+    val shadowColorArgb = shadowColor.copy(alpha = 0.7f).toArgb()
     
     drawIntoCanvas { canvas ->
         val paint = android.graphics.Paint()
-        paint.color = android.graphics.Color.WHITE
+        paint.color = backgroundColor.toArgb()
         
         val blurRadius = 5.dp.toPx()
 
@@ -55,7 +58,7 @@ private fun Modifier.roadmapActionShadow(color: Color): Modifier = this.drawBehi
             blurRadius,
             0f,
             0f,
-            shadowColor
+            shadowColorArgb
         )
         
         canvas.nativeCanvas.drawCircle(
@@ -173,7 +176,10 @@ fun RoadmapContent(
                         modifier = Modifier
                             .padding(end = Theme.spacing.lg)
                             .size(Theme.spacing.xxxl)
-                            .roadmapActionShadow(Theme.colorScheme.brand.primary)
+                            .roadmapActionShadow(
+                                shadowColor = Theme.colorScheme.brand.primary,
+                                backgroundColor = Theme.colorScheme.surface.background
+                            )
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.filter),
@@ -188,7 +194,10 @@ fun RoadmapContent(
                         modifier = Modifier
                             .padding(end = Theme.spacing.lg)
                             .size(Theme.spacing.xxxl)
-                            .roadmapActionShadow(Theme.colorScheme.brand.primary)
+                            .roadmapActionShadow(
+                                shadowColor = Theme.colorScheme.brand.primary,
+                                backgroundColor = Theme.colorScheme.surface.background
+                            )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,

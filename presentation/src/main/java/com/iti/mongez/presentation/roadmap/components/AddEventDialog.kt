@@ -240,10 +240,10 @@ private fun StepOneType(
 ) {
     val eventColors = Theme.colorScheme.events
     val eventTypes = listOf(
-        EventTypeUiModel("study", stringResource(R.string.event_study_title), stringResource(R.string.event_study_desc), Icons.Rounded.MenuBook, eventColors.studyContainer, eventColors.studyIcon),
         EventTypeUiModel("assignment", stringResource(R.string.event_assignment_title), stringResource(R.string.event_assignment_desc), Icons.AutoMirrored.Rounded.Assignment, eventColors.assignmentContainer, eventColors.assignmentIcon),
         EventTypeUiModel("quiz", stringResource(R.string.event_quiz_title), stringResource(R.string.event_quiz_desc), Icons.Rounded.Quiz, eventColors.quizContainer, eventColors.quizIcon),
-        EventTypeUiModel("exam", stringResource(R.string.event_midterm_title), stringResource(R.string.event_midterm_desc), Icons.Rounded.School, eventColors.examContainer, eventColors.examIcon),
+        EventTypeUiModel("midterm", stringResource(R.string.event_midterm_title), stringResource(R.string.event_midterm_desc), Icons.Rounded.Description, eventColors.examContainer, eventColors.examIcon),
+        EventTypeUiModel("exam", stringResource(R.string.event_exam_title), stringResource(R.string.event_exam_desc), Icons.Rounded.School, eventColors.examContainer, eventColors.examIcon),
         EventTypeUiModel("project", stringResource(R.string.event_project_title), stringResource(R.string.event_project_desc), Icons.Rounded.GridView, eventColors.projectContainer, eventColors.projectIcon)
     )
 
