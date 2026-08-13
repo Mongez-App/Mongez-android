@@ -1,4 +1,5 @@
 package com.iti.mongez.designsystem.screens.dashboard
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,17 +40,26 @@ import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
 /**
- * A reusable focus card component to highlight daily tasks or modules.
- * Fully bound to the system's dynamic color tokens.
+ * Helper function to extract initials from the topic/course name.
+ * Example: "Data Structure" -> "DS", "Operating Systems" -> "OS", "Algorithms" -> "A"
  */
+private fun getInitials(topic: String): String {
+    return topic.trim()
+        .split("\\s+".toRegex())
+        .filter { it.isNotEmpty() }
+        .map { it.first().uppercaseChar() }
+        .take(2)
+        .joinToString("")
+}
+
 @Composable
 fun AppFocusCard(
     title: String,
     topic: String,
     duration: String,
-    imagePainter: Painter,
     onStartClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imagePainter: Painter? = null
 ) {
     // Semantic mappings directly from your AppColorScheme tokens
     val contentOnBrandColor = Theme.colorScheme.brand.onPrimary
@@ -83,16 +93,36 @@ fun AppFocusCard(
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left Image Module
-        Image(
-            painter = imagePainter,
-            contentDescription = "$topic image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(160.dp)
-                .height(180.dp)
-                .clip(RoundedCornerShape(16.dp))
-        )
+        // Left Image / Initials Module
+        if (imagePainter != null) {
+            Image(
+                painter = imagePainter,
+                contentDescription = "$topic image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(180.dp)
+                    .clip(RoundedCornerShape(16.dp))
+            )
+        } else {
+            // Placeholder Box with translucent white background & white initials
+            Box(
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(180.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = getInitials(topic),
+                    color = Color.White,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
 
         // Right Content Stack
         Column(
@@ -171,32 +201,16 @@ fun AppFocusCard(
     }
 }
 
-@Preview(showBackground = true, name = "Focus Card - Light Theme")
+@Preview(showBackground = true, name = "Focus Card - Initials Fallback")
 @Composable
-private fun AppFocusCardLightPreview() {
+private fun AppFocusCardInitialsPreview() {
     MongezTheme(darkTheme = false) {
         Box(modifier = Modifier.padding(16.dp)) {
             AppFocusCard(
                 title = "Today's Focus",
-                topic = "Operating\nSystems",
+                topic = "Data Structure",
                 duration = "2h 15m",
-                imagePainter = ColorPainter(Color(0xFF111111)),
-                onStartClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, name = "Focus Card - Dark Theme")
-@Composable
-private fun AppFocusCardDarkPreview() {
-    MongezTheme(darkTheme = true) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            AppFocusCard(
-                title = "Today's Focus",
-                topic = "Operating\nSystems",
-                duration = "2h 15m",
-                imagePainter = ColorPainter(Color(0xFF20232B)),
+                imagePainter = null,
                 onStartClick = {}
             )
         }

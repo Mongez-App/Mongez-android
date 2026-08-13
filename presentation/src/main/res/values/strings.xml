@@ -245,7 +245,7 @@
     </string>
 
     <!-- Dashboard Goals -->
-    <string name="dashboard_daily_goal">Daily Goal</string>
+    <string name="dashboard_daily_goal">Today\'s Goal</string>
     <string name="dashboard_weekly_goal">Weekly Goal</string>
     <string name="dashboard_monthly_goal">Monthly Goal</string>
 
