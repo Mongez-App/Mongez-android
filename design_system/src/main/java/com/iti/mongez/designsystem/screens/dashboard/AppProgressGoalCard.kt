@@ -27,16 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
-/**
- * A reusable goal/progress tracking card.
- *
- * @param title The headline text (e.g., "Today's Goal").
- * @param currentValue The current progress integer.
- * @param totalValue The target integer.
- * @param unit The metric being tracked (e.g., "tasks", "hours").
- * @param tintColor The primary color defining the border, title, current value, and progress bar fill.
- * @param modifier Modifier to be applied to the layout.
- */
 @Composable
 fun AppProgressGoalCard(
     title: String,
@@ -46,7 +36,6 @@ fun AppProgressGoalCard(
     tintColor: Color,
     modifier: Modifier = Modifier
 ) {
-    // Safely calculate progress fraction between 0.0 and 1.0
     val progressFraction = if (totalValue > 0) {
         (currentValue.toFloat() / totalValue.toFloat()).coerceIn(0f, 1f)
     } else {
@@ -55,9 +44,9 @@ fun AppProgressGoalCard(
 
     Column(
         modifier = modifier
-            .size(width = 140.dp, height = 86.dp) // Strictly matches CSS width/height
+            .size(width = 140.dp, height = 86.dp)
             .shadow(
-                elevation = 2.dp, // Approximation of 0px 1px 2px rgba(0, 0, 0, 0.05)
+                elevation = 2.dp,
                 shape = RoundedCornerShape(16.dp),
                 ambientColor = Color.Black.copy(alpha = 0.05f),
                 spotColor = Color.Black.copy(alpha = 0.05f)
@@ -65,14 +54,13 @@ fun AppProgressGoalCard(
             .background(Theme.colorScheme.surface.background, shape = RoundedCornerShape(16.dp))
             .border(
                 width = 1.dp,
-                color = tintColor.copy(alpha = 0.4f), // 0.4 opacity border from CSS
+                color = tintColor.copy(alpha = 0.4f),
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(12.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.Start
     ) {
-        // Top Section: Title
         Text(
             text = title,
             color = tintColor,
@@ -80,11 +68,9 @@ fun AppProgressGoalCard(
             fontWeight = FontWeight.Medium
         )
 
-        // Bottom Section: Metrics & Progress Bar
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Metrics Row
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -114,21 +100,23 @@ fun AppProgressGoalCard(
                 )
             }
 
-            // Custom Progress Bar (To strictly enforce 6dp height and pill rounding)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
-                    .clip(RoundedCornerShape(50)) // Pill shape (matches 9999px)
-                    .background(Theme.colorScheme.surface.surfaceContainer) // Track background
+                    .clip(RoundedCornerShape(50))
+                    // Use surfaceVariant for a clearer gray track when there are no tasks
+                    .background(Theme.colorScheme.surface.surfaceVariant)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(fraction = progressFraction)
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(tintColor) // Fill color
-                )
+                if (progressFraction > 0f) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = progressFraction)
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(tintColor)
+                    )
+                }
             }
         }
     }
@@ -148,7 +136,7 @@ private fun AppProgressGoalCardsPreview() {
             // Blue Card -> Using state.info
             AppProgressGoalCard(
                 title = "Today's Goal",
-                currentValue = 5,
+                currentValue = 2,
                 totalValue = 5,
                 unit = "tasks",
                 tintColor = Theme.colorScheme.state.info

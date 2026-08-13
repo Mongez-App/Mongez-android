@@ -1,6 +1,5 @@
 package com.iti.mongez.presentation.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -11,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,8 +20,6 @@ import com.iti.mongez.designsystem.screens.dashboard.AppTaskCard
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
-// Ensure TaskPriority is imported from your model package if it's in a different package:
-// import com.iti.mongez.domain.model.TaskPriority
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,15 +31,14 @@ fun AllTasksScreen(
     var selectedFilterIndex by remember { mutableStateOf(0) }
     val filters = listOf("All", "Pending", "Completed", "High", "Medium", "Low")
 
-    // >>> EDIT HIGHLIGHT: Updated filtering logic to use TaskPriority enum constants directly <<<
     val filteredTasks = remember(tasks, selectedFilterIndex) {
         when (selectedFilterIndex) {
-            1 -> tasks.filter { !it.isCompleted } // Pending tasks
-            2 -> tasks.filter { it.isCompleted }  // Completed tasks
-            3 -> tasks.filter { it.priority == TaskPriority.HIGH }   // High Priority
-            4 -> tasks.filter { it.priority == TaskPriority.MEDIUM } // Medium Priority
-            5 -> tasks.filter { it.priority == TaskPriority.LOW }    // Low Priority
-            else -> tasks                         // All tasks
+            1 -> tasks.filter { !it.isCompleted }
+            2 -> tasks.filter { it.isCompleted }
+            3 -> tasks.filter { it.priority == TaskPriority.HIGH }
+            4 -> tasks.filter { it.priority == TaskPriority.MEDIUM }
+            5 -> tasks.filter { it.priority == TaskPriority.LOW }
+            else -> tasks
         }
     }
 
@@ -97,12 +95,20 @@ fun AllTasksScreen(
             Spacer(modifier = Modifier.height(Theme.spacing.md))
 
             if (filteredTasks.isEmpty()) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_no_tasks),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(135.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = stringResource(R.string.no_tasks_for_today),
                         style = Theme.typography.body.medium,
