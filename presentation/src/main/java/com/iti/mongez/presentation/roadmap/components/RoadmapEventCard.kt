@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
+import androidx.compose.ui.res.stringResource
+import com.iti.mongez.presentation.R
+
 @Composable
 fun RoadmapEventCard(
     title: String,
@@ -44,8 +47,16 @@ fun RoadmapEventCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (type.isNotEmpty()) {
+                    val labelMap = mapOf(
+                        "assignment" to stringResource(R.string.event_assignment_title),
+                        "quiz" to stringResource(R.string.event_quiz_title),
+                        "midterm" to stringResource(R.string.event_midterm_title),
+                        "exam" to stringResource(R.string.event_exam_title),
+                        "project" to stringResource(R.string.event_project_title),
+                        "study" to stringResource(R.string.event_study_title)
+                    )
                     Text(
-                        text = type,
+                        text = labelMap[type.lowercase()] ?: type.replaceFirstChar { it.uppercase() },
                         style = Theme.typography.label.medium,
                         color = Theme.colorScheme.text.tertiary
                     )

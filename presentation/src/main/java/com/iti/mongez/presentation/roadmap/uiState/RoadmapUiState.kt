@@ -15,7 +15,7 @@ data class RoadmapUiState(
     val activeFilterState: RoadmapFilterState = RoadmapFilterState(),
 
     val availableCourses: List<CourseUiModel> = emptyList(),
-    val availableEventTypes: List<String> = listOf("Study", "Assignment", "Quiz", "Exam", "Reminder")
+    val availableEventTypes: List<String> = listOf("assignment", "quiz", "midterm", "exam", "project")
 )
 
 data class CourseUiModel(
@@ -31,6 +31,7 @@ data class RoadmapWeekUiModel(
 
 data class StudyBlockUiModel(
     val id: String,
+    val courseId: String,
     val courseName: UiText,
     val topic: UiText,
     val durationMinutes: Int,

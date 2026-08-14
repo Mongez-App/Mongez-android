@@ -123,7 +123,7 @@ fun FilterBottomSheetPreview() {
                     CourseUiModel("3", "Networks"),
                     CourseUiModel("4", "Operating Systems")
                 ),
-                availableEventTypes = listOf("Study", "Assignment", "Quiz", "Exam"),
+                availableEventTypes = listOf("assignment", "quiz", "midterm", "exam", "project"),
                 onApply = {},
                 onStateChange = {},
                 onReset = {}
