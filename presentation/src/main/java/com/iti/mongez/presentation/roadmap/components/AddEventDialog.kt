@@ -34,8 +34,10 @@ import com.iti.mongez.presentation.roadmap.uiState.CourseUiModel
 import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.components.dialog.AppTimePickerDialog
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 enum class AddEventStep {
@@ -421,7 +423,14 @@ private fun StepThreeDetails(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                val todayUtc = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                return utcTimeMillis >= todayUtc
+            }
+        }
+    )
     val timePickerState = rememberTimePickerState()
 
     Column(modifier = Modifier.fillMaxSize()) {

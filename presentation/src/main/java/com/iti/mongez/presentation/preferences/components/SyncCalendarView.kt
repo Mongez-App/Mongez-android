@@ -1,7 +1,9 @@
 package com.iti.mongez.presentation.preferences.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ fun SyncCalendarView(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Theme.colorScheme.surface.background)
             .padding(bottom = Theme.spacing.xl),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -39,7 +42,7 @@ fun SyncCalendarView(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 200.dp),
+                .heightIn(max = 300.dp),
             contentScale = ContentScale.Fit
         )
 
@@ -80,14 +83,29 @@ fun SyncCalendarView(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
 @Composable
 private fun SyncCalendarViewPreview() {
     MongezTheme {
-        SyncCalendarView(
-            onSyncClick = {},
-            onSkipClick = {}
-        )
+        Surface(color = Theme.colorScheme.surface.background) {
+            SyncCalendarView(
+                onSyncClick = {},
+                onSkipClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+private fun SyncCalendarViewDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        Surface(color = Theme.colorScheme.surface.background) {
+            SyncCalendarView(
+                onSyncClick = {},
+                onSkipClick = {}
+            )
+        }
     }
 }
 

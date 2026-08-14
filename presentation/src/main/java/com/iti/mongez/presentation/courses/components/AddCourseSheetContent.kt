@@ -36,6 +36,7 @@ import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.utils.getFileInfo
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -64,7 +65,28 @@ fun AddCourseSheetContent(
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showExamDatePicker by remember { mutableStateOf(false) }
 
-    val datePickerState = rememberDatePickerState()
+    val todayUtc = remember {
+        LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+    }
+
+    val startDatePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis >= todayUtc
+            }
+        }
+    )
+
+    val examDatePickerState = rememberDatePickerState(
+        selectableDates = remember(startDatePickerState.selectedDateMillis) {
+            object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val minDate = startDatePickerState.selectedDateMillis ?: todayUtc
+                    return utcTimeMillis >= minDate
+                }
+            }
+        }
+    )
 
     var selectedFiles by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
@@ -275,7 +297,8 @@ fun AddCourseSheetContent(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            datePickerState.selectedDateMillis?.let { millis ->
+                            val activeState = if (showStartDatePicker) startDatePickerState else examDatePickerState
+                            activeState.selectedDateMillis?.let { millis ->
                                 val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
                                 val formattedUi = localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                                 val formattedIso = Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
@@ -305,7 +328,7 @@ fun AddCourseSheetContent(
                 }
             ) {
                 DatePicker(
-                    state = datePickerState,
+                    state = if (showStartDatePicker) startDatePickerState else examDatePickerState,
                     colors = DatePickerDefaults.colors(
                         containerColor = Theme.colorScheme.surface.surface,
                         titleContentColor = Theme.colorScheme.text.primary,
