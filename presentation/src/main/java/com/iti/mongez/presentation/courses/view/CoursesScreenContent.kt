@@ -9,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.fab.AppFab
@@ -17,7 +19,9 @@ import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.courses.CourseCard
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.contract.CoursesIntent
 import com.iti.mongez.presentation.courses.components.AddCourseSheetContent
@@ -109,7 +113,7 @@ fun CoursesScreenContent(
                     description = stringResource(R.string.delete_course_dialog_description),
                     primaryActionText = stringResource(R.string.action_delete),
                     onPrimaryAction = {
-                        onIntent(CoursesIntent.ConfirmDeleteCourse(state.courseToDeleteId!!))
+                        onIntent(CoursesIntent.ConfirmDeleteCourse(state.courseToDeleteId))
                     },
                     onDismiss = {
                         onIntent(CoursesIntent.DismissDeleteConfirmation)
@@ -171,5 +175,87 @@ fun CoursesScreenContent(
                 AppSnackbarContent(message = message, type = topSnackbarType)
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CoursesScreenContentPreview() {
+    val sampleCourses = listOf(
+        Course(
+            id = "1",
+            name = "Mobile Development",
+            courseCode = "CS402",
+            imageUrl = null,
+            startDate = "2023-10-01",
+            examDate = "2024-01-15",
+            hasMaterials = true,
+            completionPercentage = 65f
+        ),
+        Course(
+            id = "2",
+            name = "Web Security",
+            courseCode = "CS305",
+            imageUrl = null,
+            startDate = "2023-10-05",
+            examDate = "2024-01-20",
+            hasMaterials = false,
+            completionPercentage = 30f
+        )
+    )
+
+    MongezTheme {
+        CoursesScreenContent(
+            state = CoursesState(
+                allCourses = sampleCourses,
+                filteredCourses = sampleCourses
+            ),
+            innerPadding = PaddingValues(0.dp),
+            topSnackbarMessage = null,
+            topSnackbarType = AppSnackbarType.Info,
+            onIntent = {},
+            onCourseClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CoursesScreenContentDarkPreview() {
+    val sampleCourses = listOf(
+        Course(
+            id = "1",
+            name = "Mobile Development",
+            courseCode = "CS402",
+            imageUrl = null,
+            startDate = "2023-10-01",
+            examDate = "2024-01-15",
+            hasMaterials = true,
+            completionPercentage = 65f
+        ),
+        Course(
+            id = "2",
+            name = "Web Security",
+            courseCode = "CS305",
+            imageUrl = null,
+            startDate = "2023-10-05",
+            examDate = "2024-01-20",
+            hasMaterials = false,
+            completionPercentage = 30f
+        )
+    )
+
+    MongezTheme(darkTheme = true) {
+        CoursesScreenContent(
+            state = CoursesState(
+                allCourses = sampleCourses,
+                filteredCourses = sampleCourses
+            ),
+            innerPadding = PaddingValues(0.dp),
+            topSnackbarMessage = null,
+            topSnackbarType = AppSnackbarType.Info,
+            onIntent = {},
+            onCourseClick = {}
+        )
     }
 }
