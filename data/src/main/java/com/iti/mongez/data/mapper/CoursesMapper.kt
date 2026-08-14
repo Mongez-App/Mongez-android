@@ -51,3 +51,12 @@ fun CourseMaterialDto.toDomain() = CourseMaterial(
     },
     deviceFileUri = deviceFileUri
 )
+
+fun CourseTaskDto.toDomain() = com.iti.mongez.domain.courses.model.CourseTask(
+    id = this.id.orEmpty(),
+    title = this.title.orEmpty(),
+    durationMinutes = this.durationMinutes ?: 0,
+    priority = this.priority ?: "LOW",
+    isCompleted = this.completed ?: false,
+    scheduledDate = this.scheduledDate.orEmpty()
+)

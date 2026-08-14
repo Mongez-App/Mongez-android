@@ -1,4 +1,4 @@
-package com.iti.mongez.feature.coursedetails.viewmodel
+package com.iti.mongez.presentation.coursedetails.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -10,10 +10,13 @@ import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsEffect
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 import com.iti.mongez.presentation.coursedetails.uistate.CourseDetailsUiState
 import com.iti.mongez.presentation.coursedetails.uistate.DocumentItem
+import com.iti.mongez.presentation.coursedetails.uistate.TaskItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
+import kotlin.collections.filter
 
 @HiltViewModel
 class CourseDetailsViewModel @Inject constructor(
@@ -22,7 +25,8 @@ class CourseDetailsViewModel @Inject constructor(
     private val deleteCourseUseCase: DeleteCourseUseCase,
     private val deleteCourseMaterialUseCase: DeleteCourseMaterialUseCase,
     private val uploadCourseMaterialUseCase: UploadCourseMaterialUseCase,
-    private val updateCourseUseCase: UpdateCourseUseCase
+    private val updateCourseUseCase: UpdateCourseUseCase,
+    private val getCourseTasksUseCase: GetCourseTasksUseCase
 ) : ViewModel() {
 
     private var courseId: String = ""
@@ -56,7 +60,7 @@ class CourseDetailsViewModel @Inject constructor(
                     }
                 }
                 is Result.Failure -> {
-                    Log.e("CourseDebug", "Failed to load details: ${detailsResult.exception?.message}")
+                    Log.e("CourseDebug", "Failed to load details: ${detailsResult.exception.message}")
                     _effect.emit(CourseDetailsEffect.ShowSnackbar("Failed to load course details", AppSnackbarType.Error))
                 }
                 else -> {}
@@ -66,9 +70,9 @@ class CourseDetailsViewModel @Inject constructor(
             when (val materialsResult = getCourseMaterialsUseCase(courseId)) {
                 is Result.Success -> {
                     val documents = materialsResult.data.map { mat ->
-                        val finalId = if (mat.id.isBlank()) {
-                            java.util.UUID.randomUUID().toString()
-                        } else mat.id
+                        val finalId = mat.id.ifBlank {
+                            UUID.randomUUID().toString()
+                        }
 
                         DocumentItem(
                             id = finalId,
@@ -81,7 +85,7 @@ class CourseDetailsViewModel @Inject constructor(
                     _uiState.update { it.copy(materials = documents, isLoading = false) }
                 }
                 is Result.Failure -> {
-                    Log.e("CourseDebug", "Failed to load materials: ${materialsResult.exception?.message}")
+                    Log.e("CourseDebug", "Failed to load materials: ${materialsResult.exception.message}")
                     _uiState.update { it.copy(isLoading = false) }
                     _effect.emit(CourseDetailsEffect.ShowSnackbar("Failed to load materials", AppSnackbarType.Error))
                 }
@@ -89,7 +93,58 @@ class CourseDetailsViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false) }
                 }
             }
+
+            // 3. Fetch Tasks
+            when (val tasksResult = getCourseTasksUseCase(courseId)) {
+                is Result.Success -> {
+                    allTasks = tasksResult.data.map { task ->
+                        TaskItem(
+                            id = task.id,
+                            title = task.title,
+                            duration = "${task.durationMinutes} min",
+                            priority = task.priority,
+                            isCompleted = task.isCompleted,
+                            isToday = task.scheduledDate == java.time.LocalDate.now().toString()
+                        )
+                    }
+                    updateTasksState()
+                }
+                is Result.Failure -> {
+                    Log.e("CourseDebug", "Failed to load tasks: ${tasksResult.exception.message}")
+                    _uiState.update { it.copy(isLoading = false) }
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar("Failed to load tasks", AppSnackbarType.Error))
+                }
+                else -> {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            }
         }
+    }
+
+    private var allTasks: List<TaskItem> = emptyList()
+
+    private fun updateTasksState() {
+        val filteredTasks = when (_uiState.value.selectedTaskFilterIndex) {
+            0 -> allTasks // All
+            1 -> allTasks.filter { !it.isCompleted } // Pending
+            2 -> allTasks.filter { it.isCompleted } // Completed
+            3 -> allTasks.filter { it.priority.equals("HIGH", ignoreCase = true) } // High
+            4 -> allTasks.filter { it.priority.equals("MEDIUM", ignoreCase = true) } // Medium
+            5 -> allTasks.filter { it.priority.equals("LOW", ignoreCase = true) } // Low
+            else -> allTasks
+        }
+        
+        val completedCount = allTasks.count { it.isCompleted }
+        val totalCount = allTasks.size
+        val progress = if (totalCount > 0) (completedCount * 100) / totalCount else 0
+
+        _uiState.update { it.copy(
+            tasks = filteredTasks,
+            completedTasks = completedCount,
+            totalTasks = totalCount,
+            progressPercentage = progress,
+            isLoading = false
+        ) }
     }
 
     fun processIntent(intent: CourseDetailsIntent) {
@@ -106,7 +161,10 @@ class CourseDetailsViewModel @Inject constructor(
             is CourseDetailsIntent.ShowDeleteDialog -> _uiState.update { it.copy(isDeleteDialogVisible = true) }
             is CourseDetailsIntent.DismissDeleteDialog -> _uiState.update { it.copy(isDeleteDialogVisible = false) }
             is CourseDetailsIntent.DeleteCourse -> deleteCourse()
-            is CourseDetailsIntent.SelectTaskFilter -> _uiState.update { it.copy(selectedTaskFilterIndex = intent.index) }
+            is CourseDetailsIntent.SelectTaskFilter -> {
+                _uiState.update { it.copy(selectedTaskFilterIndex = intent.index) }
+                updateTasksState()
+            }
             is CourseDetailsIntent.ClickTask -> { /* Toggle task completion */ }
             is CourseDetailsIntent.UpdateCourse -> updateCourse(intent.name, intent.imageUrl)
             else -> {}
@@ -138,7 +196,7 @@ class CourseDetailsViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _uiState.update { it.copy(isLoading = false) }
-                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception?.message ?: "Update failed", AppSnackbarType.Error))
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception.message ?: "Update failed", AppSnackbarType.Error))
                 }
                 else -> { _uiState.update { it.copy(isLoading = false) } }
             }
@@ -159,7 +217,7 @@ class CourseDetailsViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _uiState.update { it.copy(isLoading = false) }
-                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception?.message ?: "Failed to delete material", AppSnackbarType.Error))
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception.message ?: "Failed to delete material", AppSnackbarType.Error))
                 }
                 else -> {
                     _uiState.update { it.copy(isLoading = false) }
@@ -179,7 +237,7 @@ class CourseDetailsViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _uiState.update { it.copy(isLoading = false) }
-                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception?.message ?: "Failed to delete course", AppSnackbarType.Error))
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception.message ?: "Failed to delete course", AppSnackbarType.Error))
                 }
                 else -> {
                     _uiState.update { it.copy(isLoading = false) }
@@ -210,7 +268,7 @@ class CourseDetailsViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _uiState.update { it.copy(isLoading = false) }
-                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception?.message ?: "Upload failed.", AppSnackbarType.Error))
+                    _effect.emit(CourseDetailsEffect.ShowSnackbar(result.exception.message ?: "Upload failed.", AppSnackbarType.Error))
                 }
                 else -> {
                     _uiState.update { it.copy(isLoading = false) }

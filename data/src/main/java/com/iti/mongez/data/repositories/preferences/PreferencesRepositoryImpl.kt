@@ -6,7 +6,7 @@ import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.data.mapper.toDto
 import com.iti.mongez.data.mapper.toEntity
 import com.iti.mongez.data.sources.local.PreferencesDataSource
-import com.iti.mongez.data.sources.remote.services.ApiService
+import com.iti.mongez.data.sources.remote.interfaces.UserRemoteDataSource
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.preferences.model.UserPreferences
 import com.iti.mongez.domain.preferences.repository.PreferencesRepository
@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class PreferencesRepositoryImpl @Inject constructor(
-    private val dataSource: PreferencesDataSource,
     private val preferencesDao: PreferencesDao,
-    private val apiService: ApiService,
+    private val dataSource: PreferencesDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource,
 ) : PreferencesRepository {
 
     override suspend fun savePreferences(preferences: UserPreferences): Result<UserPreferences> {
@@ -25,7 +25,7 @@ class PreferencesRepositoryImpl @Inject constructor(
             preferencesDao.insertPreferences(preferences.toEntity(isSynced = false))
 
             // Remote save
-            apiService.updatePreferences(preferences.toDto())
+            userRemoteDataSource.updatePreferences(preferences.toDto())
 
             // Mark as synced
             preferencesDao.insertPreferences(preferences.toEntity(isSynced = true))
@@ -50,7 +50,7 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun getPreferences(): Result<UserPreferences> {
         return try {
             // Try remote first
-            val remotePrefsDto = apiService.getPreferences()
+            val remotePrefsDto = userRemoteDataSource.getPreferences()
             val remotePrefs = remotePrefsDto.toDomain()
             
             Log.d("PreferencesRepo", "Remote Preferences fetched successfully: $remotePrefsDto")
@@ -82,7 +82,7 @@ class PreferencesRepositoryImpl @Inject constructor(
             }
 
             // Check remote if local is empty
-            val response = apiService.getPreferences()
+            val response = userRemoteDataSource.getPreferences()
             val isSetRemotely = response.dailyStudyHours > 0
             if (isSetRemotely) {
                 preferencesDao.insertPreferences(response.toDomain().toEntity(isSynced = true))

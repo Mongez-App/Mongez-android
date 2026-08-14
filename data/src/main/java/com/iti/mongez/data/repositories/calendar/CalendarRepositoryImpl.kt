@@ -6,7 +6,7 @@ import com.iti.mongez.data.dtos.CalendarSyncRequestDto
 import com.iti.mongez.data.dtos.SyncCalendarEventsRequestDto
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.local.CalendarLocalDataSource
-import com.iti.mongez.data.sources.remote.services.ApiService
+import com.iti.mongez.data.sources.remote.interfaces.CalendarRemoteDataSource
 import com.iti.mongez.domain.calendar.model.CalendarEvent
 import com.iti.mongez.domain.calendar.model.CalendarStatus
 import com.iti.mongez.domain.calendar.repository.CalendarRepository
@@ -15,7 +15,7 @@ import java.time.Instant
 import javax.inject.Inject
 
 class CalendarRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
+    private val calendarRemoteDataSource: CalendarRemoteDataSource,
     private val localDataSource: CalendarLocalDataSource
 ) : CalendarRepository {
 
@@ -24,7 +24,7 @@ class CalendarRepositoryImpl @Inject constructor(
     override suspend fun disconnect(): Result<Unit> = Result.Success(Unit)
 
     override suspend fun getStatus(): Result<CalendarStatus> = safeApi {
-        val response = apiService.getCalendarSyncStatus()
+        val response = calendarRemoteDataSource.getCalendarSyncStatus()
         CalendarStatus(
             isConnected = response.calendarConnected,
             isSynced = response.calendarSynced,
@@ -34,7 +34,7 @@ class CalendarRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateSyncStatus(connected: Boolean, synced: Boolean): Result<CalendarStatus> = safeApi {
-        val response = apiService.updateCalendarSyncStatus(
+        val response = calendarRemoteDataSource.updateCalendarSyncStatus(
             CalendarSyncRequestDto(connected, synced)
         )
         CalendarStatus(
@@ -72,7 +72,7 @@ class CalendarRepositoryImpl @Inject constructor(
             Log.d("CalendarSync", "Payload preview: '${first.title}' from ${first.startDate} to ${first.endDate}")
         }
         
-        apiService.syncCalendarEvents(request)
+        calendarRemoteDataSource.syncCalendarEvents(request)
         Log.d("CalendarSync", "Sync completed successfully!")
     }
 }

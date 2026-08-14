@@ -2,8 +2,6 @@ package com.iti.mongez.data.repositories.profile
 
 import com.iti.mongez.data.dtos.profile.UpdateProfileRequestDto
 import com.iti.mongez.data.network.safeApi
-import com.iti.mongez.data.sources.remote.services.ApiService
-import com.iti.mongez.data.dtos.toDomain
 import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.data.mapper.toEntity
 import com.iti.mongez.data.local.dao.UserDao
@@ -11,18 +9,19 @@ import com.iti.mongez.data.sources.remote.FirebaseAuthDataSource
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.profile.model.Profile
 import com.iti.mongez.domain.profile.repository.ProfileRepository
+import com.iti.mongez.data.sources.remote.interfaces.UserRemoteDataSource
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
+    private val userRemoteDataSource: UserRemoteDataSource,
     private val userDao: UserDao,
     private val firebaseAuthDataSource: FirebaseAuthDataSource
 ) : ProfileRepository {
     override suspend fun getFullProfile(): Result<Profile> = safeApi {
-        apiService.getFullUserProfile().toDomain()
+        userRemoteDataSource.getFullUserProfile().toDomain()
     }
 
     override suspend fun updateProfile(
@@ -37,7 +36,7 @@ class ProfileRepositoryImpl @Inject constructor(
             appearance = appearance,
             language = language
         )
-        val response = apiService.updateFullUserProfile(request)
+        val response = userRemoteDataSource.updateFullUserProfile(request)
         val profile = response.profile?.toDomain() ?: throw Exception("Profile update failed")
         
         // Sync with local database
@@ -62,7 +61,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
             val multipartBody = MultipartBody.Part.createFormData("avatar", "profile_image.jpg", requestFile)
 
-            val response = apiService.uploadProfileImage(multipartBody)
+            val response = userRemoteDataSource.uploadProfileImage(multipartBody)
 
             response.profile?.avatarUrl ?: throw Exception("Server did not return a valid avatar URL")
         }

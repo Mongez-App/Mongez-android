@@ -43,4 +43,28 @@ object NetworkModule {
     fun provideApiService(retrofit: Retrofit) : ApiService {
         return retrofit.create(ApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideAuthApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.AuthApiService {
+        return retrofit.create(com.iti.mongez.data.sources.remote.services.AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRoadmapApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.RoadmapApiService {
+        return retrofit.create(com.iti.mongez.data.sources.remote.services.RoadmapApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.UserApiService {
+        return retrofit.create(com.iti.mongez.data.sources.remote.services.UserApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTasksApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.TasksApiService {
+        return retrofit.create(com.iti.mongez.data.sources.remote.services.TasksApiService::class.java)
+    }
 }

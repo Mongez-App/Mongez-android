@@ -5,6 +5,7 @@ import com.iti.mongez.domain.courses.model.CourseCreationResult
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.courses.model.CourseActionResponse
 import com.iti.mongez.domain.courses.model.CourseMaterial
+import com.iti.mongez.domain.courses.model.CourseTask
 
 interface CoursesRepository {
     suspend fun getCourses(): Result<List<Course>>
@@ -18,6 +19,7 @@ interface CoursesRepository {
         materialUrl: String?
     ): Result<CourseCreationResult>
     suspend fun getCourseDetails(courseId: String): Result<Course>
+    suspend fun getCourseTasks(courseId: String): Result<List<CourseTask>>
     suspend fun updateCourse(courseId: String, name: String, imageUrl: String, isHidden: Boolean): Result<CourseActionResponse<Course>>    suspend fun deleteCourse(courseId: String): Result<CourseActionResponse<Unit>>
     
     suspend fun getCourseMaterials(courseId: String): Result<List<CourseMaterial>>
