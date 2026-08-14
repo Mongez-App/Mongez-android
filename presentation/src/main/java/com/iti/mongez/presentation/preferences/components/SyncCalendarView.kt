@@ -35,7 +35,7 @@ fun SyncCalendarView(
         Spacer(modifier = Modifier.weight(1f))
 
         Image(
-            painter = painterResource(id = R.drawable.google_calendar),
+            painter = painterResource(id = R.drawable.sync_calendar),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()

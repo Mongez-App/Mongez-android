@@ -166,6 +166,7 @@ fun TimelineBlockItemPreview() {
                     TimelineBlockItem(
                         block = StudyBlockUiModel(
                             id = "1",
+                            courseId = "algorithms",
                             courseName = UiText.DynamicString("Algorithms"),
                             topic = UiText.DynamicString("Dynamic Programming"),
                             durationMinutes = 60,
@@ -189,6 +190,7 @@ fun TimelineBlockItemPreview() {
                     TimelineBlockItem(
                         block = StudyBlockUiModel(
                             id = "2",
+                            courseId = "algorithms",
                             courseName = UiText.DynamicString("Algorithms"),
                             topic = UiText.DynamicString("Dynamic Programming"),
                             durationMinutes = 90,

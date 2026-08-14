@@ -11,6 +11,9 @@ import androidx.compose.material.icons.automirrored.rounded.Assignment
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.GridView
+import androidx.compose.material.icons.rounded.Quiz
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -41,11 +44,22 @@ fun EventTypeSection(
     )
     
     val iconMap = mapOf(
-        "Study" to Icons.AutoMirrored.Rounded.MenuBook,
-        "Assignment" to Icons.AutoMirrored.Rounded.Assignment,
-        "Quiz" to Icons.AutoMirrored.Rounded.HelpOutline,
-        "Exam" to Icons.Rounded.School,
-        "Reminder" to Icons.Rounded.Alarm
+        "assignment" to Icons.AutoMirrored.Rounded.Assignment,
+        "quiz" to Icons.Rounded.Quiz,
+        "midterm" to Icons.Rounded.Description,
+        "exam" to Icons.Rounded.School,
+        "project" to Icons.Rounded.GridView,
+        "study" to Icons.AutoMirrored.Rounded.MenuBook,
+        "reminder" to Icons.Rounded.Alarm
+    )
+
+    val labelMap = mapOf(
+        "assignment" to stringResource(R.string.event_assignment_title),
+        "quiz" to stringResource(R.string.event_quiz_title),
+        "midterm" to stringResource(R.string.event_midterm_title),
+        "exam" to stringResource(R.string.event_exam_title),
+        "project" to stringResource(R.string.event_project_title),
+        "study" to stringResource(R.string.event_study_title)
     )
 
     FlowRow(
@@ -66,7 +80,11 @@ fun EventTypeSection(
                         Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(16.dp))
                     }
                 },
-                label = { Text(event) },
+                label = { 
+                    Text(
+                        text = labelMap[event] ?: event.replaceFirstChar { it.uppercase() }
+                    ) 
+                },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = Theme.colorScheme.brand.primaryContainer,
                     selectedLabelColor = Theme.colorScheme.brand.primary,

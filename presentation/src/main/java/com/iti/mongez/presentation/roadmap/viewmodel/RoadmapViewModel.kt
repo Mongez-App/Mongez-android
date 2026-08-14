@@ -60,8 +60,9 @@ class RoadmapViewModel @Inject constructor(
         viewModelScope.launch {
             getCoursesUseCase().fold(
                 onSuccess = { courses ->
+                    val newCourses = courses.map { CourseUiModel(it.id, it.name) }
                     _state.value = _state.value.copy(
-                        availableCourses = courses.map { CourseUiModel(it.id, it.name) }
+                        availableCourses = (_state.value.availableCourses + newCourses).distinctBy { it.id }
                     )
                 },
                 onFailure = { /* Ignore and rely on loadRoadmap courses if needed */ },
@@ -101,6 +102,7 @@ class RoadmapViewModel @Inject constructor(
 
                                 StudyBlockUiModel(
                                     id = firstBlock.id,
+                                    courseId = firstBlock.courseId,
                                     courseName = UiText.DynamicString(firstBlock.courseName),
                                     topic = UiText.DynamicString(allTasks.firstOrNull()?.topic ?: firstBlock.courseName),
                                     durationMinutes = allTasks.sumOf { it.durationMinutes },
@@ -112,10 +114,10 @@ class RoadmapViewModel @Inject constructor(
                                     },
                                     tasks = allTasks.map { task ->
                                         val date = LocalDate.parse(task.taskDate)
-                                        val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                                        val formattedDate = date.format(DateTimeFormatter.ofPattern("d MMM", Locale.getDefault()))
                                         RoadmapTaskUiModel(
                                             title = UiText.DynamicString(task.topic),
-                                            dateTime = UiText.DynamicString("$dayName, ${task.durationMinutes} min"),
+                                            dateTime = UiText.DynamicString("$formattedDate, ${task.durationMinutes} min"),
                                             date = date
                                         )
                                     },
@@ -130,7 +132,7 @@ class RoadmapViewModel @Inject constructor(
 
                                         RoadmapEventUiModel(
                                             title = UiText.DynamicString(event.title),
-                                            type = event.eventType,
+                                            type = event.eventType.lowercase(),
                                             dateTime = UiText.DynamicString("$dayName, $time"),
                                             date = dateTime.toLocalDate()
                                         )
@@ -149,15 +151,23 @@ class RoadmapViewModel @Inject constructor(
                     }
 
                     val allEventTypes = uiWeeks.flatMap { week ->
-                        week.blocks.flatMap { it.events.map { event -> event.type } }
-                    }.distinct().sorted().ifEmpty { listOf("Study", "Assignment", "Quiz", "Exam", "Reminder") }
+                        week.blocks.flatMap { it.events.map { event ->
+                            event.type.lowercase()
+                        } }
+                    }.distinct().sorted().ifEmpty { listOf("assignment", "quiz", "midterm", "exam", "project") }
+
+                    val roadmapCourses = roadmap.weeks
+                        .flatMap { it.studyBlocks }
+                        .map { CourseUiModel(it.courseId, it.courseName) }
+                        .distinctBy { it.id }
 
                     fullRoadmapWeeks = uiWeeks
                     _state.value = _state.value.copy(
                         isLoading = false,
                         roadmapStartDate = roadmap.roadmapStartDate,
                         weeks = uiWeeks,
-                        availableEventTypes = allEventTypes
+                        availableEventTypes = allEventTypes,
+                        availableCourses = (_state.value.availableCourses + roadmapCourses).distinctBy { it.id }
                     )
                     applyFilters(_state.value.activeFilterState)
                 },
