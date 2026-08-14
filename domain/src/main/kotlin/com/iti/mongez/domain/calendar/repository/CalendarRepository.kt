@@ -8,6 +8,7 @@ interface CalendarRepository {
     suspend fun connect(): Result<Unit>
     suspend fun disconnect(): Result<Unit>
     suspend fun getStatus(): Result<CalendarStatus>
+    suspend fun updateSyncStatus(connected: Boolean, synced: Boolean): Result<CalendarStatus>
     suspend fun getLocalEvents(): Result<List<CalendarEvent>>
     suspend fun syncEvents(events: List<CalendarEvent>): Result<Unit>
 }

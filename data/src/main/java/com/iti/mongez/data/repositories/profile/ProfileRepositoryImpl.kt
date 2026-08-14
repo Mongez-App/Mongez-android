@@ -27,11 +27,15 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun updateProfile(
         name: String?,
-        avatarUrl: String?
+        avatarUrl: String?,
+        appearance: String?,
+        language: String?
     ): Result<Profile> = safeApi {
         val request = UpdateProfileRequestDto(
             name = name,
-            avatarUrl = avatarUrl
+            avatarUrl = avatarUrl,
+            appearance = appearance,
+            language = language
         )
         val response = apiService.updateFullUserProfile(request)
         val profile = response.profile?.toDomain() ?: throw Exception("Profile update failed")

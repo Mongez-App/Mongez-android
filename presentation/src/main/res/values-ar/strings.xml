@@ -118,7 +118,9 @@
     <string name="event_assignment_title">تكليف</string>
     <string name="event_assignment_desc">واجب منزلي أو مشروع</string>
     <string name="event_midterm_title">امتحان نصفي</string>
-    <string name="event_midterm_desc">امتحان مهم</string>
+    <string name="event_midterm_desc">امتحان نصفي مهم</string>
+    <string name="event_exam_title">امتحان</string>
+    <string name="event_exam_desc">امتحان نهائي أو رئيسي</string>
     <string name="event_project_title">مشروع</string>
     <string name="event_project_desc">مشروع كبير أو عمل نهائي</string>
 
@@ -199,6 +201,10 @@
     <string name="profile_logout">تسجيل الخروج</string>
     <string name="profile_studying_preferences">تفضيلات الدراسة</string>
     <string name="profile_edit">تعديل</string>
+    <string name="profile_manual_sync">مزامنة الآن</string>
+    <string name="profile_last_synced">آخر مزامنة: %1$s</string>
+    <string name="profile_synced">تمت المزامنة</string>
+    <string name="profile_not_synced">لم تتم المزامنة</string>
     <string name="logout_confirmation_title">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
     <string name="logout_confirmation_desc">ستحتاج إلى إدخال اسم المستخدم وكلمة المرور لتسجيل الدخول مرة أخرى.</string>
     <string name="logout_action">تسجيل الخروج</string>

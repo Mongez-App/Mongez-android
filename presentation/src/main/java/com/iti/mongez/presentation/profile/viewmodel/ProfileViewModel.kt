@@ -18,6 +18,8 @@ import com.iti.mongez.domain.preferences.usecase.SavePreferencesLocallyUseCase
 import com.iti.mongez.domain.preferences.usecase.SetPreferencesOnboardingCompletedUseCase
 import com.iti.mongez.domain.profile.usecase.UpdateProfileUseCase
 import com.iti.mongez.domain.calendar.usecase.SyncCalendarEventsUseCase
+import com.iti.mongez.domain.calendar.usecase.GetCalendarStatusUseCase
+import com.iti.mongez.domain.calendar.usecase.UpdateCalendarSyncStatusUseCase
 import com.iti.mongez.domain.profile.usecase.UploadProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -43,6 +46,8 @@ class ProfileViewModel @Inject constructor(
     private val setPreferencesOnboardingCompletedUseCase: SetPreferencesOnboardingCompletedUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
     private val syncCalendarEventsUseCase: SyncCalendarEventsUseCase,
+    private val getCalendarStatusUseCase: GetCalendarStatusUseCase,
+    private val updateCalendarSyncStatusUseCase: UpdateCalendarSyncStatusUseCase,
     private val uploadProfileImageUseCase: UploadProfileImageUseCase
 ) : ViewModel() {
 
@@ -79,7 +84,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.Logout -> {
                 _viewState.update { it.copy(isLogoutDialogVisible = true) }
             }
-            is ProfileIntent.ConfirmLogout -> logout()
+            ProfileIntent.ConfirmLogout -> logout()
             is ProfileIntent.ToggleLogoutDialog -> {
                 _viewState.update { it.copy(isLogoutDialogVisible = intent.visible) }
             }
@@ -91,7 +96,8 @@ class ProfileViewModel @Inject constructor(
                     ) 
                 }
             }
-            is ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(_viewState.value.calendarSyncDialogTargetState)
+            ProfileIntent.ConfirmCalendarSyncDisconnect -> toggleCalendarSync(_viewState.value.calendarSyncDialogTargetState)
+            ProfileIntent.ManualSync -> manualSync()
             is ProfileIntent.ToggleEditPreferencesSheet -> {
                 if (intent.visible) {
                     loadPreferences()
@@ -215,7 +221,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true, errorMessage = null) }
             
-            // Load Profile concurrently
+            // Load Profile and Calendar Status concurrently
             val profileJob = launch {
                 when (val result = getUserProfileUseCase()) {
                     is Result.Success -> {
@@ -235,6 +241,19 @@ class ProfileViewModel @Inject constructor(
                                 streakDays = profile.currentStreakDays
                             )
                         }
+
+                        profile.appearance?.let { appearance ->
+                            val isDark = appearance.contains("Dark", ignoreCase = true)
+                            if (isDark != _viewState.value.isDarkModeEnabled) {
+                                updateSettings { it.copy(isDarkModeEnabled = isDark) }
+                            }
+                        }
+                        profile.language?.let { langCode ->
+                            val lang = Language.entries.find { it.code == langCode }
+                            if (lang != null && lang != _viewState.value.language) {
+                                updateSettings { it.copy(language = lang) }
+                            }
+                        }
                     }
                     is Result.Failure -> {
                         _viewState.update {
@@ -245,7 +264,23 @@ class ProfileViewModel @Inject constructor(
                 }
             }
 
+            val calendarStatusJob = launch {
+                when (val result = getCalendarStatusUseCase()) {
+                    is Result.Success -> {
+                        _viewState.update {
+                            it.copy(
+                                isCalendarSyncEnabled = result.data.isConnected,
+                                isCalendarSynced = result.data.isSynced,
+                                lastSyncedAt = result.data.lastSyncedAt
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+
             profileJob.join()
+            calendarStatusJob.join()
             _viewState.update { it.copy(isLoading = false) }
         }
     }
@@ -257,7 +292,9 @@ class ProfileViewModel @Inject constructor(
 
             val result = updateProfileUseCase(
                 name = state.editingName,
-                avatarUrl = state.selectedAvatarUrl
+                avatarUrl = state.selectedAvatarUrl,
+                appearance = if (state.isDarkModeEnabled) "Dark Mode" else "Light Mode",
+                language = state.language.code
             )
 
             when (result) {
@@ -288,22 +325,56 @@ class ProfileViewModel @Inject constructor(
             // Update local settings immediately
             updateSettings { it.copy(isCalendarSyncEnabled = enabled) }
             
-            _viewState.update { 
-                it.copy(
-                    isLoading = false,
-                    isCalendarSyncEnabled = enabled
-                )
+            when (val result = updateCalendarSyncStatusUseCase(connected = enabled, synced = false)) {
+                is Result.Success -> {
+                    _viewState.update { 
+                        it.copy(
+                            isCalendarSyncEnabled = result.data.isConnected,
+                            isCalendarSynced = result.data.isSynced,
+                            lastSyncedAt = result.data.lastSyncedAt
+                        )
+                    }
+                }
+                is Result.Failure -> {
+                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Failed to update calendar sync"))
+                }
+                is Result.Loading -> {}
             }
 
+            _viewState.update { it.copy(isLoading = false) }
+
             if (enabled) {
-                syncCalendarEvents()
+                manualSync()
             }
         }
     }
 
-    private fun syncCalendarEvents() {
+    private fun manualSync() {
         viewModelScope.launch {
-            syncCalendarEventsUseCase()
+            _viewState.update { it.copy(isLoading = true) }
+            when (val syncResult = syncCalendarEventsUseCase()) {
+                is Result.Success -> {
+                    when (val statusResult = updateCalendarSyncStatusUseCase(connected = true, synced = true)) {
+                        is Result.Success -> {
+                            _viewState.update {
+                                it.copy(
+                                    isCalendarSynced = true,
+                                    lastSyncedAt = statusResult.data.lastSyncedAt
+                                )
+                            }
+                        }
+                        is Result.Failure -> {
+                            _effect.emit(ProfileEffect.ShowError(statusResult.exception.message ?: "Failed to update sync status"))
+                        }
+                        is Result.Loading -> {}
+                    }
+                }
+                is Result.Failure -> {
+                    _effect.emit(ProfileEffect.ShowError(syncResult.exception.message ?: "Sync failed"))
+                }
+                is Result.Loading -> {}
+            }
+            _viewState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -317,12 +388,14 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateSettings(update: (AppSettings) -> AppSettings) {
         viewModelScope.launch {
-            val currentSettings = AppSettings(
-                isCalendarSyncEnabled = _viewState.value.isCalendarSyncEnabled,
-                isDarkModeEnabled = _viewState.value.isDarkModeEnabled,
-                language = _viewState.value.language
+            val currentSettings = getAppSettingsUseCase().first()
+            val newSettings = update(currentSettings)
+            updateAppSettingsUseCase(newSettings)
+            
+            updateProfileUseCase(
+                appearance = if (newSettings.isDarkModeEnabled) "Dark Mode" else "Light Mode",
+                language = newSettings.language.code
             )
-            updateAppSettingsUseCase(update(currentSettings))
         }
     }
 

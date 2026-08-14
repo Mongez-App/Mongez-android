@@ -11,6 +11,8 @@ data class ProfileViewState(
     val completedTasks: Int = 0,
     val streakDays: Int = 0,
     val isCalendarSyncEnabled: Boolean = false,
+    val isCalendarSynced: Boolean = false,
+    val lastSyncedAt: String? = null,
     val isDarkModeEnabled: Boolean = false,
     val language: Language = Language.EN,
     val calendarEmail: String? = null,

@@ -120,7 +120,9 @@
     <string name="event_assignment_title">Assignment</string>
     <string name="event_assignment_desc">Homework or project</string>
     <string name="event_midterm_title">Midterm</string>
-    <string name="event_midterm_desc">Important exam</string>
+    <string name="event_midterm_desc">Important midterm exam</string>
+    <string name="event_exam_title">Exam</string>
+    <string name="event_exam_desc">Final or major exam</string>
     <string name="event_project_title">Project</string>
     <string name="event_project_desc">Large project or final work</string>
 
@@ -201,6 +203,10 @@
     <string name="profile_logout">Logout</string>
     <string name="profile_studying_preferences">Studying Preferences</string>
     <string name="profile_edit">Edit</string>
+    <string name="profile_manual_sync">Manual sync now</string>
+    <string name="profile_last_synced">Last time synced: %1$s</string>
+    <string name="profile_synced">Synced</string>
+    <string name="profile_not_synced">Not Synced</string>
     <string name="logout_confirmation_title">Are sure you want to log out?</string>
     <string name="logout_confirmation_desc">You will need to enter your username and password to sign back in.</string>
     <string name="logout_action">Logout</string>

@@ -10,9 +10,13 @@ class UpdateProfileUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         name: String? = null,
-        avatarUrl: String? = null
+        avatarUrl: String? = null,
+        appearance: String? = null,
+        language: String? = null
     ): Result<Profile> = repository.updateProfile(
         name = name,
-        avatarUrl = avatarUrl
+        avatarUrl = avatarUrl,
+        appearance = appearance,
+        language = language
     )
 }

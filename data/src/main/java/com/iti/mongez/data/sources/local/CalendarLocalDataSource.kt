@@ -21,7 +21,10 @@ class CalendarLocalDataSource @Inject constructor(
             CalendarContract.Instances.BEGIN,
             CalendarContract.Instances.END,
             CalendarContract.Instances.EVENT_LOCATION,
-            CalendarContract.Instances.ALL_DAY
+            CalendarContract.Instances.ORGANIZER,
+            CalendarContract.Instances.OWNER_ACCOUNT,
+            CalendarContract.Calendars.ACCOUNT_TYPE,
+            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME
         )
 
         // Fetch events from 30 days ago to 90 days ahead
@@ -45,16 +48,37 @@ class CalendarLocalDataSource @Inject constructor(
                 val startIdx = cursor.getColumnIndex(CalendarContract.Instances.BEGIN)
                 val endIdx = cursor.getColumnIndex(CalendarContract.Instances.END)
                 val locationIdx = cursor.getColumnIndex(CalendarContract.Instances.EVENT_LOCATION)
-                val allDayIdx = cursor.getColumnIndex(CalendarContract.Instances.ALL_DAY)
+                val organizerIdx = cursor.getColumnIndex(CalendarContract.Instances.ORGANIZER)
+                val ownerIdx = cursor.getColumnIndex(CalendarContract.Instances.OWNER_ACCOUNT)
+                val accountTypeIdx = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE)
+                val calendarNameIdx = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)
 
                 while (cursor.moveToNext()) {
+                    val organizer = cursor.getString(organizerIdx)
+                    val owner = cursor.getString(ownerIdx)
+                    val accountType = cursor.getString(accountTypeIdx)
+                    val calendarName = cursor.getString(calendarNameIdx) ?: ""
+                    
+                    // Identify SYSTEM events (Holidays, Celebrations, etc.)
+                    val isHolidayAccount = accountType == "com.google.android.calendar.holiday"
+                    val isHolidayCalendar = calendarName.contains("Holiday", ignoreCase = true) || 
+                                           calendarName.contains("Celebration", ignoreCase = true)
+                    
+                    val eventType = if (isHolidayAccount || isHolidayCalendar) {
+                        "SYSTEM"
+                    } else if (organizer != null && owner != null && organizer.lowercase() == owner.lowercase()) {
+                        "CALENDAR"
+                    } else {
+                        "SYSTEM"
+                    }
+
                     events.add(
                         CalendarEvent(
                             title = cursor.getString(titleIdx) ?: "Untitled Event",
                             startTimeMillis = cursor.getLong(startIdx),
                             endTimeMillis = cursor.getLong(endIdx),
                             location = cursor.getString(locationIdx),
-                            isAllDay = cursor.getInt(allDayIdx) == 1
+                            type = eventType
                         )
                     )
                 }

@@ -5,5 +5,5 @@ data class CalendarEvent(
     val startTimeMillis: Long,
     val endTimeMillis: Long,
     val location: String?,
-    val isAllDay: Boolean
+    val type: String
 )

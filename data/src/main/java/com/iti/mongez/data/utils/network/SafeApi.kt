@@ -111,4 +111,4 @@ private fun Throwable.toDomainException(): AppException {
             cause = this
         )
     }
-}
+}
