@@ -5,9 +5,10 @@ import com.iti.mongez.data.mapper.toEntity
 import com.iti.mongez.data.dtos.HandshakeRequestDto
 import com.iti.mongez.data.local.dao.UserDao
 import com.iti.mongez.data.sources.local.TokenManager
-import com.iti.mongez.data.sources.remote.services.ApiService
+import com.iti.mongez.data.sources.remote.interfaces.AuthRemoteDataSource
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.remote.FirebaseAuthDataSource
+import com.iti.mongez.data.sources.remote.interfaces.UserRemoteDataSource
 import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.domain.core.Result
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuthDataSource: FirebaseAuthDataSource,
-    private val apiService: ApiService,
+    private val authRemoteDataSource: AuthRemoteDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource,
     private val tokenManager: TokenManager,
     private val userDao: UserDao,
     private val appSettingsRepository: AppSettingsRepository
@@ -52,10 +54,10 @@ class AuthRepositoryImpl @Inject constructor(
             tokenManager.saveToken(firebaseToken)
             println("Firebase Token : $firebaseToken")
             
-            val profile = apiService.getFullUserProfile()
+            val profile = userRemoteDataSource.getFullUserProfile()
             val request = buildHandshakeRequest(profile.name)
             
-            val response = apiService.handshake(request)
+            val response = authRemoteDataSource.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
@@ -72,7 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
             
             println("Firebase Token : $firebaseToken")
             val request = buildHandshakeRequest(firstName)
-            val response = apiService.handshake(request)
+            val response = authRemoteDataSource.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
@@ -86,7 +88,7 @@ class AuthRepositoryImpl @Inject constructor(
 
             val request = buildHandshakeRequest()
 
-            val response = apiService.handshake(request)
+            val response = authRemoteDataSource.handshake(request)
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user

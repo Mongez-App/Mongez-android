@@ -1,10 +1,5 @@
-package com.iti.mongez.feature.coursedetails.view
+package com.iti.mongez.presentation.coursedetails.view
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.OpenableColumns
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,24 +20,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -57,13 +45,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.iti.mongez.designsystem.components.button.AppButton
-import com.iti.mongez.designsystem.components.button.AppButtonVariant
 import com.iti.mongez.designsystem.components.button.AppGlowButton
+import com.iti.mongez.designsystem.components.chip.AppChip
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.menu.AppPopupMenu
 import com.iti.mongez.designsystem.components.menu.PopupMenuItem
@@ -71,23 +57,18 @@ import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
-import com.iti.mongez.designsystem.components.chip.AppChip
-import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.screens.courses.AppDocumentCard
 import com.iti.mongez.designsystem.screens.courses.AppTaskCard
 import com.iti.mongez.designsystem.screens.courses.CourseProgressCard
 import com.iti.mongez.designsystem.theme.Theme
-import com.iti.mongez.feature.coursedetails.viewmodel.CourseDetailsViewModel
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.coursedetails.components.EditCourseSheetContent
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsEffect
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
-import kotlinx.coroutines.Dispatchers
+import com.iti.mongez.presentation.coursedetails.utils.FilePickerHelper
+import com.iti.mongez.presentation.coursedetails.viewmodel.CourseDetailsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,62 +105,15 @@ fun CourseDetailsScreen(
                 // ... (keep your other CourseDetailsEffect cases like ShowSnackbar and NavigateBack)
 
                 is CourseDetailsEffect.OpenPdf -> {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        try {
-                            val rawUri = Uri.parse(effect.uriString)
-
-                            // 1. Convert restricted URIs (like content:// or file://) into safe FileProvider URIs
-                            val uriToShare: Uri = when (rawUri.scheme) {
-                                "content" -> {
-                                    // Copy the Storage Access Framework content to a temporary cache file
-                                    val inputStream = context.contentResolver.openInputStream(rawUri)
-                                    val tempFile = java.io.File(context.cacheDir, "temp_document.pdf")
-                                    val outputStream = java.io.FileOutputStream(tempFile)
-                                    inputStream?.copyTo(outputStream)
-                                    inputStream?.close()
-                                    outputStream.close()
-
-                                    // Generate a secure FileProvider URI (using the provider from your Manifest)
-                                    androidx.core.content.FileProvider.getUriForFile(
-                                        context,
-                                        "${context.packageName}.provider",
-                                        tempFile
-                                    )
-                                }
-                                "file" -> {
-                                    val file = java.io.File(rawUri.path ?: "")
-                                    androidx.core.content.FileProvider.getUriForFile(
-                                        context,
-                                        "${context.packageName}.provider",
-                                        file
-                                    )
-                                }
-                                else -> rawUri // Let http/https URLs pass through normally
-                            }
-
-                            // 2. Launch the Intent on the Main Thread
-                            kotlinx.coroutines.withContext(Dispatchers.Main) {
-                                val pdfIntent = Intent(Intent.ACTION_VIEW).apply {
-                                    setDataAndType(uriToShare, "application/pdf")
-                                    // This flag is critical for allowing Adobe to read the FileProvider URI
-                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-                                }
-                                context.startActivity(pdfIntent)
-                            }
-
-                        } catch (e: android.content.ActivityNotFoundException) {
-                            // ONLY show this message if the system truly cannot find a PDF viewer
-                            kotlinx.coroutines.withContext(Dispatchers.Main) {
-                                topSnackbarMessage = "No PDF viewer app found to open this document"
+                    coroutineScope.launch {
+                        com.iti.mongez.presentation.coursedetails.utils.PdfOpener.openPdf(
+                            context = context,
+                            uriString = effect.uriString,
+                            onError = { errorMessage ->
+                                topSnackbarMessage = errorMessage
                                 topSnackbarType = AppSnackbarType.Error
                             }
-                        } catch (e: Exception) {
-                            // Display the actual error for debugging if it's a security/IO issue
-                            kotlinx.coroutines.withContext(Dispatchers.Main) {
-                                topSnackbarMessage = "Failed to load document: ${e.localizedMessage}"
-                                topSnackbarType = AppSnackbarType.Error
-                            }
-                        }
+                        )
                     }
                 }
             }
@@ -193,47 +127,13 @@ fun CourseDetailsScreen(
         }
     }
 
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        uri?.let { selectedUri ->
-
-            // ADDED: Tell Android to permanently keep read access to this URI
-            try {
-                context.contentResolver.takePersistableUriPermission(
-                    selectedUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
-            } catch (e: SecurityException) {
-                e.printStackTrace() // Fallback if the specific provider doesn't allow persistable permissions
-            }
-
-            coroutineScope.launch(Dispatchers.IO) {
-                val contentResolver = context.contentResolver
-                val mimeType = contentResolver.getType(selectedUri) ?: "application/pdf"
-
-                var fileName = "document.pdf"
-                var fileSize = 0L
-
-                contentResolver.query(selectedUri, null, null, null, null)?.use { cursor ->
-                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                    if (cursor.moveToFirst()) {
-                        fileName = cursor.getString(nameIndex)
-                        fileSize = cursor.getLong(sizeIndex)
-                    }
-                }
-
-                val inputStream = contentResolver.openInputStream(selectedUri)
-                val bytes = inputStream?.readBytes() ?: ByteArray(0)
-                inputStream?.close()
-
-                if (bytes.isNotEmpty()) {
-                    viewModel.uploadFile(fileName, mimeType, fileSize, 1, bytes, deviceFileUri = selectedUri.toString())
-                }
-            }
+    val filePickerLauncher = FilePickerHelper.rememberFilePickerLauncher(
+        context = context,
+        coroutineScope = coroutineScope,
+        onFileSelected = { fileName, mimeType, fileSize, bytes, uriString ->
+            viewModel.uploadFile(fileName, mimeType, fileSize, 1, bytes, deviceFileUri = uriString)
         }
-    }
+    )
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -478,7 +378,7 @@ fun CourseDetailsScreen(
                                         modifier = Modifier.padding(bottom = Theme.spacing.sm)
                                     )
                                 }
-                                items(upcomingTasks, key = { it.id }) { task ->
+                                items(upcomingTasks) { task ->
                                     AppTaskCard(
                                         title = task.title,
                                         duration = task.duration,
@@ -571,114 +471,6 @@ fun CourseDetailsScreen(
                     type = topSnackbarType
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditCourseSheetContent(
-    initialName: String,
-    initialImageUrl: String,
-    courseCode: String,
-    startDateIso: String,
-    examDateIso: String,
-    courseUrl: String,
-    isOnline: Boolean,
-    isLoading: Boolean,
-    onCancel: () -> Unit,
-    onSave: (name: String, imageUrl: String) -> Unit
-) {
-    var courseName by remember { mutableStateOf(initialName) }
-    var imageUrl by remember { mutableStateOf(initialImageUrl) }
-
-    fun formatIsoToUi(isoString: String): String {
-        return try {
-            val instant = Instant.parse(isoString)
-            instant.atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-        } catch (e: Exception) {
-            isoString
-        }
-    }
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing.lg)
-    ) {
-        // Editable fields
-        AppTextField(
-            value = courseName,
-            onValueChange = { courseName = it },
-            label = stringResource(R.string.label_course_name),
-            placeholder = stringResource(R.string.hint_course_name),
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words
-            )
-        )
-
-        AppTextField(
-            value = imageUrl,
-            onValueChange = { imageUrl = it },
-            label = "Course Image URL",
-            placeholder = "https://..."
-        )
-
-        // Read-only fields
-        if (isOnline) {
-            AppTextField(
-                value = courseUrl,
-                onValueChange = {},
-                label = stringResource(R.string.label_course_url),
-                readOnly = true,
-                placeholder = "https://..."
-            )
-        }
-
-        AppTextField(
-            value = courseCode,
-            onValueChange = {},
-            label = stringResource(R.string.label_course_code),
-            readOnly = true
-        )
-
-        AppTextField(
-            value = formatIsoToUi(startDateIso),
-            onValueChange = {},
-            label = stringResource(R.string.label_start_date),
-            readOnly = true
-        )
-
-        AppTextField(
-            value = formatIsoToUi(examDateIso),
-            onValueChange = {},
-            label = stringResource(R.string.label_exam_date),
-            readOnly = true
-        )
-
-        Spacer(modifier = Modifier.height(Theme.spacing.md))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextButton(
-                onClick = onCancel,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(R.string.action_cancel),
-                    color = Theme.colorScheme.text.secondary
-                )
-            }
-
-            AppButton(
-                text = "Save Changes",
-                onClick = { onSave(courseName, imageUrl) },
-                modifier = Modifier.weight(1f),
-                variant = AppButtonVariant.Primary,
-                isLoading = isLoading
-            )
         }
     }
 }

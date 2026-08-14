@@ -6,7 +6,7 @@ import com.iti.mongez.data.dtos.coursesdtos.UpdateCourseRequestDto
 import com.iti.mongez.domain.core.Result
 import com.iti.mongez.data.mapper.toDomain
 import com.iti.mongez.data.network.safeApi
-import com.iti.mongez.data.sources.remote.services.CoursesApiService
+import com.iti.mongez.data.sources.remote.interfaces.CoursesRemoteDataSource
 import com.iti.mongez.domain.core.Alert
 import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.domain.courses.model.CourseCreationResult
@@ -19,15 +19,19 @@ import okhttp3.RequestBody
 import javax.inject.Inject
 
 class CoursesRepositoryImpl @Inject constructor(
-    private val apiService: CoursesApiService
+    private val remoteDataSource: CoursesRemoteDataSource
 ) : CoursesRepository {
 
     override suspend fun getCourses(): Result<List<Course>> = safeApi {
-        apiService.getCourses().map { it.toDomain() }
+        remoteDataSource.getCourses().map { it.toDomain() }
     }
 
     override suspend fun getCourseDetails(courseId: String): Result<Course> = safeApi {
-        apiService.getCourseDetails(courseId).toDomain()
+        remoteDataSource.getCourseDetails(courseId).toDomain()
+    }
+
+    override suspend fun getCourseTasks(courseId: String): Result<List<com.iti.mongez.domain.courses.model.CourseTask>> = safeApi {
+        remoteDataSource.getCourseTasks(courseId).map { it.toDomain() }
     }
 
     override suspend fun createCourse(
@@ -49,22 +53,22 @@ class CoursesRepositoryImpl @Inject constructor(
             materialUrl = materialUrl
         )
 
-        val response = apiService.createCourse(request)
+        val response = remoteDataSource.createCourse(request)
         response.toDomain()
     }
 
     override suspend fun updateCourse(courseId: String, name: String, imageUrl: String, isHidden: Boolean): Result<CourseActionResponse<Course>> = safeApi {
-        val response = apiService.updateCourse(courseId, UpdateCourseRequestDto(name, imageUrl, isHidden))
+        val response = remoteDataSource.updateCourse(courseId, UpdateCourseRequestDto(name, imageUrl, isHidden))
         CourseActionResponse(data = response.toDomain(), alert = null)
     }
 
     override suspend fun deleteCourse(courseId: String): Result<CourseActionResponse<Unit>> = safeApi {
-        val response = apiService.deleteCourse(courseId)
+        val response = remoteDataSource.deleteCourse(courseId)
         CourseActionResponse(data = Unit, alert = response.alert?.let { Alert(it.message.orEmpty()) })
     }
 
     override suspend fun getCourseMaterials(courseId: String): Result<List<CourseMaterial>> = safeApi {
-        apiService.getCourseMaterials(courseId).map { it.toDomain() }
+        remoteDataSource.getCourseMaterials(courseId).map { it.toDomain() }
     }
 
     override suspend fun uploadCourseMaterial(
@@ -74,8 +78,8 @@ class CoursesRepositoryImpl @Inject constructor(
         fileSizeBytes: Long,
         pageCount: Int,
         fileBytes: ByteArray,
-        deviceFileUri: String? // ADDED THIS LINE
-    ): Result<CourseActionResponse<Unit>> = safeApi { // ADDED safeApi {
+        deviceFileUri: String?
+    ): Result<CourseActionResponse<Unit>> = safeApi {
 
         // Step 1: Upload metadata
         val metadataRequest = MaterialUploadRequestDto(
@@ -85,7 +89,7 @@ class CoursesRepositoryImpl @Inject constructor(
             pageCount = pageCount,
             deviceFileUri = deviceFileUri
         )
-        val metadataResponse = apiService.createMaterialMetadata(courseId, metadataRequest)
+        val metadataResponse = remoteDataSource.createMaterialMetadata(courseId, metadataRequest)
 
         val materialId = metadataResponse.materialId
             ?: throw IllegalStateException("Material ID was not returned by the server.")
@@ -95,7 +99,7 @@ class CoursesRepositoryImpl @Inject constructor(
         val requestBody = RequestBody.create(mediaType, fileBytes)
         val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody)
 
-        val uploadResult = apiService.uploadMaterialFile(materialId, multipartBody)
+        val uploadResult = remoteDataSource.uploadMaterialFile(materialId, multipartBody)
 
         CourseActionResponse(
             data = Unit,
@@ -104,7 +108,7 @@ class CoursesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteCourseMaterial(courseId: String, materialId: String): Result<CourseActionResponse<Unit>> = safeApi {
-        val response = apiService.deleteMaterial(courseId, materialId)
+        val response = remoteDataSource.deleteMaterial(courseId, materialId)
         CourseActionResponse(data = Unit, alert = response.alert?.let { Alert(it.message.orEmpty()) })
     }
 }
