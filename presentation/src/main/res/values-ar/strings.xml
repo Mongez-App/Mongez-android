@@ -284,4 +284,10 @@
     <string name="label_course_url">رابط المقرر</string>
     <string name="no_courses_dialog_title">لا توجد مقررات مضافة</string>
     <string name="no_courses_dialog_description">تحتاج إلى إضافة مقرر واحد على الأقل إلى خطتك الدراسية قبل أن تتمكن من تصفية خارطة الطريق أو إضافة أحداث.</string>
+    <string name="courses">المقررات</string>
+    <string name="events">الأحداث</string>
+    <string name="search_courses">البحث عن المقررات</string>
+    <string name="no_courses_found">لم يتم العثور على مقررات</string>
+    <string name="no_events_found">لم يتم العثور على أحداث</string>
+
 </resources>

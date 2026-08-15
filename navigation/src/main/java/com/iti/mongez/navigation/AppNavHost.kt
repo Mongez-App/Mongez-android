@@ -26,6 +26,7 @@ import com.iti.mongez.presentation.studyroom.view.StudyRoomScreen
 import com.iti.mongez.domain.settings.model.AppSettings
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import com.iti.mongez.presentation.dashboard.AllTasksScreen
+import com.iti.mongez.presentation.teamcourses.view.TrackDetailsScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -140,6 +141,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
                     },
+                    onNavigateToReadOnlyCourseDetails = { courseId ->
+                        backStack.add(AppRoute.CourseDetails(courseId, allowEditing = false, showUploadMaterial = false))
+                    },
                     onNavigateToStudyRoom = { taskId, title ->
                         backStack.add(AppRoute.StudyRoom(taskId, title))
                     },
@@ -179,7 +183,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     },
                     onNavigateToStudyRoom = { taskId, title ->
                         backStack.add(AppRoute.StudyRoom(taskId, title))
-                    }
+                    },
+                    allowEditing = key.allowEditing,
+                    showUploadMaterial = key.showUploadMaterial
                 )
             }
             is AppRoute.StudyRoom -> NavEntry(key) {
@@ -200,6 +206,16 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToStudyRoom = { taskId, title ->
                         // Pass navigation to the Study Room directly from the All Tasks screen
                         backStack.add(AppRoute.StudyRoom(taskId, title))
+                    }
+                )
+            }
+            is AppRoute.TrackDetails -> NavEntry(AppRoute.TrackDetails) {
+                TrackDetailsScreen(
+                    onNavigateBack = {
+                        backStack.remove(key)
+                    },
+                    onNavigateToCourse = { courseId ->
+                        backStack.add(AppRoute.CourseDetails(courseId, allowEditing = false, showUploadMaterial = false))
                     }
                 )
             }

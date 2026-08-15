@@ -2,25 +2,22 @@ package com.iti.mongez.presentation.courses.view
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import coil.compose.rememberAsyncImagePainter
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
 import com.iti.mongez.designsystem.components.fab.AppFab
 import com.iti.mongez.designsystem.components.search.AppSearchBar
 import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
-import com.iti.mongez.designsystem.screens.courses.CourseCard
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.courses.contract.CoursesIntent
 import com.iti.mongez.presentation.courses.components.AddCourseSheetContent
+import com.iti.mongez.presentation.courses.components.CoursesList
 import com.iti.mongez.presentation.courses.uiState.CoursesState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,22 +81,11 @@ fun CoursesScreenContent(
                         )
                     }
                 } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(Theme.spacing.lg),
-                        contentPadding = PaddingValues(bottom = Theme.spacing.giant + Theme.spacing.lg)
-                    ) {
-                        items(state.filteredCourses, key = { it.id }) { course ->
-                            Box(modifier = Modifier.fillMaxWidth().animateItem()) {
-                                CourseCard(
-                                    title = course.name,
-                                    progress = course.completionPercentage / 100f,
-                                    onClick = { onCourseClick(course.id) },
-                                    imagePainter = rememberAsyncImagePainter(course.imageUrl?.takeIf { it.isNotBlank() } ?: "https://www.atmajaya.ac.id/en/media/coursera.png")
-                                )
-                            }
-                        }
-                    }
+                    CoursesList(
+                        courses = state.filteredCourses,
+                        onCourseClick = onCourseClick,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
 

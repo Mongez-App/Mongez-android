@@ -24,6 +24,11 @@ enum class MainTab(
         R.drawable.ic_roadmap_filled,
         R.drawable.ic_roadmap_unfilled
     ),
+    Track(
+        R.string.add_event_create, // Ensure this string resource exists (e.g., "Track")
+        R.drawable.ic_courses_filled, // Replace with your track icon
+        R.drawable.ic_courses_unfilled
+    ),
 
     Profile(
         R.string.nav_profile,

@@ -31,6 +31,7 @@ import com.iti.mongez.presentation.dashboard.TaskItem
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
+import com.iti.mongez.presentation.teamcourses.view.TrackDetailsScreen
 
 /**
  * Represents the tabs available in the main bottom navigation.
@@ -44,6 +45,7 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToReadOnlyCourseDetails: (String) -> Unit = onNavigateToCourseDetails,
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit
@@ -122,6 +124,7 @@ fun MainScreen(
             innerPadding = innerPadding,
             onNavigateToPreferences = onNavigateToPreferences,
             onNavigateToCourseDetails = onNavigateToCourseDetails,
+            onNavigateToReadOnlyCourseDetails = onNavigateToReadOnlyCourseDetails,
             onNavigateToStudyRoom = onNavigateToStudyRoom,
             onNavigateToLogin = onNavigateToLogin,
             onNavigateToAllTasks = onNavigateToAllTasks,
@@ -142,6 +145,7 @@ private fun MainScreenContent(
     innerPadding: PaddingValues,
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
+    onNavigateToReadOnlyCourseDetails: (String) -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit,
@@ -174,6 +178,12 @@ private fun MainScreenContent(
                 innerPadding = innerPadding,
                 onNavigateToCourses = onNavigateToCourses,
                 onShowSnackBar = onShowSnackBar
+            )
+        }
+        MainTab.Track -> {
+            TrackDetailsScreen(
+                onNavigateBack = { /* Optional: switch tab or handle back */ },
+                onNavigateToCourse = onNavigateToReadOnlyCourseDetails
             )
         }
 
