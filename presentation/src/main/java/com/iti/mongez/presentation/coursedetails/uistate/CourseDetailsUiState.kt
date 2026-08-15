@@ -15,8 +15,10 @@ data class DocumentItem(
 
 data class TaskItem(
     val id: String,
+    val courseId: String,
     val title: String,
     val duration: String,
+    val durationMinutes: Int,
     val priority: String, // HIGH, MEDIUM, LOW
     val isCompleted: Boolean,
     val isToday: Boolean

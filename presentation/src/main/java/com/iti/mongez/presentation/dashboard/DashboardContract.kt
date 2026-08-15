@@ -13,8 +13,10 @@ data class FocusItem(
 
 data class TaskItem(
     val id: String,
+    val courseId: String,
     val title: String,
     val duration: String,
+    val durationMinutes: Int,
     val priority: TaskPriority,
     val isCompleted: Boolean
 )

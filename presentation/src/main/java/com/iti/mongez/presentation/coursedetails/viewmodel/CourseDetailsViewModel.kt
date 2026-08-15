@@ -100,8 +100,10 @@ class CourseDetailsViewModel @Inject constructor(
                     allTasks = tasksResult.data.map { task ->
                         TaskItem(
                             id = task.id,
+                            courseId = this@CourseDetailsViewModel.courseId,
                             title = task.title,
                             duration = "${task.durationMinutes} min",
+                            durationMinutes = task.durationMinutes,
                             priority = task.priority,
                             isCompleted = task.isCompleted,
                             isToday = task.scheduledDate == java.time.LocalDate.now().toString()
@@ -150,10 +152,8 @@ class CourseDetailsViewModel @Inject constructor(
     fun processIntent(intent: CourseDetailsIntent) {
         when (intent) {
             is CourseDetailsIntent.LoadCourse -> {
-                if (this.courseId != intent.courseId) {
-                    this.courseId = intent.courseId
-                    loadCourseData()
-                }
+                this.courseId = intent.courseId
+                loadCourseData()
             }
             is CourseDetailsIntent.SelectTab -> _uiState.update { it.copy(selectedTabIndex = intent.index) }
             is CourseDetailsIntent.ClickDocument -> openDocument(intent.documentId) // CONNECTED HERE

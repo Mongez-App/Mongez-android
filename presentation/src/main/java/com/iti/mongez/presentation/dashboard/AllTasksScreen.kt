@@ -26,7 +26,7 @@ import com.iti.mongez.presentation.R
 fun AllTasksScreen(
     tasks: List<TaskItem>,
     onNavigateBack: () -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit,
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
 ) {
     var selectedFilterIndex by remember { mutableStateOf(0) }
     val filters = listOf("All", "Pending", "Completed", "High", "Medium", "Low")
@@ -133,7 +133,7 @@ fun AllTasksScreen(
                             priority = task.priority,
                             isCompleted = task.isCompleted,
                             onClick = {
-                                onNavigateToStudyRoom(task.id, task.title)
+                                onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
                             }
                         )
                     }

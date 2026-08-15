@@ -45,7 +45,7 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit,
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit
 ) {
@@ -143,7 +143,7 @@ private fun MainScreenContent(
     innerPadding: PaddingValues,
     onNavigateToPreferences: () -> Unit,
     onNavigateToCourseDetails: (String) -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit,
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAllTasks: (List<TaskItem>) -> Unit,
     onNavigateToCourses: () -> Unit,

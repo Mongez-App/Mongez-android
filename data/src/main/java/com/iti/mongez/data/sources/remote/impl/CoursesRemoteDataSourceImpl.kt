@@ -52,7 +52,7 @@ class CoursesRemoteDataSourceImpl @Inject constructor(
         return coursesApiService.addCourseEvent(courseId, request)
     }
 
-    override suspend fun getCourseTasks(courseId: String): List<CourseTaskDto> {
+    override suspend fun getCourseTasks(courseId: String): CourseTasksResponseDto {
         return tasksApiService.getCourseTasks(courseId)
     }
 }

@@ -32,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.iti.mongez.designsystem.components.button.AppGlowButton
 import com.iti.mongez.designsystem.components.chip.AppChip
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
@@ -69,6 +71,7 @@ import com.iti.mongez.presentation.coursedetails.utils.FilePickerHelper
 import com.iti.mongez.presentation.coursedetails.viewmodel.CourseDetailsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +79,7 @@ fun CourseDetailsScreen(
     courseId: String,
     viewModel: CourseDetailsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -88,8 +91,18 @@ fun CourseDetailsScreen(
     var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
     var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
 
-    LaunchedEffect(courseId) {
-        viewModel.processIntent(CourseDetailsIntent.LoadCourse(courseId))
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner, courseId) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                viewModel.processIntent(CourseDetailsIntent.LoadCourse(courseId))
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -122,7 +135,7 @@ fun CourseDetailsScreen(
 
     LaunchedEffect(topSnackbarMessage) {
         if (topSnackbarMessage != null) {
-            delay(3000L)
+            delay(3000L.milliseconds)
             topSnackbarMessage = null
         }
     }
@@ -361,7 +374,7 @@ fun CourseDetailsScreen(
                                         priority = task.priority,
                                         isCompleted = task.isCompleted,
                                         onClick = {
-                                            onNavigateToStudyRoom(task.id, task.title)
+                                            onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
                                         }
                                     )
                                 }
@@ -385,7 +398,7 @@ fun CourseDetailsScreen(
                                         priority = task.priority,
                                         isCompleted = task.isCompleted,
                                         onClick = {
-                                            onNavigateToStudyRoom(task.id, task.title)
+                                            onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
                                         }
                                     )
                                 }

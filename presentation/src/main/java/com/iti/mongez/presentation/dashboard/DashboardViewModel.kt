@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
-import com.iti.mongez.domain.core.Result
 import com.iti.mongez.domain.dashboard.usecase.GetDashboardDataUseCase
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.presentation.R
@@ -82,8 +81,10 @@ class DashboardViewModel @Inject constructor(
                         tasks = summary.tasks.map { task ->
                             TaskItem(
                                 id = task.id,
+                                courseId = task.courseId,
                                 title = task.title,
                                 duration = "${task.durationMinutes} min",
+                                durationMinutes = task.durationMinutes,
                                 priority = try {
                                     TaskPriority.valueOf(task.priority.uppercase())
                                 } catch (e: Exception) {

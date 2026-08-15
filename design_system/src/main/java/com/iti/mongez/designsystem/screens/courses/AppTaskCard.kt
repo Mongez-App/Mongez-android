@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -44,12 +45,14 @@ fun AppTaskCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp),
+            .height(80.dp)
+            .then(if (isCompleted) Modifier.alpha(0.5f) else Modifier),
         shape = RoundedCornerShape(Theme.radius.lg),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colorScheme.surface.background
         ),
         border = BorderStroke(1.dp, Theme.colorScheme.surface.surfaceHigh),
+        enabled = !isCompleted,
         onClick = onClick
     ) {
         Row(

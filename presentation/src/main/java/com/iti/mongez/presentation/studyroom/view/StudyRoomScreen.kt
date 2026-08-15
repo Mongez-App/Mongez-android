@@ -1,5 +1,6 @@
 package com.iti.mongez.presentation.studyroom.view
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iti.mongez.designsystem.R
 import com.iti.mongez.designsystem.components.button.AppGlowIconButton
+import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.studyroom.components.ChatBubble
@@ -38,25 +40,36 @@ data class ChatMessage(val text: String, val isUser: Boolean)
 fun StudyRoomScreen(
     taskId: String,
     title: String,
+    courseId: String,
+    durationMinutes: Int,
     onNavigateBack: () -> Unit,
     viewModel: StudyRoomViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(taskId, title) {
-        viewModel.handleIntent(StudyRoomIntent.Initialize(taskId, title))
+    LaunchedEffect(taskId, title, courseId, durationMinutes) {
+        viewModel.handleIntent(StudyRoomIntent.Initialize(taskId, title, courseId, durationMinutes))
     }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 is StudyRoomEffect.NavigateBack -> onNavigateBack()
+                is StudyRoomEffect.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
             }
         }
     }
 
+    BackHandler {
+        viewModel.handleIntent(StudyRoomIntent.ShowEndSessionDialog(true))
+    }
+
     StudyRoomContent(
         state = state,
+        snackbarHostState = snackbarHostState,
         onIntent = viewModel::handleIntent
     )
 }
@@ -64,6 +77,7 @@ fun StudyRoomScreen(
 @Composable
 fun StudyRoomContent(
     state: StudyRoomState,
+    snackbarHostState: SnackbarHostState,
     onIntent: (StudyRoomIntent) -> Unit
 ) {
     val minutes = (state.timeRemaining / 60).toString().padStart(2, '0')
@@ -71,7 +85,16 @@ fun StudyRoomContent(
     val timeString = "$minutes:$seconds"
 
     Scaffold(
+        modifier = Modifier.imePadding(),
         containerColor = Theme.colorScheme.surface.background,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
+                AppSnackbarContent(
+                    message = snackbarData.visuals.message,
+                    type = com.iti.mongez.designsystem.components.snackbar.AppSnackbarType.Success
+                )
+            }
+        },
         bottomBar = {
             // Chat Input Area
             Row(
@@ -210,7 +233,7 @@ fun StudyRoomContent(
                         )
                         Spacer(modifier = Modifier.width(Theme.spacing.xs))
                         Text(
-                            text = "25:00",
+                            text = String.format("%02d:%02d", state.totalDurationSeconds / 60, state.totalDurationSeconds % 60),
                             style = Theme.typography.label.large.copy(fontWeight = FontWeight.Bold),
                             color = Theme.colorScheme.text.primary
                         )
@@ -245,7 +268,7 @@ fun StudyRoomContent(
     if (state.showEndSessionDialog) {
         EndSessionDialog(
             onDismiss = { onIntent(StudyRoomIntent.ShowEndSessionDialog(false)) },
-            onEndSession = { onIntent(StudyRoomIntent.EndSession) }
+            onEndSession = { onIntent(StudyRoomIntent.EndSession(state.timeRemaining == 0)) }
         )
     }
 }
@@ -256,6 +279,7 @@ fun StudyRoomScreenPreview() {
     MongezTheme {
         StudyRoomContent(
             state = StudyRoomState(title = "Dynamic Programming"),
+            snackbarHostState = remember { SnackbarHostState() },
             onIntent = {}
         )
     }

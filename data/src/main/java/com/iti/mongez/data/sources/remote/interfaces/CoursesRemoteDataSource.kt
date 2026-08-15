@@ -14,5 +14,5 @@ interface CoursesRemoteDataSource {
     suspend fun uploadMaterialFile(materialId: String, file: MultipartBody.Part): FileUploadResponseDto
     suspend fun deleteMaterial(courseId: String, materialId: String): ActionStatusResponseDto
     suspend fun addCourseEvent(courseId: String, request: AddEventRequestDto): AddEventResponseDto
-    suspend fun getCourseTasks(courseId: String): List<CourseTaskDto>
+    suspend fun getCourseTasks(courseId: String): CourseTasksResponseDto
 }

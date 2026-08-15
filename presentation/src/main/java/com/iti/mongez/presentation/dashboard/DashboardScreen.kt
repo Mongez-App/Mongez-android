@@ -48,7 +48,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     onNavigateToFocus: () -> Unit,
     onViewAllDeadlines: () -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit,
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
     onViewAllTasks: (List<TaskItem>) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
@@ -231,7 +231,7 @@ fun DashboardScreen(
                                 priority = task.priority,
                                 isCompleted = task.isCompleted,
                                 onClick = {
-                                    onNavigateToStudyRoom(task.id, task.title)
+                                    onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
                                 }
                             )
                         }

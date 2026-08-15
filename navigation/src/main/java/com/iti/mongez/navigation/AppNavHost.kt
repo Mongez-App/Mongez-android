@@ -140,8 +140,8 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
                     },
-                    onNavigateToStudyRoom = { taskId, title ->
-                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                    onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
                     },
                     onNavigateToLogin = {
                         backStack.clear()
@@ -177,8 +177,8 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateBack = {
                         backStack.remove(key)
                     },
-                    onNavigateToStudyRoom = { taskId, title ->
-                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                    onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
                     }
                 )
             }
@@ -186,6 +186,8 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                 StudyRoomScreen(
                     taskId = key.taskId,
                     title = key.title,
+                    courseId = key.courseId,
+                    durationMinutes = key.durationMinutes,
                     onNavigateBack = {
                         backStack.remove(key)
                     }
@@ -197,9 +199,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateBack = {
                         backStack.remove(key)
                     },
-                    onNavigateToStudyRoom = { taskId, title ->
+                    onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
                         // Pass navigation to the Study Room directly from the All Tasks screen
-                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                        backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
                     }
                 )
             }

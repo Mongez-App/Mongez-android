@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
@@ -86,8 +87,9 @@ fun AppTaskCard(
                 color = Theme.colorScheme.text.disabled,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable { onClick() }
-            .padding(16.dp), // 16px padding inside the card
+            .clickable(enabled = !isCompleted) { onClick() }
+            .padding(16.dp) // 16px padding inside the card
+            .then(if (isCompleted) Modifier.alpha(0.5f) else Modifier),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp) // 16px gap between check and text
     ) {
