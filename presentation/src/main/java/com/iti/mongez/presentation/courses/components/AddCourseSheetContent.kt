@@ -35,6 +35,8 @@ import com.iti.mongez.designsystem.screens.courses.AppUploadBox
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.utils.getFileInfo
+import androidx.compose.ui.tooling.preview.Preview
+import com.iti.mongez.designsystem.theme.MongezTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -341,5 +343,27 @@ fun AddCourseSheetContent(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AddCourseSheetContentPreview() {
+    MongezTheme {
+        AddCourseSheetContent(
+            isLoading = false,
+            onAddCourse = { _, _, _, _, _, _, _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AddCourseSheetContentDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        AddCourseSheetContent(
+            isLoading = false,
+            onAddCourse = { _, _, _, _, _, _, _, _ -> }
+        )
     }
 }

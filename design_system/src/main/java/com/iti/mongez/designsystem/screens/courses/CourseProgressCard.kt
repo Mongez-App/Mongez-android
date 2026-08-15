@@ -11,9 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
 @Composable
@@ -76,7 +79,46 @@ fun CourseProgressCard(
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp)),
                 color = Theme.colorScheme.brand.onPrimary,
-                trackColor = Theme.colorScheme.brand.onPrimary.copy(alpha = 0.3f)
+                trackColor = Theme.colorScheme.brand.onPrimary.copy(alpha = 0.3f),
+                strokeCap = StrokeCap.Round,
+                gapSize = 0.dp,
+                drawStopIndicator = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Course Progress Card - Light Mode")
+@Composable
+private fun CourseProgressCardPreview() {
+    MongezTheme(darkTheme = false) {
+        Box(
+            modifier = Modifier
+                .background(Theme.colorScheme.surface.background)
+                .padding(Theme.spacing.xl)
+        ) {
+            CourseProgressCard(
+                completedTasks = 8,
+                totalTasks = 10,
+                percentage = 80
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Course Progress Card - Dark Mode")
+@Composable
+private fun CourseProgressCardDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        Box(
+            modifier = Modifier
+                .background(Theme.colorScheme.surface.background)
+                .padding(Theme.spacing.xl)
+        ) {
+            CourseProgressCard(
+                completedTasks = 4,
+                totalTasks = 10,
+                percentage = 40
             )
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -64,6 +65,7 @@ fun AppNavigationBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .padding(horizontal = Theme.spacing.xl, vertical = Theme.radius.xxl)
             .mongezShadow(
                 color = Theme.colorScheme.brand.primary.copy(alpha = 0.58f),
@@ -101,7 +103,7 @@ fun AppNavigationBar(
                     Icon(
                         painter = painterResource(id = if (isSelected) item.selectedIcon else item.unselectedIcon),
                         contentDescription = item.contentDescription,
-                        tint = if (isSelected) Theme.colorScheme.navigation.activeIcon else Theme.colorScheme.navigation.inactiveIcon,
+                        tint = if (isSelected) Theme.colorScheme.brand.primary else Theme.colorScheme.navigation.inactiveIcon,
                         modifier = Modifier.size(Theme.spacing.xl)
                     )
 
@@ -113,7 +115,7 @@ fun AppNavigationBar(
                             .size(Theme.spacing.xs)
                             .clip(CircleShape)
                             .background(
-                                color = if (isSelected) Theme.colorScheme.navigation.activeIcon else Color.Transparent
+                                color = if (isSelected) Theme.colorScheme.brand.primary else Color.Transparent
                             )
                     )
                 }

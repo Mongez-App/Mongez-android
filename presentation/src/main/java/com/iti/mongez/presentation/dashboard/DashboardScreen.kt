@@ -15,16 +15,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -36,6 +37,7 @@ import com.iti.mongez.designsystem.components.section.AppSectionHeader
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.screens.dashboard.*
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import kotlinx.coroutines.delay
@@ -87,6 +89,25 @@ fun DashboardScreen(
         }
     }
 
+    DashboardContent(
+        state = state,
+        innerPadding = innerPadding,
+        topSnackbarMessageRes = topSnackbarMessageRes,
+        topSnackbarType = topSnackbarType,
+        onEvent = viewModel::onEvent,
+        onNavigateToStudyRoom = onNavigateToStudyRoom
+    )
+}
+
+@Composable
+private fun DashboardContent(
+    state: DashboardUiState,
+    innerPadding: PaddingValues,
+    topSnackbarMessageRes: Int?,
+    topSnackbarType: AppSnackbarType?,
+    onEvent: (DashboardEvent) -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
+) {
     Box(modifier = Modifier.fillMaxSize().background(Theme.colorScheme.surface.background)) {
 
         if (state.isLoading) {
@@ -125,8 +146,8 @@ fun DashboardScreen(
                                 // Removed the welcome message line & Text Truncation to let long names wrap natively
                                 Text(
                                     text = state.userName,
-                                    style = Theme.typography.title.large,
-                                    fontWeight = FontWeight.Bold,
+                                    style = Theme.typography.body.large,
+                                    fontWeight = FontWeight.Medium,
                                     color = Theme.colorScheme.text.primary
                                 )
 
@@ -157,7 +178,7 @@ fun DashboardScreen(
                                 topic = focus.courseName,
                                 duration = focus.durationText,
                                 imagePainter = null, // Will automatically display initials like "DS" on translucent background
-                                onStartClick = { viewModel.onEvent(DashboardEvent.OnStartFocusClicked) }
+                                onStartClick = { onEvent(DashboardEvent.OnStartFocusClicked) }
                             )
                         }
                     }
@@ -194,7 +215,7 @@ fun DashboardScreen(
                     AppSectionHeader(
                         title = stringResource(R.string.dashboard_todays_tasks),
                         actionText = if (state.tasks.size > tasksToShow.size) stringResource(R.string.dashboard_view_all) else "",
-                        onAction = { viewModel.onEvent(DashboardEvent.OnViewAllTasksClicked) },
+                        onAction = { onEvent(DashboardEvent.OnViewAllTasksClicked) },
                         modifier = Modifier.padding(horizontal = Theme.spacing.xl)
                     )
                 }
@@ -242,7 +263,7 @@ fun DashboardScreen(
                     AppSectionHeader(
                         title = stringResource(R.string.dashboard_upcoming_deadlines),
                         actionText = if (state.deadlines.isNotEmpty()) stringResource(R.string.dashboard_view_all) else "",
-                        onAction = { viewModel.onEvent(DashboardEvent.OnViewAllDeadlinesClicked) },
+                        onAction = { onEvent(DashboardEvent.OnViewAllDeadlinesClicked) },
                         modifier = Modifier.padding(horizontal = Theme.spacing.xl)
                     )
                 }
@@ -371,6 +392,48 @@ fun DashboardShimmerLoading(innerPadding: PaddingValues) {
         ) {
             AppShimmer(height = 76.dp, modifier = Modifier.fillMaxWidth())
             AppShimmer(height = 76.dp, modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DashboardScreenPreview() {
+    val sampleState = DashboardUiState(
+        userName = "Abdullah Mohamed",
+        streakCount = 5,
+        isStreakActive = true,
+        todayFocus = FocusItem(
+            courseId = "1",
+            courseName = "Data Structures",
+            durationText = "2h 30m"
+        ),
+        goals = listOf(
+            GoalItem(R.string.dashboard_daily_goal, 2, 4, R.string.hours, GoalType.DAILY),
+            GoalItem(R.string.dashboard_weekly_goal, 15, 20, R.string.hours, GoalType.WEEKLY)
+        ),
+        tasks = listOf(
+            TaskItem("1", "Study Linked Lists", "1h", TaskPriority.HIGH, false),
+            TaskItem("2", "Review Recursion", "30m", TaskPriority.MEDIUM, true),
+            TaskItem("3", "Practice Sorting", "1h 30m", TaskPriority.LOW, false)
+        ),
+        deadlines = listOf(
+            DeadlineItem("1", "Algorithms", "Assignment", "2 days left", true),
+            DeadlineItem("2", "Database", "Project", "5 days left", false)
+        ),
+        aiSuggestionText = "Try focusing on Data Structures today to stay ahead of your schedule!"
+    )
+
+    MongezTheme {
+        Surface(color = Theme.colorScheme.surface.background) {
+            DashboardContent(
+                state = sampleState,
+                innerPadding = PaddingValues(0.dp),
+                topSnackbarMessageRes = null,
+                topSnackbarType = null,
+                onEvent = {},
+                onNavigateToStudyRoom = { _, _ -> }
+            )
         }
     }
 }

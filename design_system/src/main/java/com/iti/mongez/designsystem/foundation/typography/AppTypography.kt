@@ -70,9 +70,9 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
             ),
             small = TextStyle(
                 fontFamily = fontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 32.sp,
-                lineHeight = 40.sp,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                lineHeight = 23.sp,
             ),
         ),
         headline = HeadlineTypography(
@@ -84,7 +84,7 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
             ),
             medium = TextStyle(
                 fontFamily = fontFamily,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 lineHeight = 32.sp,
             ),
@@ -100,7 +100,7 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
-                lineHeight = 28.sp,
+                lineHeight = 20.sp,
             ),
             medium = TextStyle(
                 fontFamily = fontFamily,
@@ -110,9 +110,9 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
             ),
             small = TextStyle(
                 fontFamily = fontFamily,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                lineHeight = 24.sp,
+                lineHeight = 20.sp,
             ),
         ),
         body = BodyTypography(
@@ -120,13 +120,13 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
-                lineHeight = 24.sp,
+                lineHeight = 15.sp,
             ),
             medium = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
-                lineHeight = 20.sp,
+                lineHeight = 15.sp,
             ),
             small = TextStyle(
                 fontFamily = fontFamily,
@@ -138,9 +138,9 @@ fun defaultAppTypography(fontFamily: androidx.compose.ui.text.font.FontFamily = 
         label = LabelTypography(
             large = TextStyle(
                 fontFamily = fontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                lineHeight = 28.sp,
             ),
             medium = TextStyle(
                 fontFamily = fontFamily,

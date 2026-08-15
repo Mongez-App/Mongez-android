@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import coil.compose.rememberAsyncImagePainter
 import com.iti.mongez.designsystem.screens.courses.CourseCard
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.domain.courses.model.Course
@@ -42,11 +41,9 @@ fun CoursesList(
                     onClick = {
                         onCourseClick(course.id)
                     },
-                    imagePainter = rememberAsyncImagePainter(
-                        course.imageUrl
-                            ?.takeIf { it.isNotBlank() }
-                            ?: "https://www.atmajaya.ac.id/en/media/coursera.png"
-                    )
+                    imageUrl = course.imageUrl
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "https://www.atmajaya.ac.id/en/media/coursera.png"
                 )
             }
         }

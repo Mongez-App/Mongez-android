@@ -170,3 +170,31 @@ private fun OnboardingContentPreview() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingContentDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        OnboardingContent(
+            state = OnboardingUiState(
+                onboardingPages = listOf(
+                    OnboardingPage(
+                        titleRes = R.string.onboarding_page1_title,
+                        descriptionRes = R.string.onboarding_page1_description
+                    ),
+                    OnboardingPage(
+                        titleRes = R.string.onboarding_page2_title,
+                        descriptionRes = R.string.onboarding_page2_description
+                    ),
+                    OnboardingPage(
+                        titleRes = R.string.onboarding_page3_title,
+                        descriptionRes = R.string.onboarding_page3_description
+                    )
+                )
+            ),
+            pagerState = pagerState,
+            onIntent = {}
+        )
+    }
+}
+

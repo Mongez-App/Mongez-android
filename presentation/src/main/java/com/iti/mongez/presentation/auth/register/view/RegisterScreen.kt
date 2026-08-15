@@ -45,6 +45,9 @@ import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.theme.Theme
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
+import android.content.res.Configuration
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.R as DesignSystemR
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.auth.rememberGoogleSignInLauncher
@@ -99,10 +102,23 @@ fun RegisterScreen(
         }
     }
 
+    RegisterScreenContent(
+        state = state,
+        topErrorMessage = topErrorMessage,
+        onIntent = viewModel::onIntent
+    )
+}
+
+@Composable
+private fun RegisterScreenContent(
+    state: RegisterUiState,
+    topErrorMessage: String?,
+    onIntent: (RegisterIntent) -> Unit
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         RegisterContent(
             state = state,
-            onIntent = viewModel::onIntent
+            onIntent = onIntent
         )
 
         AnimatedVisibility(
@@ -139,32 +155,13 @@ private fun RegisterContent(
     ) {
         Spacer(modifier = Modifier.height(Theme.spacing.xxl))
 
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(end = Theme.spacing.md, top = 4.dp)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_sparkle),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.height(Theme.spacing.xs))
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(Theme.colorScheme.border.secondary.copy(alpha = 0.5f))
-                )
-            }
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = stringResource(R.string.create_account),
-                    style = Theme.typography.headline.medium.copy(fontWeight = FontWeight.Bold),
+                    style = Theme.typography.display.small,
                     color = Theme.colorScheme.text.primary
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.xs))
@@ -174,7 +171,7 @@ private fun RegisterContent(
                     color = Theme.colorScheme.text.secondary
                 )
             }
-        }
+
 
         Spacer(modifier = Modifier.height(Theme.spacing.xl))
 
@@ -283,17 +280,104 @@ private fun RegisterContent(
         ) {
             Text(
                 text = stringResource(R.string.already_have_account),
-                style = Theme.typography.body.medium,
+                style = Theme.typography.body.large,
                 color = Theme.colorScheme.text.secondary
             )
+            Spacer(modifier = Modifier.width(Theme.spacing.xs))
             Text(
                 text = stringResource(R.string.log_in),
-                style = Theme.typography.label.large,
+                style = Theme.typography.body.large,
                 color = Theme.colorScheme.brand.primary,
                 modifier = Modifier.clickable { onIntent(RegisterIntent.OnLoginClicked) }
             )
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.xl))
+    }
+}
+
+@Preview(showBackground = true, name = "Register Screen - Light Mode")
+@Composable
+private fun RegisterScreenPreview() {
+    MongezTheme {
+        RegisterScreenContent(
+            state = RegisterUiState(
+                firstName = "John Doe",
+                email = "john@example.com"
+            ),
+            topErrorMessage = null,
+            onIntent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register Screen - Loading")
+@Composable
+private fun RegisterScreenLoadingPreview() {
+    MongezTheme {
+        RegisterScreenContent(
+            state = RegisterUiState(
+                firstName = "John Doe",
+                email = "john@example.com",
+                isLoading = true
+            ),
+            topErrorMessage = null,
+            onIntent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register Screen - Validation Errors")
+@Composable
+private fun RegisterScreenErrorPreview() {
+    MongezTheme {
+        RegisterScreenContent(
+            state = RegisterUiState(
+                firstName = "",
+                firstNameError = "First name is required",
+                email = "invalid-email",
+                emailError = "Invalid email format",
+                password = "123",
+                passwordError = "Password too short",
+                confirmPassword = "456",
+                confirmPasswordError = "Passwords do not match"
+            ),
+            topErrorMessage = null,
+            onIntent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register Screen - Top Error")
+@Composable
+private fun RegisterScreenTopErrorPreview() {
+    MongezTheme {
+        RegisterScreenContent(
+            state = RegisterUiState(
+                firstName = "John Doe",
+                email = "john@example.com"
+            ),
+            topErrorMessage = "Account already exists",
+            onIntent = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Register Screen - Dark Mode"
+)
+@Composable
+private fun RegisterScreenDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        RegisterScreenContent(
+            state = RegisterUiState(
+                firstName = "John Doe",
+                email = "john@example.com"
+            ),
+            topErrorMessage = null,
+            onIntent = {}
+        )
     }
 }
