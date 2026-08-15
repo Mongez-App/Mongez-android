@@ -64,6 +64,7 @@ fun AppDeadlineCard(
                 )
             )
 
+            // Keeping your exact 8.dp spacer
             Spacer(Modifier.height(8.dp))
 
             Text(
@@ -76,6 +77,7 @@ fun AppDeadlineCard(
                 )
             )
 
+            // Keeping your exact 12.dp spacer
             Spacer(Modifier.height(12.dp))
 
             Text(
@@ -91,6 +93,7 @@ fun AppDeadlineCard(
 
         Spacer(Modifier.width(12.dp))
 
+        // Keeping your wrapper Column to center the icon perfectly
         Column(
             modifier = Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.Center
@@ -112,10 +115,7 @@ fun AppDeadlineCard(
         }
     }
 }
-/**
- * Preview matching the provided screenshot exactly, drawing the background
- * natively from the theme to prevent false-color mismatch issues.
- */
+
 @Preview(showBackground = true, name = "Deadline Cards Row")
 @Composable
 private fun AppDeadlineCardsPreview() {
@@ -126,7 +126,6 @@ private fun AppDeadlineCardsPreview() {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Red Card -> Using state.error
             AppDeadlineCard(
                 subject = "Networks",
                 taskType = "Assignment",
@@ -134,7 +133,6 @@ private fun AppDeadlineCardsPreview() {
                 tintColor = Theme.colorScheme.state.error
             )
 
-            // Green Card -> Using state.success
             AppDeadlineCard(
                 subject = "Operating Systems",
                 taskType = "Midterm",

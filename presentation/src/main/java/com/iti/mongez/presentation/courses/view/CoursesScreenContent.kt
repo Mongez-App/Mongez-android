@@ -38,6 +38,7 @@ import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.coursedetails.components.CoursesShimmerLoading
 import com.iti.mongez.presentation.courses.components.AddCourseSheetContent
 import com.iti.mongez.presentation.courses.contract.CoursesIntent
+import com.iti.mongez.presentation.courses.components.CoursesList
 import com.iti.mongez.presentation.courses.uiState.CoursesState
 
 private fun Modifier.coursesActionShadow(

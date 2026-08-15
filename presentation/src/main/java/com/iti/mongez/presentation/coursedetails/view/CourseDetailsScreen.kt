@@ -79,7 +79,10 @@ fun CourseDetailsScreen(
     courseId: String,
     viewModel: CourseDetailsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit
+    onNavigateToStudyRoom: (String, String) -> Unit,
+    // Added optional parameters with defaults to preserve existing usages across the app
+    allowEditing: Boolean = true,
+    showUploadMaterial: Boolean = true
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -140,7 +143,9 @@ fun CourseDetailsScreen(
         onIntent = viewModel::processIntent,
         onNavigateBack = onNavigateBack,
         onNavigateToStudyRoom = onNavigateToStudyRoom,
-        onUploadClick = { filePickerLauncher.launch(arrayOf("application/pdf")) }
+        onUploadClick = { filePickerLauncher.launch(arrayOf("application/pdf")) },
+        allowEditing = allowEditing,
+        showUploadMaterial = showUploadMaterial
     )
 }
 
@@ -153,7 +158,9 @@ fun CourseDetailsContent(
     onIntent: (CourseDetailsIntent) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToStudyRoom: (String, String) -> Unit,
-    onUploadClick: () -> Unit
+    onUploadClick: () -> Unit,
+    allowEditing: Boolean = true,
+    showUploadMaterial: Boolean = true
 ) {
     var isCourseMenuExpanded by remember { mutableStateOf(false) }
     var isEditBottomSheetOpen by remember { mutableStateOf(false) }
@@ -162,7 +169,8 @@ fun CourseDetailsContent(
         Scaffold(
             containerColor = Theme.colorScheme.surface.background,
             bottomBar = {
-                if (state.courseType != "URL_COURSE" && state.selectedTabIndex == 0) {
+                // Conditionally render the upload button based on the flag and course type
+                if (showUploadMaterial && state.courseType != "URL_COURSE") {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -216,24 +224,27 @@ fun CourseDetailsContent(
                                 )
                             }
 
-                            AppPopupMenu(
-                                expanded = isCourseMenuExpanded,
-                                onDismissRequest = { isCourseMenuExpanded = false },
-                                items = listOf(
-                                    PopupMenuItem(
-                                        title = stringResource(R.string.edit_course),
-                                        icon = Icons.Outlined.Edit,
-                                        color = Theme.colorScheme.text.primary,
-                                        height = 48.dp,
-                                        padding = PaddingValues(
-                                            horizontal = Theme.spacing.lg,
-                                            vertical = Theme.spacing.md
-                                        ),
-                                        onClick = {
-                                            isCourseMenuExpanded = false
-                                            isEditBottomSheetOpen = true
-                                        }
-                                    ),
+                            // Dynamically build menu options based on allowEditing flag
+                            val menuItems = mutableListOf<PopupMenuItem>().apply {
+                                if (allowEditing) {
+                                    add(
+                                        PopupMenuItem(
+                                            title = stringResource(R.string.edit_course),
+                                            icon = Icons.Outlined.Edit,
+                                            color = Theme.colorScheme.text.primary,
+                                            height = 48.dp,
+                                            padding = PaddingValues(
+                                                horizontal = Theme.spacing.lg,
+                                                vertical = Theme.spacing.md
+                                            ),
+                                            onClick = {
+                                                isCourseMenuExpanded = false
+                                                isEditBottomSheetOpen = true
+                                            }
+                                        )
+                                    )
+                                }
+                                add(
                                     PopupMenuItem(
                                         title = stringResource(R.string.delete_course),
                                         icon = Icons.Outlined.Delete,
@@ -251,6 +262,12 @@ fun CourseDetailsContent(
                                         }
                                     )
                                 )
+                            }
+
+                            AppPopupMenu(
+                                expanded = isCourseMenuExpanded,
+                                onDismissRequest = { isCourseMenuExpanded = false },
+                                items = menuItems
                             )
                         }
                     }
@@ -453,8 +470,8 @@ fun CourseDetailsContent(
             )
         }
 
-        // Edit Course Bottom Sheet
-        if (isEditBottomSheetOpen) {
+        // Edit Course Bottom Sheet (Guarded by allowEditing)
+        if (allowEditing && isEditBottomSheetOpen) {
             AppBottomSheet(
                 onDismiss = { isEditBottomSheetOpen = false },
                 title = stringResource(R.string.edit_course)
@@ -552,7 +569,9 @@ fun CourseDetailsScreenPreview() {
             onIntent = {},
             onNavigateBack = {},
             onNavigateToStudyRoom = { _, _ -> },
-            onUploadClick = {}
+            onUploadClick = {},
+            allowEditing = true,
+            showUploadMaterial = true
         )
     }
 }
