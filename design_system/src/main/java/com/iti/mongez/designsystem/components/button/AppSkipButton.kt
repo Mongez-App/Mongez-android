@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.iti.mongez.designsystem.R
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
 /**
@@ -51,5 +53,16 @@ fun AppSkipButton(
                 onClick = onSkipClick
             )
         }
+    }
+}
+
+@Preview(showBackground = true, name = "App Skip Button")
+@Composable
+private fun AppSkipButtonPreview() {
+    MongezTheme {
+        AppSkipButton(
+            isVisible = true,
+            onSkipClick = {}
+        )
     }
 }

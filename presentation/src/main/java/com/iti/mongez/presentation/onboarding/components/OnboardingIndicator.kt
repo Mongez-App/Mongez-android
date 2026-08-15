@@ -33,7 +33,7 @@ fun OnboardingIndicator(
             val fraction = 1f - pageOffset.coerceIn(0f, 1f)
 
             val width = lerp(Theme.spacing.sm, Theme.spacing.xl, fraction)
-            val color = lerp(Theme.colorScheme.brand.indicatorUnselected, Theme.colorScheme.brand.primary, fraction)
+            val color = lerp(Theme.colorScheme.brand.roadmapTimeline, Theme.colorScheme.brand.primary, fraction)
 
             Box(
                 modifier = Modifier

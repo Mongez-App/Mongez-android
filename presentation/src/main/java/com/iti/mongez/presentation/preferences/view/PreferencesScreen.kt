@@ -87,12 +87,9 @@ private fun PreferencesContent(
     onIntent: (PreferencesIntent) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
-            Column {
+            Column(modifier = Modifier.statusBarsPadding()) {
                 AppSkipButton(
                     isVisible = pagerState.currentPage < 2,
                     onSkipClick = { onIntent(PreferencesIntent.OnSkipClicked) }

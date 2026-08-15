@@ -26,6 +26,7 @@ import com.iti.mongez.presentation.studyroom.view.StudyRoomScreen
 import com.iti.mongez.domain.settings.model.AppSettings
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
 import com.iti.mongez.presentation.dashboard.AllTasksScreen
+import com.iti.mongez.presentation.teamcourses.view.TrackDetailsScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -142,6 +143,8 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     },
                     onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
                         backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
+                    onNavigateToReadOnlyCourseDetails = { courseId ->
+                        backStack.add(AppRoute.CourseDetails(courseId, allowEditing = false, showUploadMaterial = false))
                     },
                     onNavigateToLogin = {
                         backStack.clear()
@@ -202,6 +205,16 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
                         // Pass navigation to the Study Room directly from the All Tasks screen
                         backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
+                    }
+                )
+            }
+            is AppRoute.TrackDetails -> NavEntry(AppRoute.TrackDetails) {
+                TrackDetailsScreen(
+                    onNavigateBack = {
+                        backStack.remove(key)
+                    },
+                    onNavigateToCourse = { courseId ->
+                        backStack.add(AppRoute.CourseDetails(courseId, allowEditing = false, showUploadMaterial = false))
                     }
                 )
             }

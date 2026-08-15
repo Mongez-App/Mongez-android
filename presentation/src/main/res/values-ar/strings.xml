@@ -21,20 +21,20 @@
 
     <!-- Auth Strings -->
     <string name="welcome_back">مرحبًا بعودتك</string>
-    <string name="login_subtitle">سجل الدخول لمواصلة\nرحلتك الدراسية</string>
+    <string name="login_subtitle">لنكمل رحلتنا الدراسية</string>
     <string name="email_label">البريد الإلكتروني</string>
     <string name="email_placeholder">youremail@example.com</string>
     <string name="password_label">كلمة المرور</string>
     <string name="password_placeholder">••••••••••••</string>
     <string name="forgot_password">نسيت كلمة المرور؟</string>
-    <string name="continue_btn">متابعة</string>
+    <string name="signIn_btn">تسجيل الدخول</string>
     <string name="or_divider">أو</string>
     <string name="continue_as_guest">المتابعة كضيف</string>
     <string name="sign_in_google">تسجيل الدخول باستخدام Google</string>
     <string name="dont_have_account">ليس لديك حساب؟ </string>
     <string name="sign_up">إنشاء حساب</string>
     <string name="create_account">إنشاء حساب</string>
-    <string name="register_subtitle">انضم إلينا وابدأ\nرحلتك التعليمية</string>
+    <string name="register_subtitle">ابدأ رحلتك التعليمية الذكية</string>
     <string name="first_name_label">الاسم الأول</string>
     <string name="first_name_placeholder">محمد</string>
     <string name="confirm_password_label">تأكيد كلمة المرور</string>
@@ -285,4 +285,10 @@
     <string name="nav_organization">المنظمة</string>
     <string name="no_courses_dialog_title">لا توجد مقررات مضافة</string>
     <string name="no_courses_dialog_description">تحتاج إلى إضافة مقرر واحد على الأقل إلى خطتك الدراسية قبل أن تتمكن من تصفية خارطة الطريق أو إضافة أحداث.</string>
+    <string name="courses">المقررات</string>
+    <string name="events">الأحداث</string>
+    <string name="search_courses">البحث عن المقررات</string>
+    <string name="no_courses_found">لم يتم العثور على مقررات</string>
+    <string name="no_events_found">لم يتم العثور على أحداث</string>
+
 </resources>

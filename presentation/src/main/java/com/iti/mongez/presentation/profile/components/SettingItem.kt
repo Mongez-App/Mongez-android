@@ -64,7 +64,7 @@ fun SettingItem(
 
         Text(
             text = title,
-            style = Theme.typography.body.large,
+            style = Theme.typography.label.medium,
             color = titleColor,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)

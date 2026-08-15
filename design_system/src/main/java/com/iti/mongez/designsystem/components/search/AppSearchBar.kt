@@ -84,10 +84,10 @@ fun AppSearchBar(
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = Theme.colorScheme.input.text,
             unfocusedTextColor = Theme.colorScheme.input.text,
-            focusedBorderColor = Theme.colorScheme.input.focusedBorder,
-            unfocusedBorderColor = Theme.colorScheme.input.border,
-            focusedContainerColor = Theme.colorScheme.surface.surfaceVariant,
-            unfocusedContainerColor = Theme.colorScheme.surface.surfaceVariant,
+            focusedBorderColor = Theme.colorScheme.input.focusedBorder.copy(alpha = 0.9f),
+            unfocusedBorderColor = Theme.colorScheme.text.secondary,
+            focusedContainerColor = Theme.colorScheme.surface.background,
+            unfocusedContainerColor = Theme.colorScheme.surface.background,
             cursorColor = Theme.colorScheme.brand.primary,
         ),
     )

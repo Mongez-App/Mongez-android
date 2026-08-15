@@ -271,6 +271,7 @@ fun RoadmapScreenPreview() {
             blocks = listOf(
                 StudyBlockUiModel(
                     id = "1",
+                    courseId = "algorithms",
                     courseName = UiText.DynamicString("Algorithms"),
                     topic = UiText.DynamicString("Graph Theory"),
                     durationMinutes = 60,
@@ -285,6 +286,7 @@ fun RoadmapScreenPreview() {
             blocks = listOf(
                 StudyBlockUiModel(
                     id = "2",
+                    courseId = "db",
                     courseName = UiText.DynamicString("Database Systems"),
                     topic = UiText.DynamicString("SQL Optimization"),
                     durationMinutes = 90,
@@ -293,6 +295,7 @@ fun RoadmapScreenPreview() {
                 ),
                 StudyBlockUiModel(
                     id = "3",
+                    courseId = "networks",
                     courseName = UiText.DynamicString("Networks"),
                     topic = UiText.DynamicString("OSI Model"),
                     durationMinutes = 45,

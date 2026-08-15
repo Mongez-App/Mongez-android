@@ -25,8 +25,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import androidx.compose.ui.res.stringResource
@@ -34,8 +38,10 @@ import com.iti.mongez.presentation.roadmap.uiState.CourseUiModel
 import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.components.dialog.AppTimePickerDialog
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 enum class AddEventStep {
@@ -56,11 +62,16 @@ fun AddEventDialog(
     var eventDate by remember { mutableStateOf("") }
     var eventTime by remember { mutableStateOf("") }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.85f),
+                .fillMaxHeight(0.85f)
+                .padding(horizontal = Theme.spacing.xl)
+                .navigationBarsPadding(),
             shape = RoundedCornerShape(Theme.radius.dialog),
             color = Theme.colorScheme.surface.background,
             tonalElevation = 6.dp
@@ -176,7 +187,7 @@ private fun WizardProgressIndicator(currentStep: AddEventStep) {
                         when {
                             isCompleted -> Theme.colorScheme.brand.primary
                             isCurrent -> Theme.colorScheme.brand.primary
-                            else -> Theme.colorScheme.surface.surfaceVariant
+                            else -> Theme.colorScheme.surface.surface
                         }
                     )
                     .border(
@@ -212,7 +223,7 @@ private fun WizardProgressIndicator(currentStep: AddEventStep) {
                         .padding(horizontal = 8.dp)
                         .background(
                             if (isCompleted) Theme.colorScheme.brand.primary
-                            else Theme.colorScheme.surface.surfaceVariant
+                            else Theme.colorScheme.surface.surface
                         )
                 )
             }
@@ -385,22 +396,33 @@ private fun StepTwoCourse(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = Theme.spacing.lg),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.md),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
                 onClick = onBack,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(stringResource(R.string.add_event_back), color = Theme.colorScheme.text.secondary)
+                Text(
+                    text = stringResource(R.string.add_event_back),
+                    color = Theme.colorScheme.text.secondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
             Button(
                 onClick = onContinue,
                 enabled = selectedCourseId != null,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Theme.colorScheme.brand.primary),
-                shape = RoundedCornerShape(100)
+                shape = RoundedCornerShape(100),
+                contentPadding = PaddingValues(horizontal = Theme.spacing.sm)
             ) {
-                Text(stringResource(R.string.add_event_continue))
+                Text(
+                    text = stringResource(R.string.add_event_continue),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
@@ -421,7 +443,14 @@ private fun StepThreeDetails(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                val todayUtc = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                return utcTimeMillis >= todayUtc
+            }
+        }
+    )
     val timePickerState = rememberTimePickerState()
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -560,3 +589,116 @@ private data class EventTypeUiModel(
     val containerColor: Color,
     val iconColor: Color
 )
+
+@Preview(showBackground = true, widthDp = 400, heightDp = 800)
+@Composable
+fun AddEventDialogPreview() {
+    val sampleCourses = listOf(
+        CourseUiModel("1", "Mathematics"),
+        CourseUiModel("2", "Physics"),
+        CourseUiModel("3", "Computer Science"),
+        CourseUiModel("4", "History")
+    )
+    MongezTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Gray.copy(alpha = 0.3f)),
+            contentAlignment = Alignment.Center
+        ) {
+            AddEventDialog(
+                availableCourses = sampleCourses,
+                onDismiss = {},
+                onEventCreated = { _, _, _, _, _ -> }
+            )
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun StepOneTypePreview() {
+    MongezTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Theme.colorScheme.surface.background
+        ) {
+            Box(modifier = Modifier.padding(Theme.spacing.xl)) {
+                StepOneType(
+                    selectedType = null,
+                    onTypeSelected = {},
+                    onContinue = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Selected")
+@Composable
+private fun StepOneTypeSelectedPreview() {
+    MongezTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Theme.colorScheme.surface.background
+        ) {
+            Box(modifier = Modifier.padding(Theme.spacing.xl)) {
+                StepOneType(
+                    selectedType = "assignment",
+                    onTypeSelected = {},
+                    onContinue = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StepTwoCoursePreview() {
+    MongezTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Theme.colorScheme.surface.background
+        ) {
+            Box(modifier = Modifier.padding(Theme.spacing.xl)) {
+                StepTwoCourse(
+                    availableCourses = listOf(
+                        CourseUiModel("1", "Algorithms"),
+                        CourseUiModel("2", "Database Systems"),
+                        CourseUiModel("3", "Mobile Development")
+                    ),
+                    selectedCourseId = "1",
+                    onCourseSelected = {},
+                    onBack = {},
+                    onContinue = {}
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StepThreeDetailsPreview() {
+    MongezTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Theme.colorScheme.surface.background
+        ) {
+            Box(modifier = Modifier.padding(Theme.spacing.xl)) {
+                StepThreeDetails(
+                    eventName = "Quiz 1",
+                    onNameChange = {},
+                    eventDate = "Oct 20, 2024",
+                    onDateChange = {},
+                    eventTime = "10:00 AM",
+                    onTimeChange = {},
+                    onBack = {},
+                    onCreate = {}
+                )
+            }
+        }
+    }
+}
