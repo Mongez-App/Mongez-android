@@ -97,14 +97,16 @@ fun AppSegmentedTabs(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        painter = item.iconPainter,
-                        contentDescription = "${item.title} icon",
-                        tint = contentColor,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    if (item.iconPainter != null) {
+                        Icon(
+                            painter = item.iconPainter,
+                            contentDescription = "${item.title} icon",
+                            tint = contentColor,
+                            modifier = Modifier.size(20.dp)
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
 
                     Text(
                         text = item.title,

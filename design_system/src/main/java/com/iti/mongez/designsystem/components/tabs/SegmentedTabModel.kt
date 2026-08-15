@@ -4,5 +4,5 @@ import androidx.compose.ui.graphics.painter.Painter
 
 data class SegmentedTabItem(
     val title: String,
-    val iconPainter: Painter
+    val iconPainter: Painter? = null
 )

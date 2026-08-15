@@ -24,6 +24,11 @@ enum class MainTab(
         R.drawable.ic_roadmap_filled,
         R.drawable.ic_roadmap_unfilled
     ),
+    Organization(
+    R.string.nav_organization,
+    R.drawable.ic_teams_filled,
+    R.drawable.ic_teams_unfilled
+    ),
 
     Profile(
         R.string.nav_profile,

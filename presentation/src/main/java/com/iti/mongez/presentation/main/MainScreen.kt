@@ -31,6 +31,7 @@ import com.iti.mongez.presentation.dashboard.TaskItem
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
+import com.iti.mongez.presentation.organization.view.OrganizationScreen
 
 /**
  * Represents the tabs available in the main bottom navigation.
@@ -177,6 +178,15 @@ private fun MainScreenContent(
             )
         }
 
+        MainTab.Organization -> {
+            OrganizationScreen(
+                innerPadding = innerPadding,
+                onNavigateToTeamCourses = { teamId ->
+                    // Handle navigation to team courses here when implemented
+                }
+            )
+        }
+        
         MainTab.Profile -> {
             ProfileScreen(
                 innerPadding = innerPadding,
