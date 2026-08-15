@@ -31,7 +31,6 @@ fun RoadmapEventCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Theme.radius.lg),
         colors = CardDefaults.cardColors(containerColor = Theme.colorScheme.surface.surfaceVariant),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Theme.colorScheme.border.secondary)
     ) {
         Column(
             modifier = Modifier.padding(Theme.spacing.md)

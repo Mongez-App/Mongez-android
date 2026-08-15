@@ -63,7 +63,7 @@ fun AppChip(
         },
         modifier = modifier,
         enabled = enabled,
-        shape = RoundedCornerShape(Theme.radius.sm),
+        shape = RoundedCornerShape(Theme.radius.lg),
         border = if (!selected) {
             BorderStroke(1.dp, Theme.colorScheme.chip.unselectedBorder)
         } else null,

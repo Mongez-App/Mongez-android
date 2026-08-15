@@ -47,7 +47,7 @@ fun PreferenceStepHeader(
                         .clip(CircleShape)
                         .background(
                             if (isSelected) Theme.colorScheme.brand.primary
-                            else Theme.colorScheme.brand.indicatorUnselected
+                            else Theme.colorScheme.brand.roadmapTimeline
                         )
                 )
             }

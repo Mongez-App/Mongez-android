@@ -74,7 +74,7 @@ fun AppTextField(
         if (label != null) {
             Text(
                 text = label,
-                style = Theme.typography.label.medium,
+                style = Theme.typography.title.small,
                 color = Theme.colorScheme.text.primary,
                 modifier = Modifier.padding(bottom = Theme.spacing.xs),
             )
@@ -88,13 +88,13 @@ fun AppTextField(
                 .height(56.dp),
             enabled = enabled,
             readOnly = readOnly,
-            textStyle = Theme.typography.body.medium,
+            textStyle = Theme.typography.body.large,
             placeholder = placeholder?.let {
                 {
                     Text(
                         text = it,
-                        style = Theme.typography.body.medium,
-                        color = Theme.colorScheme.input.placeholder,
+                        style = Theme.typography.body.large,
+                        color = Theme.colorScheme.text.secondary,
                     )
                 }
             },
@@ -103,7 +103,7 @@ fun AppTextField(
                     Icon(
                         imageVector = it,
                         contentDescription = null,
-                        tint = Theme.colorScheme.input.icon,
+                        tint = Theme.colorScheme.text.secondary,
                     )
                 }
             },
@@ -118,8 +118,8 @@ fun AppTextField(
                 focusedTextColor = Theme.colorScheme.input.text,
                 unfocusedTextColor = Theme.colorScheme.input.text,
                 disabledTextColor = Theme.colorScheme.text.disabled,
-                focusedBorderColor = Theme.colorScheme.input.focusedBorder.copy(alpha = 0.5f),
-                unfocusedBorderColor = Theme.colorScheme.input.border,
+                focusedBorderColor = Theme.colorScheme.input.focusedBorder.copy(alpha = 0.9f),
+                unfocusedBorderColor = Theme.colorScheme.text.secondary,
                 errorBorderColor = Theme.colorScheme.input.errorBorder,
                 disabledBorderColor = Theme.colorScheme.border.disabled,
                 focusedContainerColor = Theme.colorScheme.surface.background,

@@ -60,15 +60,18 @@ import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
 import com.iti.mongez.designsystem.screens.courses.AppDocumentCard
 import com.iti.mongez.designsystem.screens.courses.AppTaskCard
 import com.iti.mongez.designsystem.screens.courses.CourseProgressCard
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.coursedetails.components.EditCourseSheetContent
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsEffect
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 import com.iti.mongez.presentation.coursedetails.utils.FilePickerHelper
+import com.iti.mongez.presentation.coursedetails.uistate.CourseDetailsUiState
 import com.iti.mongez.presentation.coursedetails.viewmodel.CourseDetailsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,15 +85,12 @@ fun CourseDetailsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    var isCourseMenuExpanded by remember { mutableStateOf(false) }
-    var isEditBottomSheetOpen by remember { mutableStateOf(false) }
-
-    var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
-    var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
-
     LaunchedEffect(courseId) {
         viewModel.processIntent(CourseDetailsIntent.LoadCourse(courseId))
     }
+
+    var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
+    var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -102,8 +102,6 @@ fun CourseDetailsScreen(
                 is CourseDetailsEffect.NavigateBack -> {
                     onNavigateBack()
                 }
-                // ... (keep your other CourseDetailsEffect cases like ShowSnackbar and NavigateBack)
-
                 is CourseDetailsEffect.OpenPdf -> {
                     coroutineScope.launch {
                         com.iti.mongez.presentation.coursedetails.utils.PdfOpener.openPdf(
@@ -135,12 +133,36 @@ fun CourseDetailsScreen(
         }
     )
 
+    CourseDetailsContent(
+        state = state,
+        topSnackbarMessage = topSnackbarMessage,
+        topSnackbarType = topSnackbarType,
+        onIntent = viewModel::processIntent,
+        onNavigateBack = onNavigateBack,
+        onNavigateToStudyRoom = onNavigateToStudyRoom,
+        onUploadClick = { filePickerLauncher.launch(arrayOf("application/pdf")) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CourseDetailsContent(
+    state: CourseDetailsUiState,
+    topSnackbarMessage: String?,
+    topSnackbarType: AppSnackbarType,
+    onIntent: (CourseDetailsIntent) -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateToStudyRoom: (String, String) -> Unit,
+    onUploadClick: () -> Unit
+) {
+    var isCourseMenuExpanded by remember { mutableStateOf(false) }
+    var isEditBottomSheetOpen by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             containerColor = Theme.colorScheme.surface.background,
             bottomBar = {
-                // Ensure state.courseType exists in your UI State
-                if (state.courseType != "URL_COURSE") {
+                if (state.courseType != "URL_COURSE" && state.selectedTabIndex == 0) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -149,7 +171,7 @@ fun CourseDetailsScreen(
                     ) {
                         AppGlowButton(
                             text = stringResource(R.string.upload_course_material),
-                            onClick = { filePickerLauncher.launch(arrayOf("application/pdf")) }
+                            onClick = onUploadClick
                         )
                     }
                 }
@@ -171,7 +193,7 @@ fun CourseDetailsScreen(
                     ) {
                         IconButton(
                             onClick = {
-                                viewModel.processIntent(CourseDetailsIntent.ClickBack)
+                                onIntent(CourseDetailsIntent.ClickBack)
                                 onNavigateBack()
                             }
                         ) {
@@ -225,7 +247,7 @@ fun CourseDetailsScreen(
                                         ),
                                         onClick = {
                                             isCourseMenuExpanded = false
-                                            viewModel.processIntent(CourseDetailsIntent.ShowDeleteDialog)
+                                            onIntent(CourseDetailsIntent.ShowDeleteDialog)
                                         }
                                     )
                                 )
@@ -248,12 +270,13 @@ fun CourseDetailsScreen(
                     Spacer(modifier = Modifier.height(Theme.spacing.md))
 
                     // Custom Tabs
-                    val tabTitles = state.tabs.map { stringResource(it) }
+                    val tabTitles = mutableListOf<String>()
+                    state.tabs.forEach { tabTitles.add(stringResource(it)) }
                     AppPrimaryTabs(
                         tabs = tabTitles,
                         selectedTabIndex = state.selectedTabIndex,
                         onTabSelected = { index ->
-                            viewModel.processIntent(CourseDetailsIntent.SelectTab(index))
+                            onIntent(CourseDetailsIntent.SelectTab(index))
                         }
                     )
 
@@ -284,7 +307,6 @@ fun CourseDetailsScreen(
                                                 style = Theme.typography.headline.large,
                                                 modifier = Modifier.padding(bottom = Theme.spacing.sm)
                                             )
-                                            // Problem 2 Fix: Dynamic empty state messaging
                                             Text(
                                                 text = if (state.courseType == "URL_COURSE") "This course's material is on the platform" else stringResource(R.string.no_materials_empty_state),
                                                 style = Theme.typography.body.large,
@@ -301,10 +323,10 @@ fun CourseDetailsScreen(
                                         fileSize = document.fileSize,
                                         fileExtension = document.fileExtension,
                                         onClick = {
-                                            viewModel.processIntent(CourseDetailsIntent.ClickDocument(document.id))
+                                            onIntent(CourseDetailsIntent.ClickDocument(document.id))
                                         },
                                         onDeleteClick = {
-                                            viewModel.processIntent(CourseDetailsIntent.DeleteDocument(document.id))
+                                            onIntent(CourseDetailsIntent.DeleteDocument(document.id))
                                         }
                                     )
                                 }
@@ -334,7 +356,7 @@ fun CourseDetailsScreen(
                                             label = stringResource(filterRes),
                                             selected = state.selectedTaskFilterIndex == index,
                                             onSelectedChange = {
-                                                viewModel.processIntent(
+                                                onIntent(
                                                     CourseDetailsIntent.SelectTaskFilter(index)
                                                 )
                                             }
@@ -419,14 +441,14 @@ fun CourseDetailsScreen(
                 description = stringResource(R.string.delete_course_dialog_description),
                 primaryActionText = stringResource(R.string.action_delete),
                 onPrimaryAction = {
-                    viewModel.processIntent(CourseDetailsIntent.DeleteCourse)
+                    onIntent(CourseDetailsIntent.DeleteCourse)
                 },
                 onDismiss = {
-                    viewModel.processIntent(CourseDetailsIntent.DismissDeleteDialog)
+                    onIntent(CourseDetailsIntent.DismissDeleteDialog)
                 },
                 secondaryActionText = stringResource(R.string.action_cancel),
                 onSecondaryAction = {
-                    viewModel.processIntent(CourseDetailsIntent.DismissDeleteDialog)
+                    onIntent(CourseDetailsIntent.DismissDeleteDialog)
                 }
             )
         }
@@ -449,7 +471,7 @@ fun CourseDetailsScreen(
                     onCancel = { isEditBottomSheetOpen = false },
                     onSave = { name, imageUrl ->
                         isEditBottomSheetOpen = false
-                        viewModel.processIntent(CourseDetailsIntent.UpdateCourse(name = name, imageUrl = imageUrl))
+                        onIntent(CourseDetailsIntent.UpdateCourse(name = name, imageUrl = imageUrl))
                     }
                 )
             }
@@ -472,5 +494,65 @@ fun CourseDetailsScreen(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CourseDetailsScreenPreview() {
+    MongezTheme {
+        CourseDetailsContent(
+            state = CourseDetailsUiState(
+                courseTitle = "Advanced Android Development",
+                courseCode = "CS-402",
+                courseType = "NORMAL",
+                materials = listOf(
+                    com.iti.mongez.presentation.coursedetails.uistate.DocumentItem(
+                        "1",
+                        "Clean Architecture.pdf",
+                        45,
+                        "2.4 MB"
+                    ),
+                    com.iti.mongez.presentation.coursedetails.uistate.DocumentItem(
+                        "2",
+                        "Kotlin Coroutines.pdf",
+                        30,
+                        "1.5 MB"
+                    )
+                ),
+                tasks = listOf(
+                    com.iti.mongez.presentation.coursedetails.uistate.TaskItem(
+                        "1",
+                        "Read Chapter 1",
+                        "30 min",
+                        "HIGH",
+                        false,
+                        true
+                    ),
+                    com.iti.mongez.presentation.coursedetails.uistate.TaskItem(
+                        "2",
+                        "Watch Video 2",
+                        "15 min",
+                        "MEDIUM",
+                        true,
+                        true
+                    ),
+                    com.iti.mongez.presentation.coursedetails.uistate.TaskItem(
+                        "3",
+                        "Submit Quiz",
+                        "20 min",
+                        "HIGH",
+                        false,
+                        false
+                    )
+                )
+            ),
+            topSnackbarMessage = null,
+            topSnackbarType = AppSnackbarType.Info,
+            onIntent = {},
+            onNavigateBack = {},
+            onNavigateToStudyRoom = { _, _ -> },
+            onUploadClick = {}
+        )
     }
 }

@@ -129,7 +129,7 @@ fun AppFocusCard(
             modifier = Modifier
                 .width(139.dp)
                 .height(180.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.Start
         ) {
             // Text Block (Title & Topic)
@@ -175,28 +175,28 @@ fun AppFocusCard(
             }
 
             // CTA Button
-            Box(
-                modifier = Modifier
-                    .width(127.dp)
-                    .height(36.dp)
-                    .shadow(
-                        elevation = 6.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        spotColor = Color.Black.copy(alpha = 0.1f)
-                    )
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(buttonBgColor)
-                    .clickable { onStartClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Let’s Start",
-                    color = buttonTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
-                )
-            }
+//            Box(
+//                modifier = Modifier
+//                    .width(127.dp)
+//                    .height(36.dp)
+//                    .shadow(
+//                        elevation = 6.dp,
+//                        shape = RoundedCornerShape(12.dp),
+//                        spotColor = Color.Black.copy(alpha = 0.1f)
+//                    )
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(buttonBgColor)
+//                    .clickable { onStartClick() },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "Let’s Start",
+//                    color = buttonTextColor,
+//                    fontSize = 14.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    textAlign = TextAlign.Center
+//                )
+//            }
         }
     }
 }

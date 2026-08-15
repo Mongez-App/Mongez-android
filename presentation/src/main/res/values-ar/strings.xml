@@ -21,20 +21,20 @@
 
     <!-- Auth Strings -->
     <string name="welcome_back">مرحبًا بعودتك</string>
-    <string name="login_subtitle">سجل الدخول لمواصلة\nرحلتك الدراسية</string>
+    <string name="login_subtitle">لنكمل رحلتنا الدراسية</string>
     <string name="email_label">البريد الإلكتروني</string>
     <string name="email_placeholder">youremail@example.com</string>
     <string name="password_label">كلمة المرور</string>
     <string name="password_placeholder">••••••••••••</string>
     <string name="forgot_password">نسيت كلمة المرور؟</string>
-    <string name="continue_btn">متابعة</string>
+    <string name="signIn_btn">تسجيل الدخول</string>
     <string name="or_divider">أو</string>
     <string name="continue_as_guest">المتابعة كضيف</string>
     <string name="sign_in_google">تسجيل الدخول باستخدام Google</string>
     <string name="dont_have_account">ليس لديك حساب؟ </string>
     <string name="sign_up">إنشاء حساب</string>
     <string name="create_account">إنشاء حساب</string>
-    <string name="register_subtitle">انضم إلينا وابدأ\nرحلتك التعليمية</string>
+    <string name="register_subtitle">ابدأ رحلتك التعليمية الذكية</string>
     <string name="first_name_label">الاسم الأول</string>
     <string name="first_name_placeholder">محمد</string>
     <string name="confirm_password_label">تأكيد كلمة المرور</string>

@@ -2,13 +2,14 @@ package com.iti.mongez.designsystem.screens.courses
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.iti.mongez.designsystem.foundation.modifier.mongezShadow
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
@@ -41,20 +44,17 @@ import com.iti.mongez.designsystem.theme.Theme
 fun CourseCard(
     title: String,
     progress: Float,
-    imagePainter: Painter,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imageUrl: String? = null
 ) {
     val spacing = Theme.spacing
     val radius = Theme.radius
-    val elevation = Theme.elevation
 
     val backgroundColor = Theme.colorScheme.card.background
-    val borderColor = Theme.colorScheme.card.border
     val titleColor = Theme.colorScheme.text.primary
     val hintColor = Theme.colorScheme.text.hint
     val trackColor = Theme.colorScheme.surface.surfaceContainer
-    val shadowColor = Theme.colorScheme.border.disabled
 
     val dynamicProgressColor = when {
         progress >= 0.5f -> Theme.colorScheme.state.success
@@ -65,19 +65,13 @@ fun CourseCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = elevation.md,
-                shape = RoundedCornerShape(radius.dialog),
-                spotColor = shadowColor.copy(alpha = 0.05f),
-                ambientColor = shadowColor.copy(alpha = 0.05f)
+            .mongezShadow(
+                color = Theme.colorScheme.brand.primary.copy(alpha = 0.6f),
+                borderRadius = radius.dialog,
+                blurRadius = 10.dp
             )
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(radius.dialog)
-            )
-            .border(
-                width = 1.dp,
-                color = borderColor,
                 shape = RoundedCornerShape(radius.dialog)
             )
             .clip(RoundedCornerShape(radius.dialog))
@@ -87,14 +81,35 @@ fun CourseCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Image(
-            painter = imagePainter,
-            contentDescription = "$title thumbnail",
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = Modifier
                 .size(width = 128.dp, height = 144.dp)
                 .clip(RoundedCornerShape(radius.lg))
-        )
+                .background(Theme.colorScheme.brand.primaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!imageUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "$title thumbnail",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                val initials = title.split(" ")
+                    .filter { it.isNotBlank() }
+                    .take(2)
+                    .map { it.first().uppercase() }
+                    .joinToString("")
+
+                Text(
+                    text = initials,
+                    style = Theme.typography.headline.medium,
+                    color = Theme.colorScheme.brand.onPrimaryContainer,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -179,7 +194,6 @@ private fun CourseCardHighProgressPreview() {
             CourseCard(
                 title = "Operating Systems",
                 progress = 0.1f,
-                imagePainter = ColorPainter(Color(0xFF0F172A)),
                 onClick = {}
             )
         }
@@ -198,7 +212,6 @@ private fun CourseCardLowProgressPreview() {
             CourseCard(
                 title = "Algorithms",
                 progress = 0.34f,
-                imagePainter = ColorPainter(Color(0xFF1E293B)),
                 onClick = {}
             )
         }

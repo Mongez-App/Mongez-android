@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -23,10 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -41,10 +38,11 @@ import com.iti.mongez.designsystem.theme.Theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.iti.mongez.designsystem.R as DesignSystemR
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.auth.rememberGoogleSignInLauncher
 import com.iti.mongez.presentation.auth.login.contract.LoginIntent
@@ -101,10 +99,23 @@ fun LoginScreen(
         }
     }
 
+    LoginScreenContent(
+        state = state,
+        topErrorMessage = topErrorMessage,
+        onIntent = viewModel::onIntent
+    )
+}
+
+@Composable
+private fun LoginScreenContent(
+    state: LoginUiState,
+    topErrorMessage: String? = null,
+    onIntent: (LoginIntent) -> Unit = {}
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         LoginContent(
             state = state,
-            onIntent = viewModel::onIntent
+            onIntent = onIntent
         )
 
         AnimatedVisibility(
@@ -142,32 +153,13 @@ private fun LoginContent(
         Spacer(modifier = Modifier.height(Theme.spacing.xxl))
 
         // Header
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(end = Theme.spacing.md, top = 4.dp)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = DesignSystemR.drawable.ic_sparkle),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.height(Theme.spacing.xs))
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(Theme.colorScheme.border.secondary.copy(alpha = 0.5f))
-                )
-            }
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = stringResource(R.string.welcome_back),
-                    style = Theme.typography.headline.medium.copy(fontWeight = FontWeight.Bold),
+                    style = Theme.typography.display.small,
                     color = Theme.colorScheme.text.primary
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.xs))
@@ -177,7 +169,7 @@ private fun LoginContent(
                     color = Theme.colorScheme.text.secondary
                 )
             }
-        }
+
 
         Spacer(modifier = Modifier.height(Theme.spacing.xxl))
 
@@ -212,23 +204,23 @@ private fun LoginContent(
         Spacer(modifier = Modifier.height(Theme.spacing.md))
 
         // Forgot Password
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(
-                text = stringResource(R.string.forgot_password),
-                style = Theme.typography.label.large,
-                color = Theme.colorScheme.brand.primary,
-                modifier = Modifier.clickable { onIntent(LoginIntent.OnForgotPasswordClicked) }
-            )
-        }
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.End
+//        ) {
+//            Text(
+//                text = stringResource(R.string.forgot_password),
+//                style = Theme.typography.label.large,
+//                color = Theme.colorScheme.brand.primary,
+//                modifier = Modifier.clickable { onIntent(LoginIntent.OnForgotPasswordClicked) }
+//            )
+//        }
 
         Spacer(modifier = Modifier.height(Theme.spacing.xl))
 
-        // Continue Button
+        // Sign In Button
         AppButton(
-            text = stringResource(R.string.continue_btn),
+            text = stringResource(R.string.signIn_btn),
             onClick = { onIntent(LoginIntent.OnLoginClicked) },
             isLoading = state.isLoading,
             fullWidth = true
@@ -278,17 +270,87 @@ private fun LoginContent(
         ) {
             Text(
                 text = stringResource(R.string.dont_have_account),
-                style = Theme.typography.body.medium,
+                style = Theme.typography.body.large,
                 color = Theme.colorScheme.text.secondary
             )
+            Spacer(modifier = Modifier.width(Theme.spacing.xs))
             Text(
                 text = stringResource(R.string.sign_up),
-                style = Theme.typography.label.large,
+                style = Theme.typography.body.large,
                 color = Theme.colorScheme.brand.primary,
                 modifier = Modifier.clickable { onIntent(LoginIntent.OnSignUpClicked) }
             )
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.xl))
+    }
+}
+
+@Preview(showBackground = true, name = "Login Screen - Light Mode")
+@Composable
+private fun LoginScreenPreview() {
+    MongezTheme {
+        LoginScreenContent(
+            state = LoginUiState(
+                email = "user@example.com",
+                password = "password123"
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login Screen - Loading")
+@Composable
+private fun LoginScreenLoadingPreview() {
+    MongezTheme {
+        LoginScreenContent(
+            state = LoginUiState(
+                email = "user@example.com",
+                password = "password123",
+                isLoading = true
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login Screen - Validation Errors")
+@Composable
+private fun LoginScreenErrorPreview() {
+    MongezTheme {
+        LoginScreenContent(
+            state = LoginUiState(
+                email = "invalid-email",
+                emailError = "Invalid email format",
+                password = "123",
+                passwordError = "Password too short"
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login Screen - Top Error")
+@Composable
+private fun LoginScreenTopErrorPreview() {
+    MongezTheme {
+        LoginScreenContent(
+            state = LoginUiState(
+                email = "user@example.com",
+                password = "password123"
+            ),
+            topErrorMessage = "Invalid email or password"
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Login Screen - Dark Mode")
+@Composable
+private fun LoginScreenDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        LoginScreenContent(
+            state = LoginUiState(
+                email = "user@example.com",
+                password = "password123"
+            )
+        )
     }
 }

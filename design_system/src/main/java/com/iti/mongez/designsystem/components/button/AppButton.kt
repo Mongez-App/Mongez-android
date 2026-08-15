@@ -102,8 +102,10 @@ fun AppButton(
     leadingIcon: ImageVector? = null,
     fullWidth: Boolean = true,
     containerColor: Color? = null,
+    textStyle: androidx.compose.ui.text.TextStyle? = null,
 ) {
     val shape = RoundedCornerShape(Theme.radius.md)
+    val resolvedTextStyle = textStyle ?: Theme.typography.label.large
     val heightModifier = modifier
         .height(48.dp)
         .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier)
@@ -142,6 +144,7 @@ fun AppButton(
                     isLoading = isLoading,
                     contentColor = contentColor,
                     leadingIcon = leadingIcon,
+                    textStyle = resolvedTextStyle,
                 )
             }
         }
@@ -170,6 +173,7 @@ fun AppButton(
                     contentColor = if (enabled) Theme.colorScheme.button.secondaryContent
                     else Theme.colorScheme.button.disabledContent,
                     leadingIcon = leadingIcon,
+                    textStyle = resolvedTextStyle,
                 )
             }
         }
@@ -198,6 +202,7 @@ fun AppButton(
                     contentColor = if (enabled) Theme.colorScheme.brand.primary
                     else Theme.colorScheme.button.disabledContent,
                     leadingIcon = leadingIcon,
+                    textStyle = resolvedTextStyle,
                 )
             }
         }
@@ -221,6 +226,7 @@ fun AppButton(
                     contentColor = if (enabled) Theme.colorScheme.brand.primary
                     else Theme.colorScheme.button.disabledContent,
                     leadingIcon = leadingIcon,
+                    textStyle = resolvedTextStyle,
                 )
             }
         }
@@ -233,6 +239,7 @@ private fun ButtonContent(
     isLoading: Boolean,
     contentColor: Color,
     leadingIcon: ImageVector?,
+    textStyle: androidx.compose.ui.text.TextStyle,
 ) {
     if (isLoading) {
         CircularProgressIndicator(
@@ -253,7 +260,7 @@ private fun ButtonContent(
             }
             Text(
                 text = text,
-                style = Theme.typography.label.large,
+                style = textStyle,
                 textAlign = TextAlign.Center,
             )
         }

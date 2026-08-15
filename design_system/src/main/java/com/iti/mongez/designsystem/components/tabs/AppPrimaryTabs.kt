@@ -39,7 +39,7 @@ fun AppPrimaryTabs(
     TabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = modifier.fillMaxWidth(),
-        containerColor = Theme.colorScheme.surface.surface,
+        containerColor = Theme.colorScheme.surface.background,
         // The 1px solid #F3F4F6 bottom border
         divider = {
             HorizontalDivider(

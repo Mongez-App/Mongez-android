@@ -1,10 +1,12 @@
 package com.iti.mongez.designsystem.components.button
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.theme.Theme
 
@@ -40,19 +43,21 @@ fun SocialButton(
             contentColor = Theme.colorScheme.text.primary
         )
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+        ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterStart),
+                modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified
             )
+            Spacer(modifier = Modifier.width(Theme.spacing.md))
             Text(
                 text = text,
-                style = Theme.typography.label.large,
-                modifier = Modifier.align(Alignment.Center)
+                style = Theme.typography.title.small.copy(fontWeight = FontWeight.Medium)
             )
         }
     }
