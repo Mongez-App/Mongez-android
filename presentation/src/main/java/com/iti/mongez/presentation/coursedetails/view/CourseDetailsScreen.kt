@@ -76,7 +76,10 @@ fun CourseDetailsScreen(
     courseId: String,
     viewModel: CourseDetailsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit
+    onNavigateToStudyRoom: (String, String) -> Unit,
+    // Added optional parameters with defaults to preserve existing usages across the app
+    allowEditing: Boolean = true,
+    showUploadMaterial: Boolean = true
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -102,8 +105,6 @@ fun CourseDetailsScreen(
                 is CourseDetailsEffect.NavigateBack -> {
                     onNavigateBack()
                 }
-                // ... (keep your other CourseDetailsEffect cases like ShowSnackbar and NavigateBack)
-
                 is CourseDetailsEffect.OpenPdf -> {
                     coroutineScope.launch {
                         com.iti.mongez.presentation.coursedetails.utils.PdfOpener.openPdf(
@@ -139,8 +140,8 @@ fun CourseDetailsScreen(
         Scaffold(
             containerColor = Theme.colorScheme.surface.background,
             bottomBar = {
-                // Ensure state.courseType exists in your UI State
-                if (state.courseType != "URL_COURSE") {
+                // Conditionally render the upload button based on the flag and course type
+                if (showUploadMaterial && state.courseType != "URL_COURSE") {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -194,24 +195,27 @@ fun CourseDetailsScreen(
                                 )
                             }
 
-                            AppPopupMenu(
-                                expanded = isCourseMenuExpanded,
-                                onDismissRequest = { isCourseMenuExpanded = false },
-                                items = listOf(
-                                    PopupMenuItem(
-                                        title = stringResource(R.string.edit_course),
-                                        icon = Icons.Outlined.Edit,
-                                        color = Theme.colorScheme.text.primary,
-                                        height = 48.dp,
-                                        padding = PaddingValues(
-                                            horizontal = Theme.spacing.lg,
-                                            vertical = Theme.spacing.md
-                                        ),
-                                        onClick = {
-                                            isCourseMenuExpanded = false
-                                            isEditBottomSheetOpen = true
-                                        }
-                                    ),
+                            // Dynamically build menu options based on allowEditing flag
+                            val menuItems = mutableListOf<PopupMenuItem>().apply {
+                                if (allowEditing) {
+                                    add(
+                                        PopupMenuItem(
+                                            title = stringResource(R.string.edit_course),
+                                            icon = Icons.Outlined.Edit,
+                                            color = Theme.colorScheme.text.primary,
+                                            height = 48.dp,
+                                            padding = PaddingValues(
+                                                horizontal = Theme.spacing.lg,
+                                                vertical = Theme.spacing.md
+                                            ),
+                                            onClick = {
+                                                isCourseMenuExpanded = false
+                                                isEditBottomSheetOpen = true
+                                            }
+                                        )
+                                    )
+                                }
+                                add(
                                     PopupMenuItem(
                                         title = stringResource(R.string.delete_course),
                                         icon = Icons.Outlined.Delete,
@@ -229,6 +233,12 @@ fun CourseDetailsScreen(
                                         }
                                     )
                                 )
+                            }
+
+                            AppPopupMenu(
+                                expanded = isCourseMenuExpanded,
+                                onDismissRequest = { isCourseMenuExpanded = false },
+                                items = menuItems
                             )
                         }
                     }
@@ -284,7 +294,6 @@ fun CourseDetailsScreen(
                                                 style = Theme.typography.headline.large,
                                                 modifier = Modifier.padding(bottom = Theme.spacing.sm)
                                             )
-                                            // Problem 2 Fix: Dynamic empty state messaging
                                             Text(
                                                 text = if (state.courseType == "URL_COURSE") "This course's material is on the platform" else stringResource(R.string.no_materials_empty_state),
                                                 style = Theme.typography.body.large,
@@ -431,8 +440,8 @@ fun CourseDetailsScreen(
             )
         }
 
-        // Edit Course Bottom Sheet
-        if (isEditBottomSheetOpen) {
+        // Edit Course Bottom Sheet (Guarded by allowEditing)
+        if (allowEditing && isEditBottomSheetOpen) {
             AppBottomSheet(
                 onDismiss = { isEditBottomSheetOpen = false },
                 title = stringResource(R.string.edit_course)
