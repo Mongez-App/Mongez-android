@@ -58,7 +58,11 @@ fun CourseTaskDto.toDomain() = CourseTask(
     courseId = this.courseId.orEmpty(),
     title = this.title.orEmpty(),
     durationMinutes = this.durationMinutes ?: 0,
-    priority = this.priority ?: "LOW",
+    priority = try {
+        com.iti.mongez.domain.core.model.TaskPriority.valueOf((this.priority ?: "LOW").uppercase())
+    } catch (e: Exception) {
+        com.iti.mongez.domain.core.model.TaskPriority.LOW
+    },
     isCompleted = this.completed ?: false,
     scheduledDate = this.scheduledDate.orEmpty()
 )

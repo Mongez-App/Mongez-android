@@ -7,7 +7,18 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -17,7 +28,14 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,7 +55,16 @@ import com.iti.mongez.designsystem.components.loading.AppShimmer
 import com.iti.mongez.designsystem.components.section.AppSectionHeader
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
-import com.iti.mongez.designsystem.screens.dashboard.*
+import com.iti.mongez.designsystem.screens.dashboard.AppDeadlineCard
+import com.iti.mongez.designsystem.screens.dashboard.AppFocusCard
+import com.iti.mongez.designsystem.screens.dashboard.AppInfoCard
+import com.iti.mongez.designsystem.screens.dashboard.AppProgressGoalCard
+import com.iti.mongez.designsystem.screens.dashboard.AppStreakBadge
+import com.iti.mongez.designsystem.components.card.AppTaskCard
+import com.iti.mongez.domain.core.model.TaskPriority
+import com.iti.mongez.presentation.core.models.textRes
+import com.iti.mongez.presentation.core.models.colorRes
+import com.iti.mongez.presentation.core.models.TaskItem
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
@@ -106,10 +134,13 @@ private fun DashboardContent(
     topSnackbarMessageRes: Int?,
     topSnackbarType: AppSnackbarType?,
     onEvent: (DashboardEvent) -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit,
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize().background(Theme.colorScheme.surface.background)) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Theme.colorScheme.surface.background)
+    ) {
         if (state.isLoading) {
             DashboardShimmerLoading(innerPadding = innerPadding)
         } else {
@@ -120,7 +151,6 @@ private fun DashboardContent(
                 contentPadding = PaddingValues(vertical = Theme.spacing.xl),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing.xl)
             ) {
-
                 item {
                     Row(
                         modifier = Modifier
@@ -143,7 +173,6 @@ private fun DashboardContent(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                // Removed the welcome message line & Text Truncation to let long names wrap natively
                                 Text(
                                     text = state.userName,
                                     style = Theme.typography.body.large,
@@ -156,7 +185,7 @@ private fun DashboardContent(
                                     style = Theme.typography.body.small,
                                     color = Theme.colorScheme.text.secondary,
                                     maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -177,7 +206,7 @@ private fun DashboardContent(
                                 title = stringResource(R.string.dashboard_todays_focus),
                                 topic = focus.courseName,
                                 duration = focus.durationText,
-                                imagePainter = null, // Will automatically display initials like "DS" on translucent background
+                                imagePainter = null,
                                 onStartClick = { onEvent(DashboardEvent.OnStartFocusClicked) }
                             )
                         }
@@ -249,7 +278,8 @@ private fun DashboardContent(
                             AppTaskCard(
                                 title = task.title,
                                 duration = task.duration,
-                                priority = task.priority,
+                                priorityTextRes = task.priority.textRes,
+                                priorityColor = task.priority.colorRes,
                                 isCompleted = task.isCompleted,
                                 onClick = {
                                     onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
@@ -413,9 +443,33 @@ fun DashboardScreenPreview() {
             GoalItem(R.string.dashboard_weekly_goal, 15, 20, R.string.hours, GoalType.WEEKLY)
         ),
         tasks = listOf(
-            TaskItem("1", "Study Linked Lists", "1h", TaskPriority.HIGH, false),
-            TaskItem("2", "Review Recursion", "30m", TaskPriority.MEDIUM, true),
-            TaskItem("3", "Practice Sorting", "1h 30m", TaskPriority.LOW, false)
+            TaskItem(
+                id = "1",
+                courseId = "courseId1",
+                title = "Study Linked Lists",
+                duration = "1h",
+                durationMinutes = 60,
+                priority = TaskPriority.HIGH,
+                isCompleted = false,
+            ),
+            TaskItem(
+                id = "2",
+                courseId = "courseId2",
+                title = "Review Recursion",
+                duration = "30 min",
+                durationMinutes = 30,
+                priority = TaskPriority.MEDIUM,
+                isCompleted = true,
+            ),
+            TaskItem(
+                id = "3",
+                courseId = "courseId3",
+                title = "Practice Sorting",
+                duration = "1h 30m",
+                durationMinutes = 90,
+                priority = TaskPriority.LOW,
+                isCompleted = false,
+            )
         ),
         deadlines = listOf(
             DeadlineItem("1", "Algorithms", "Assignment", "2 days left", true),
@@ -432,7 +486,7 @@ fun DashboardScreenPreview() {
                 topSnackbarMessageRes = null,
                 topSnackbarType = null,
                 onEvent = {},
-                onNavigateToStudyRoom = { _, _ -> }
+                onNavigateToStudyRoom = { _, _, _, _ -> }
             )
         }
     }

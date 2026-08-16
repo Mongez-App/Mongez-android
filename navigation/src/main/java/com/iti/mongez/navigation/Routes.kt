@@ -1,6 +1,6 @@
 package com.iti.mongez.navigation
 
-import com.iti.mongez.presentation.dashboard.TaskItem
+import com.iti.mongez.presentation.core.models.TaskItem
 
 sealed interface AppRoute {
     object Onboarding : AppRoute

@@ -27,12 +27,12 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.courses.view.CoursesScreen
 import com.iti.mongez.presentation.dashboard.DashboardScreen
-import com.iti.mongez.presentation.dashboard.TaskItem
+import com.iti.mongez.presentation.core.models.TaskItem
 import com.iti.mongez.presentation.preferences.components.DefaultScheduleDialog
 import com.iti.mongez.presentation.profile.view.ProfileScreen
 import com.iti.mongez.presentation.roadmap.view.RoadmapScreen
 import com.iti.mongez.presentation.organization.view.OrganizationScreen
-import com.iti.mongez.presentation.teamcourses.view.TrackDetailsScreen
+
 
 /**
  * Represents the tabs available in the main bottom navigation.
@@ -49,7 +49,8 @@ fun MainScreen(
     onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
     onNavigateToReadOnlyCourseDetails: (String) -> Unit = onNavigateToCourseDetails,
     onNavigateToLogin: () -> Unit,
-    onNavigateToAllTasks: (List<TaskItem>) -> Unit
+    onNavigateToAllTasks: (List<TaskItem>) -> Unit,
+    onNavigateToTeamCourses: (String) -> Unit
 ) {
     val preferences by viewModel.preferences.collectAsState()
     
@@ -135,7 +136,8 @@ fun MainScreen(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(message)
                 }
-            }
+            },
+            onNavigateToTeamCourses = onNavigateToTeamCourses
         )
     }
 }
@@ -152,6 +154,7 @@ private fun MainScreenContent(
     onNavigateToAllTasks: (List<TaskItem>) -> Unit,
     onNavigateToCourses: () -> Unit,
     onShowSnackBar: (String, AppSnackbarType?) -> Unit,
+    onNavigateToTeamCourses: (String) -> Unit
 ) {
     when (tab) {
         MainTab.Home -> {
@@ -181,19 +184,12 @@ private fun MainScreenContent(
                 onShowSnackBar = onShowSnackBar
             )
         }
-        MainTab.Track -> {
-            TrackDetailsScreen(
-                onNavigateBack = { /* Optional: switch tab or handle back */ },
-                onNavigateToCourse = onNavigateToReadOnlyCourseDetails
-            )
-        }
+
 
         MainTab.Organization -> {
             OrganizationScreen(
                 innerPadding = innerPadding,
-                onNavigateToTeamCourses = { teamId ->
-                    // Handle navigation to team courses here when implemented
-                }
+                onNavigateToTeamCourses = onNavigateToTeamCourses
             )
         }
         

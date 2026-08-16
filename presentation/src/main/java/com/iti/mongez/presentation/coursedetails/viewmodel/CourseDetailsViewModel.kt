@@ -10,10 +10,11 @@ import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsEffect
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
 import com.iti.mongez.presentation.coursedetails.uistate.CourseDetailsUiState
 import com.iti.mongez.presentation.coursedetails.uistate.DocumentItem
-import com.iti.mongez.presentation.coursedetails.uistate.TaskItem
+import com.iti.mongez.presentation.core.models.TaskItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.collections.filter
@@ -106,7 +107,7 @@ class CourseDetailsViewModel @Inject constructor(
                             durationMinutes = task.durationMinutes,
                             priority = task.priority,
                             isCompleted = task.isCompleted,
-                            isToday = task.scheduledDate == java.time.LocalDate.now().toString()
+                            isToday = task.scheduledDate == LocalDate.now().toString()
                         )
                     }
                     updateTasksState()
@@ -130,9 +131,9 @@ class CourseDetailsViewModel @Inject constructor(
             0 -> allTasks // All
             1 -> allTasks.filter { !it.isCompleted } // Pending
             2 -> allTasks.filter { it.isCompleted } // Completed
-            3 -> allTasks.filter { it.priority.equals("HIGH", ignoreCase = true) } // High
-            4 -> allTasks.filter { it.priority.equals("MEDIUM", ignoreCase = true) } // Medium
-            5 -> allTasks.filter { it.priority.equals("LOW", ignoreCase = true) } // Low
+            3 -> allTasks.filter { it.priority == com.iti.mongez.domain.core.model.TaskPriority.HIGH } // High
+            4 -> allTasks.filter { it.priority == com.iti.mongez.domain.core.model.TaskPriority.MEDIUM } // Medium
+            5 -> allTasks.filter { it.priority == com.iti.mongez.domain.core.model.TaskPriority.LOW } // Low
             else -> allTasks
         }
         

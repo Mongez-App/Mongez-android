@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,21 +61,25 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
 import com.iti.mongez.designsystem.screens.courses.AppDocumentCard
-import com.iti.mongez.designsystem.screens.courses.AppTaskCard
+import com.iti.mongez.designsystem.components.card.AppTaskCard
 import com.iti.mongez.designsystem.screens.courses.CourseProgressCard
+import com.iti.mongez.domain.core.model.TaskPriority
+import com.iti.mongez.presentation.core.models.textRes
+import com.iti.mongez.presentation.core.models.colorRes
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.coursedetails.components.EditCourseSheetContent
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsEffect
 import com.iti.mongez.presentation.coursedetails.contract.CourseDetailsIntent
-import com.iti.mongez.presentation.coursedetails.utils.FilePickerHelper
 import com.iti.mongez.presentation.coursedetails.uistate.CourseDetailsUiState
+import com.iti.mongez.presentation.coursedetails.uistate.DocumentItem
+import com.iti.mongez.presentation.core.models.TaskItem
+import com.iti.mongez.presentation.coursedetails.utils.FilePickerHelper
 import com.iti.mongez.presentation.coursedetails.viewmodel.CourseDetailsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
-import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,17 +87,13 @@ fun CourseDetailsScreen(
     courseId: String,
     viewModel: CourseDetailsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToStudyRoom: (String, String, String, Int) -> Unit
-    // Added optional parameters with defaults to preserve existing usages across the app
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
     allowEditing: Boolean = true,
     showUploadMaterial: Boolean = true
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
-    var isCourseMenuExpanded by remember { mutableStateOf(false) }
-    var isEditBottomSheetOpen by remember { mutableStateOf(false) }
 
     var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
     var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
@@ -109,9 +110,7 @@ fun CourseDetailsScreen(
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
-   
-    var topSnackbarMessage by remember { mutableStateOf<String?>(null) }
-    var topSnackbarType by remember { mutableStateOf(AppSnackbarType.Info) }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -175,7 +174,7 @@ fun CourseDetailsContent(
     topSnackbarType: AppSnackbarType,
     onIntent: (CourseDetailsIntent) -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigateToStudyRoom: (String, String) -> Unit,
+    onNavigateToStudyRoom: (String, String, String, Int) -> Unit,
     onUploadClick: () -> Unit,
     allowEditing: Boolean = true,
     showUploadMaterial: Boolean = true
@@ -187,7 +186,6 @@ fun CourseDetailsContent(
         Scaffold(
             containerColor = Theme.colorScheme.surface.background,
             bottomBar = {
-                // Conditionally render the upload button based on the flag and course type
                 if (showUploadMaterial && state.courseType != "URL_COURSE") {
                     Box(
                         modifier = Modifier
@@ -242,7 +240,6 @@ fun CourseDetailsContent(
                                 )
                             }
 
-                            // Dynamically build menu options based on allowEditing flag
                             val menuItems = mutableListOf<PopupMenuItem>().apply {
                                 if (allowEditing) {
                                     add(
@@ -415,7 +412,8 @@ fun CourseDetailsContent(
                                     AppTaskCard(
                                         title = task.title,
                                         duration = task.duration,
-                                        priority = task.priority,
+                                        priorityTextRes = task.priority.textRes,
+                                        priorityColor = task.priority.colorRes,
                                         isCompleted = task.isCompleted,
                                         onClick = {
                                             onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
@@ -439,7 +437,8 @@ fun CourseDetailsContent(
                                     AppTaskCard(
                                         title = task.title,
                                         duration = task.duration,
-                                        priority = task.priority,
+                                        priorityTextRes = task.priority.textRes,
+                                        priorityColor = task.priority.colorRes,
                                         isCompleted = task.isCompleted,
                                         onClick = {
                                             onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)
@@ -542,43 +541,49 @@ fun CourseDetailsScreenPreview() {
                 courseCode = "CS-402",
                 courseType = "NORMAL",
                 materials = listOf(
-                    com.iti.mongez.presentation.coursedetails.uistate.DocumentItem(
-                        "1",
-                        "Clean Architecture.pdf",
-                        45,
-                        "2.4 MB"
+                    DocumentItem(
+                        id = "1",
+                        title = "Clean Architecture.pdf",
+                        pageCount = 45,
+                        fileSize = "2.4 MB"
                     ),
-                    com.iti.mongez.presentation.coursedetails.uistate.DocumentItem(
-                        "2",
-                        "Kotlin Coroutines.pdf",
-                        30,
-                        "1.5 MB"
+                    DocumentItem(
+                        id = "2",
+                        title = "Kotlin Coroutines.pdf",
+                        pageCount = 30,
+                        fileSize = "1.5 MB"
                     )
                 ),
                 tasks = listOf(
-                    com.iti.mongez.presentation.coursedetails.uistate.TaskItem(
-                        "1",
-                        "Read Chapter 1",
-                        "30 min",
-                        "HIGH",
-                        false,
-                        true
+                    TaskItem(
+                        id = "1",
+                        courseId = "courseId1",
+                        title = "Read Chapter 1",
+                        duration = "30 min",
+                        durationMinutes = 30,
+                        priority = TaskPriority.HIGH,
+                        isCompleted = false,
+                        isToday = true
                     ),
-                    com.iti.mongez.presentation.coursedetails.uistate.TaskItem(
-                        "2",
-                        "Watch Video 2",
-                        "15 min",
-                        "MEDIUM",
-                        true,
-                        true
+                    TaskItem(
+                        id = "2",
+                        courseId = "courseId2",
+                        title = "Watch Video 2",
+                        duration = "15 min",
+                        durationMinutes = 15,
+                        priority = TaskPriority.MEDIUM,
+                        isCompleted = true,
+                        isToday = true
                     ),
-                    com.iti.mongez.presentation.coursedetails.uistate.TaskItem(
-                        "3",
-                        "Submit Quiz",
-                        "20 min",
-                        "HIGH",
-                        false,
-                        false
+                    TaskItem(
+                        id = "3",
+                        courseId = "courseId3",
+                        title = "Submit Quiz",
+                        duration = "20 min",
+                        durationMinutes = 20,
+                        priority = TaskPriority.HIGH,
+                        isCompleted = true,
+                        isToday = true
                     )
                 )
             ),
@@ -586,7 +591,7 @@ fun CourseDetailsScreenPreview() {
             topSnackbarType = AppSnackbarType.Info,
             onIntent = {},
             onNavigateBack = {},
-            onNavigateToStudyRoom = { _, _ -> },
+            onNavigateToStudyRoom = { _, _, _, _ -> },
             onUploadClick = {},
             allowEditing = true,
             showUploadMaterial = true

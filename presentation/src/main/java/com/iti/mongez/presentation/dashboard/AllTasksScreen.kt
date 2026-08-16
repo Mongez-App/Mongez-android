@@ -16,8 +16,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.iti.mongez.designsystem.components.chip.AppChip
-import com.iti.mongez.designsystem.screens.dashboard.AppTaskCard
-import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
+import com.iti.mongez.designsystem.components.card.AppTaskCard
+import com.iti.mongez.domain.core.model.TaskPriority
+import com.iti.mongez.presentation.core.models.textRes
+import com.iti.mongez.presentation.core.models.colorRes
+import com.iti.mongez.presentation.core.models.TaskItem
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.presentation.R
 
@@ -130,7 +133,8 @@ fun AllTasksScreen(
                         AppTaskCard(
                             title = task.title,
                             duration = task.duration,
-                            priority = task.priority,
+                            priorityTextRes = task.priority.textRes,
+                            priorityColor = task.priority.colorRes,
                             isCompleted = task.isCompleted,
                             onClick = {
                                 onNavigateToStudyRoom(task.id, task.title, task.courseId, task.durationMinutes)

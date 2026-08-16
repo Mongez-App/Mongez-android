@@ -23,7 +23,6 @@ import com.iti.mongez.presentation.organization.viewmodel.OrganizationViewModel
 import androidx.compose.ui.text.font.FontWeight
 import com.iti.mongez.designsystem.components.search.AppSearchBar
 import com.iti.mongez.presentation.organization.components.DiscoverTeamCard
-import androidx.compose.foundation.ExperimentalFoundationApi
 
 @Composable
 fun OrganizationScreen(
@@ -106,8 +105,7 @@ fun OrganizationScreen(
                                     progress = team.progress,
                                     eventsCount = team.events.size,
                                     onClick = { 
-                                        // TODO: Navigate to TeamCoursesScreen (not implemented yet)
-                                        // onNavigateToTeamCourses(team.id)
+                                        onNavigateToTeamCourses(team.id)
                                     }
                                 )
                             }

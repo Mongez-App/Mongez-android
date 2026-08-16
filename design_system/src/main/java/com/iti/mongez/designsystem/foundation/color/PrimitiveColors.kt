@@ -20,7 +20,8 @@ internal object PrimitiveColors {
     val White100 = Color(0xFFF9F9FF)
     val BackgroundDark = Color(0xFF04001B)
     
-    val Gray100 = Color(0xFFD1D5DB)
+    val Gray50 = Color(0xFFF3F4F6)
+    val Gray100 = Color(0xFFE5E7EB)
     val Gray350 = Color(0xFFB4BACD)
     
     val Gray200 = Color(0xFFBCBCBE)

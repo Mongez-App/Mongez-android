@@ -1,35 +1,31 @@
 package com.iti.mongez.presentation.teamcourses.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.tooling.preview.Preview
 import com.iti.mongez.presentation.R
 import com.iti.mongez.designsystem.components.tabs.AppPrimaryTabs
 import com.iti.mongez.designsystem.components.textfield.AppTextField
 import com.iti.mongez.designsystem.theme.Theme
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.presentation.courses.components.CoursesList
 import com.iti.mongez.presentation.teamcourses.component.EmptyStateView
 import com.iti.mongez.presentation.teamcourses.contract.TrackDetailsEffect
 import com.iti.mongez.presentation.teamcourses.contract.TrackDetailsIntent
+import com.iti.mongez.presentation.teamcourses.contract.TrackDetailsState
+import com.iti.mongez.presentation.teamcourses.mock.MockData
 import com.iti.mongez.presentation.teamcourses.model.TrackEvent
 import com.iti.mongez.presentation.teamcourses.viewmodel.TrackDetailsViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -51,17 +47,29 @@ fun TrackDetailsScreen(
         }
     }
 
+    TrackDetailsContent(
+        state = state,
+        onIntent = viewModel::onIntent
+    )
+}
+
+@Composable
+fun TrackDetailsContent(
+    state: TrackDetailsState,
+    onIntent: (TrackDetailsIntent) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Scaffold(
         containerColor = Theme.colorScheme.surface.background,
         topBar = {
             TrackTopAppBar(
                 title = state.title,
-                onBackClick = { viewModel.onIntent(TrackDetailsIntent.NavigateBack) }
+                onBackClick = { onIntent(TrackDetailsIntent.NavigateBack) }
             )
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = Theme.spacing.lg)
@@ -75,7 +83,7 @@ fun TrackDetailsScreen(
                     stringResource(id = R.string.events)
                 ),
                 selectedTabIndex = state.selectedTabIndex,
-                onTabSelected = { viewModel.onIntent(TrackDetailsIntent.TabSelected(it)) }
+                onTabSelected = { onIntent(TrackDetailsIntent.TabSelected(it)) }
             )
 
             Spacer(modifier = Modifier.height(Theme.spacing.lg))
@@ -85,12 +93,10 @@ fun TrackDetailsScreen(
                     // Courses Tab
                     AppTextField(
                         value = state.searchQuery,
-                        onValueChange = { viewModel.onIntent(TrackDetailsIntent.SearchQueryChanged(it)) },
+                        onValueChange = { onIntent(TrackDetailsIntent.SearchQueryChanged(it)) },
                         placeholder = stringResource(id = R.string.search_courses),
                         modifier = Modifier.fillMaxWidth()
                     )
-
-                    Spacer(modifier = Modifier.height(Theme.spacing.lg))
 
                     if (state.filteredCourses.isEmpty()) {
                         EmptyStateView(
@@ -100,7 +106,7 @@ fun TrackDetailsScreen(
                     } else {
                         CoursesList(
                             courses = state.filteredCourses,
-                            onCourseClick = { viewModel.onIntent(TrackDetailsIntent.CourseClicked(it)) },
+                            onCourseClick = { onIntent(TrackDetailsIntent.CourseClicked(it)) },
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -115,7 +121,7 @@ fun TrackDetailsScreen(
                     } else {
                         EventsGrid(
                             events = state.events,
-                            onEventClick = { viewModel.onIntent(TrackDetailsIntent.EventClicked(it)) }
+                            onEventClick = { onIntent(TrackDetailsIntent.EventClicked(it)) }
                         )
                     }
                 }
@@ -171,5 +177,21 @@ fun EventsGrid(
                 modifier = Modifier.clickable { onEventClick(event.id) }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TrackDetailsPreview() {
+    MongezTheme {
+        TrackDetailsContent(
+            state = TrackDetailsState(
+                title = "Mobile Native",
+                courses = MockData.getMockCourses(),
+                filteredCourses = MockData.getMockCourses(),
+                events = MockData.getMockEvents()
+            ),
+            onIntent = {}
+        )
     }
 }

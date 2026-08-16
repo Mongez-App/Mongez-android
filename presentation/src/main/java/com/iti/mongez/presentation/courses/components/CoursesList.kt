@@ -8,7 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.iti.mongez.designsystem.screens.courses.CourseCard
+import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 import com.iti.mongez.domain.courses.model.Course
 
@@ -22,7 +24,7 @@ fun CoursesList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing.lg),
         contentPadding = PaddingValues(
-            bottom = Theme.spacing.giant + Theme.spacing.lg
+            vertical = Theme.spacing.lg
         )
     ) {
         items(
@@ -49,3 +51,58 @@ fun CoursesList(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun CoursesListPreview() {
+    MongezTheme {
+        CoursesList(
+            courses = sampleCourses,
+            onCourseClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Courses List - Dark Mode")
+@Composable
+private fun CoursesListDarkPreview() {
+    MongezTheme(darkTheme = true) {
+        CoursesList(
+            courses = sampleCourses,
+            onCourseClick = {}
+        )
+    }
+}
+
+private val sampleCourses = listOf(
+    Course(
+        id = "1",
+        name = "Mobile Development",
+        courseCode = "CS402",
+        imageUrl = null,
+        startDate = "2023-10-01",
+        examDate = "2024-01-15",
+        hasMaterials = true,
+        completionPercentage = 65f
+    ),
+    Course(
+        id = "2",
+        name = "Web Security",
+        courseCode = "CS305",
+        imageUrl = null,
+        startDate = "2023-10-05",
+        examDate = "2024-01-20",
+        hasMaterials = false,
+        completionPercentage = 30f
+    ),
+    Course(
+        id = "3",
+        name = "Cloud Computing",
+        courseCode = "CS408",
+        imageUrl = null,
+        startDate = "2023-10-10",
+        examDate = "2024-01-25",
+        hasMaterials = true,
+        completionPercentage = 85f
+    )
+)

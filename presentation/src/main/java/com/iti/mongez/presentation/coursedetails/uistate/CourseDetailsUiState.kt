@@ -1,7 +1,9 @@
 package com.iti.mongez.presentation.coursedetails.uistate
 
 import androidx.annotation.StringRes
+
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.core.models.TaskItem
 
 data class DocumentItem(
     val id: String,
@@ -13,16 +15,7 @@ data class DocumentItem(
 
 )
 
-data class TaskItem(
-    val id: String,
-    val courseId: String,
-    val title: String,
-    val duration: String,
-    val durationMinutes: Int,
-    val priority: String, // HIGH, MEDIUM, LOW
-    val isCompleted: Boolean,
-    val isToday: Boolean
-)
+
 
 data class CourseDetailsUiState(
     val isLoading: Boolean = false,

@@ -3,7 +3,8 @@ package com.iti.mongez.presentation.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
-import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
+import com.iti.mongez.domain.core.model.TaskPriority
+import com.iti.mongez.presentation.core.models.TaskItem
 import com.iti.mongez.domain.dashboard.usecase.GetDashboardDataUseCase
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.presentation.R

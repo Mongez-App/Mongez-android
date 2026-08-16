@@ -143,6 +143,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     },
                     onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
                         backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
+                    },
                     onNavigateToReadOnlyCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId, allowEditing = false, showUploadMaterial = false))
                     },
@@ -152,6 +153,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     },
                     onNavigateToAllTasks = { tasks ->
                         backStack.add(AppRoute.AllTasks(tasks))
+                    },
+                    onNavigateToTeamCourses = { teamId ->
+                        backStack.add(AppRoute.TrackDetails)
                     }
                 )
             }

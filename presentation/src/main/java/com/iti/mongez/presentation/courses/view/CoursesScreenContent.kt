@@ -2,20 +2,36 @@ package com.iti.mongez.presentation.courses.view
 
 import android.graphics.Paint
 import android.util.Patterns
-import androidx.compose.animation.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -24,9 +40,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.iti.mongez.designsystem.components.dialog.AppConfirmationDialog
-import com.iti.mongez.designsystem.components.loading.AppShimmer
 import com.iti.mongez.designsystem.components.search.AppSearchBar
 import com.iti.mongez.designsystem.components.sheet.AppBottomSheet
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarContent
@@ -39,7 +53,6 @@ import com.iti.mongez.presentation.R
 import com.iti.mongez.presentation.coursedetails.components.CoursesShimmerLoading
 import com.iti.mongez.presentation.courses.components.AddCourseSheetContent
 import com.iti.mongez.presentation.courses.contract.CoursesIntent
-import com.iti.mongez.presentation.courses.components.CoursesList
 import com.iti.mongez.presentation.courses.uiState.CoursesState
 
 private fun Modifier.coursesActionShadow(
@@ -241,32 +254,32 @@ fun CoursesScreenContent(
     }
 }
 
-@Preview(showBackground = true)
+private val sampleCourses = listOf(
+    Course(
+        id = "1",
+        name = "Mobile Development",
+        courseCode = "CS402",
+        imageUrl = null,
+        startDate = "2023-10-01",
+        examDate = "2024-01-15",
+        hasMaterials = true,
+        completionPercentage = 65f
+    ),
+    Course(
+        id = "2",
+        name = "Web Security",
+        courseCode = "CS305",
+        imageUrl = null,
+        startDate = "2023-10-05",
+        examDate = "2024-01-20",
+        hasMaterials = false,
+        completionPercentage = 30f
+    )
+)
+
+@Preview(showBackground = true, name = "Courses Screen - Light")
 @Composable
 private fun CoursesScreenContentPreview() {
-    val sampleCourses = listOf(
-        Course(
-            id = "1",
-            name = "Mobile Development",
-            courseCode = "CS402",
-            imageUrl = null,
-            startDate = "2023-10-01",
-            examDate = "2024-01-15",
-            hasMaterials = true,
-            completionPercentage = 65f
-        ),
-        Course(
-            id = "2",
-            name = "Web Security",
-            courseCode = "CS305",
-            imageUrl = null,
-            startDate = "2023-10-05",
-            examDate = "2024-01-20",
-            hasMaterials = false,
-            completionPercentage = 30f
-        )
-    )
-
     MongezTheme {
         CoursesScreenContent(
             state = CoursesState(
@@ -282,105 +295,13 @@ private fun CoursesScreenContentPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+    name = "Courses Screen - Dark"
+)
 @Composable
 private fun CoursesScreenContentDarkPreview() {
-            courseCode = "CS101",
-            imageUrl = null, // Showing placeholder in preview
-            startDate = "2023-01-01",
-            examDate = "2023-06-01",
-            hasMaterials = true,
-            completionPercentage = 75f
-        ),
-        Course(
-            id = "2",
-            name = "Algorithms & Data Structures",
-            courseCode = "CS102",
-            imageUrl = null,
-            startDate = "2023-01-01",
-            examDate = "2023-06-01",
-            hasMaterials = false,
-            completionPercentage = 40f
-        )
-    )
-
-    val sampleState = CoursesState(
-        allCourses = sampleCourses,
-        filteredCourses = sampleCourses,
-        isLoading = false
-    )
-
-    MongezTheme {
-        Surface(color = Theme.colorScheme.surface.background) {
-            CoursesScreenContent(
-                state = sampleState,
-                innerPadding = PaddingValues(0.dp),
-                topSnackbarMessage = null,
-                topSnackbarType = AppSnackbarType.Success,
-                onIntent = {},
-                onCourseClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CoursesScreenContentDarkPreview() {
-    val sampleCourses = listOf(
-        Course(
-            id = "1",
-            name = "Mobile Development",
-            courseCode = "CS402",
-            imageUrl = null,
-            startDate = "2023-10-01",
-            examDate = "2024-01-15",
-            hasMaterials = true,
-            completionPercentage = 65f
-        ),
-        Course(
-            id = "2",
-            name = "Web Security",
-            courseCode = "CS305",
-            imageUrl = null,
-            startDate = "2023-10-05",
-            examDate = "2024-01-20",
-            hasMaterials = false,
-            completionPercentage = 30f
-        )
-    )
-
-    MongezTheme(darkTheme = true) {
-        CoursesScreenContent(
-            state = CoursesState(
-                allCourses = sampleCourses,
-                filteredCourses = sampleCourses
-            ),
-            innerPadding = PaddingValues(0.dp),
-            topSnackbarMessage = null,
-            topSnackbarType = AppSnackbarType.Info,
-            onIntent = {},
-            onCourseClick = {}
-        )
-            courseCode = "CS101",
-            imageUrl = null, // Showing placeholder in preview
-            startDate = "2023-01-01",
-            examDate = "2023-06-01",
-            hasMaterials = true,
-            completionPercentage = 75f
-        ),
-        Course(
-            id = "2",
-            name = "Algorithms & Data Structures",
-            courseCode = "CS102",
-            imageUrl = null,
-            startDate = "2023-01-01",
-            examDate = "2023-06-01",
-            hasMaterials = false,
-            completionPercentage = 40f
-        )
-    )
-
     val sampleState = CoursesState(
         allCourses = sampleCourses,
         filteredCourses = sampleCourses,
@@ -405,7 +326,10 @@ fun CoursesScreenContentDarkPreview() {
 @Composable
 fun CoursesShimmerLoadingPreview() {
     MongezTheme {
-        Surface(color = Theme.colorScheme.surface.background, modifier = Modifier.padding(Theme.spacing.lg)) {
+        Surface(
+            color = Theme.colorScheme.surface.background,
+            modifier = Modifier.padding(Theme.spacing.lg)
+        ) {
             CoursesShimmerLoading()
         }
     }
@@ -415,7 +339,10 @@ fun CoursesShimmerLoadingPreview() {
 @Composable
 fun CoursesShimmerLoadingDarkPreview() {
     MongezTheme(darkTheme = true) {
-        Surface(color = Theme.colorScheme.surface.background, modifier = Modifier.padding(Theme.spacing.lg)) {
+        Surface(
+            color = Theme.colorScheme.surface.background,
+            modifier = Modifier.padding(Theme.spacing.lg)
+        ) {
             CoursesShimmerLoading()
         }
     }

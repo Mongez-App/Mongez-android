@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -54,7 +53,7 @@ fun AppDocumentCard(
             .fillMaxWidth()
             .height(78.dp)
             .clip(shape)
-            .background(Theme.colorScheme.surface.surfaceVariant)
+            .background(Theme.colorScheme.surface.surface)
             .border(
                 width = 1.dp,
                 color = Theme.colorScheme.card.border,
