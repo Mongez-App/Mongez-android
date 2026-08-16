@@ -1,4 +1,4 @@
-package com.iti.mongez.designsystem.screens.dashboard
+package com.iti.mongez.designsystem.components.card
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
@@ -30,46 +31,18 @@ import com.iti.mongez.designsystem.R
 import com.iti.mongez.designsystem.theme.MongezTheme
 import com.iti.mongez.designsystem.theme.Theme
 
-/**
- * Defines the urgency of a task, mapped to semantic state colors.
- */
-enum class TaskPriority {
-    HIGH, MEDIUM, LOW
-}
+import androidx.compose.ui.graphics.Color
 
-
-/**
- * A reusable daily task card component with toggleable completion states.
- *
- * @param title The main task text (e.g., "Read Chapter 4").
- * @param duration The estimated time to complete the task.
- * @param priority The urgency level, which dictates the tag color.
- * @param isCompleted Whether the task checkmark is filled.
- * @param modifier Modifier to be applied to the layout.
- */
 @Composable
 fun AppTaskCard(
     title: String,
     duration: String,
-    priority: TaskPriority,
+    priorityTextRes: Int,
+    priorityColor: Color,
     isCompleted: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Dynamically map priority to your design system's state tokens
-    val priorityColor = when (priority) {
-        TaskPriority.HIGH -> Theme.colorScheme.state.error
-        TaskPriority.MEDIUM -> Theme.colorScheme.state.warning
-        TaskPriority.LOW -> Theme.colorScheme.state.success
-    }
-
-// Map Enum to String Resource
-    val priorityTextRes = when (priority) {
-        TaskPriority.HIGH -> R.string.priority_high
-        TaskPriority.MEDIUM -> R.string.priority_medium
-        TaskPriority.LOW -> R.string.priority_low
-    }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -86,8 +59,9 @@ fun AppTaskCard(
                 color = Theme.colorScheme.text.disabled,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable { onClick() }
-            .padding(16.dp), // 16px padding inside the card
+            .clickable(enabled = !isCompleted) { onClick() }
+            .padding(16.dp) // 16px padding inside the card
+            .then(if (isCompleted) Modifier.alpha(0.5f) else Modifier),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp) // 16px gap between check and text
     ) {
@@ -179,7 +153,8 @@ private fun AppTaskCardsListPreview() {
             AppTaskCard(
                 title = "Read Chapter 4",
                 duration = "45 min",
-                priority = TaskPriority.HIGH,
+                priorityTextRes = R.string.priority_high,
+                priorityColor = Theme.colorScheme.state.error,
                 isCompleted = true,
                 onClick = {}
             )
@@ -187,7 +162,8 @@ private fun AppTaskCardsListPreview() {
             AppTaskCard(
                 title = "Practice DFS Problems",
                 duration = "30 min",
-                priority = TaskPriority.MEDIUM,
+                priorityTextRes = R.string.priority_medium,
+                priorityColor = Theme.colorScheme.state.warning,
                 isCompleted = false,
                 onClick = {}
             )
@@ -195,7 +171,8 @@ private fun AppTaskCardsListPreview() {
             AppTaskCard(
                 title = "Finish Quiz",
                 duration = "20 min",
-                priority = TaskPriority.LOW,
+                priorityTextRes = R.string.priority_low,
+                priorityColor = Theme.colorScheme.state.success,
                 isCompleted = false,
                 onClick = {}
             )

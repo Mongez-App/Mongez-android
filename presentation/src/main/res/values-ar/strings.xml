@@ -282,6 +282,7 @@
         <string name="filter_medium">متوسط</string>
         <string name="filter_low">منخفض</string>
     <string name="label_course_url">رابط المقرر</string>
+    <string name="nav_organization">المنظمة</string>
     <string name="no_courses_dialog_title">لا توجد مقررات مضافة</string>
     <string name="no_courses_dialog_description">تحتاج إلى إضافة مقرر واحد على الأقل إلى خطتك الدراسية قبل أن تتمكن من تصفية خارطة الطريق أو إضافة أحداث.</string>
     <string name="courses">المقررات</string>

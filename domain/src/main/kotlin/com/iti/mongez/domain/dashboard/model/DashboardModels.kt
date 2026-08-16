@@ -24,6 +24,7 @@ data class DashboardMetrics(
 
 data class DashboardTask(
     val id: String,
+    val courseId: String,
     val title: String,
     val durationMinutes: Int,
     val priority: String, // "HIGH", "MEDIUM", "LOW"

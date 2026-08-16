@@ -7,6 +7,7 @@ import com.iti.mongez.data.dtos.coursesdtos.CourseMaterialDto
 import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.domain.courses.model.CourseCreationResult
 import com.iti.mongez.domain.courses.model.CourseMaterial
+import com.iti.mongez.domain.courses.model.CourseTask
 import java.time.Instant
 
 fun CourseDto.toDomain() = Course(
@@ -52,11 +53,16 @@ fun CourseMaterialDto.toDomain() = CourseMaterial(
     deviceFileUri = deviceFileUri
 )
 
-fun CourseTaskDto.toDomain() = com.iti.mongez.domain.courses.model.CourseTask(
+fun CourseTaskDto.toDomain() = CourseTask(
     id = this.id.orEmpty(),
+    courseId = this.courseId.orEmpty(),
     title = this.title.orEmpty(),
     durationMinutes = this.durationMinutes ?: 0,
-    priority = this.priority ?: "LOW",
+    priority = try {
+        com.iti.mongez.domain.core.model.TaskPriority.valueOf((this.priority ?: "LOW").uppercase())
+    } catch (e: Exception) {
+        com.iti.mongez.domain.core.model.TaskPriority.LOW
+    },
     isCompleted = this.completed ?: false,
     scheduledDate = this.scheduledDate.orEmpty()
 )

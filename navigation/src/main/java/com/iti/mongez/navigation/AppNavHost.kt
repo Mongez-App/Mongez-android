@@ -141,11 +141,11 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateToCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId))
                     },
+                    onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
+                    },
                     onNavigateToReadOnlyCourseDetails = { courseId ->
                         backStack.add(AppRoute.CourseDetails(courseId, allowEditing = false, showUploadMaterial = false))
-                    },
-                    onNavigateToStudyRoom = { taskId, title ->
-                        backStack.add(AppRoute.StudyRoom(taskId, title))
                     },
                     onNavigateToLogin = {
                         backStack.clear()
@@ -153,6 +153,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     },
                     onNavigateToAllTasks = { tasks ->
                         backStack.add(AppRoute.AllTasks(tasks))
+                    },
+                    onNavigateToTeamCourses = { teamId ->
+                        backStack.add(AppRoute.TrackDetails)
                     }
                 )
             }
@@ -181,17 +184,17 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateBack = {
                         backStack.remove(key)
                     },
-                    onNavigateToStudyRoom = { taskId, title ->
-                        backStack.add(AppRoute.StudyRoom(taskId, title))
-                    },
-                    allowEditing = key.allowEditing,
-                    showUploadMaterial = key.showUploadMaterial
+                    onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
+                        backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
+                    }
                 )
             }
             is AppRoute.StudyRoom -> NavEntry(key) {
                 StudyRoomScreen(
                     taskId = key.taskId,
                     title = key.title,
+                    courseId = key.courseId,
+                    durationMinutes = key.durationMinutes,
                     onNavigateBack = {
                         backStack.remove(key)
                     }
@@ -203,9 +206,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     onNavigateBack = {
                         backStack.remove(key)
                     },
-                    onNavigateToStudyRoom = { taskId, title ->
+                    onNavigateToStudyRoom = { taskId, title, courseId, durationMinutes ->
                         // Pass navigation to the Study Room directly from the All Tasks screen
-                        backStack.add(AppRoute.StudyRoom(taskId, title))
+                        backStack.add(AppRoute.StudyRoom(taskId, title, courseId, durationMinutes))
                     }
                 )
             }

@@ -31,7 +31,8 @@ class CoursesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCourseTasks(courseId: String): Result<List<com.iti.mongez.domain.courses.model.CourseTask>> = safeApi {
-        remoteDataSource.getCourseTasks(courseId).map { it.toDomain() }
+        val response = remoteDataSource.getCourseTasks(courseId)
+        response.data?.map { it.toDomain() } ?: emptyList()
     }
 
     override suspend fun createCourse(

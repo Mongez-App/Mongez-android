@@ -19,40 +19,43 @@ fun ProfileResponseDto.toDomain(): UserProfile {
     )
 }
 fun DashboardResponseDto.toDomain(): DashboardSummary {
-    return DashboardSummary(
-        welcomeMessage = this.welcomeMessage.orEmpty(),
-        focus = this.todayFocus?.takeIf { !it.courseName.isNullOrBlank() }?.let {
-            DashboardFocus(
-                courseId = it.courseId.orEmpty(),
-                courseName = it.courseName.orEmpty(),
-                allocatedDuration = it.allocatedDuration.orEmpty(),
-                durationMinutes = it.durationMinutes ?: 0
-            )
-        },
-        metrics = DashboardMetrics(
-            todayCompletedTasks = this.progressMetrics?.todayCompletedTasks ?: 0,
-            todayTotalTasks = this.progressMetrics?.todayTotalTasks ?: 0,
-            weeklyHoursCompleted = this.progressMetrics?.weeklyHoursCompleted ?: 0,
-            weeklyHoursGoal = this.progressMetrics?.weeklyHoursGoal ?: 0,
-            monthlyHoursCompleted = this.progressMetrics?.monthlyHoursCompleted ?: 0,
-            monthlyHoursGoal = this.progressMetrics?.monthlyHoursGoal ?: 0
-        ),
-        tasks = this.todayTasks?.map { it.toDomain() }.orEmpty(),
-        deadlines = this.upcomingDeadlines?.map { it.toDomain() }.orEmpty(),
-        streakDays = this.streak?.currentStreakDays ?: 0,
-        aiSuggestion = this.aiSuggestion?.text
-    )
-}
-
-fun TodayTaskDto.toDomain(): DashboardTask {
-    return DashboardTask(
-        id = this.taskId.orEmpty(),
-        title = this.title.orEmpty(),
-        durationMinutes = this.durationMinutes ?: 0,
-        priority = this.priority ?: "LOW",
-        isCompleted = this.isCompleted ?: false
-    )
-}
+        val fallbackCourseId = this.todayFocus?.courseId.orEmpty()
+        
+        return DashboardSummary(
+            welcomeMessage = this.welcomeMessage.orEmpty(),
+            focus = this.todayFocus?.takeIf { !it.courseName.isNullOrBlank() }?.let {
+                DashboardFocus(
+                    courseId = it.courseId.orEmpty(),
+                    courseName = it.courseName.orEmpty(),
+                    allocatedDuration = it.allocatedDuration.orEmpty(),
+                    durationMinutes = it.durationMinutes ?: 0
+                )
+            },
+            metrics = DashboardMetrics(
+                todayCompletedTasks = this.progressMetrics?.todayCompletedTasks ?: 0,
+                todayTotalTasks = this.progressMetrics?.todayTotalTasks ?: 0,
+                weeklyHoursCompleted = this.progressMetrics?.weeklyHoursCompleted ?: 0,
+                weeklyHoursGoal = this.progressMetrics?.weeklyHoursGoal ?: 0,
+                monthlyHoursCompleted = this.progressMetrics?.monthlyHoursCompleted ?: 0,
+                monthlyHoursGoal = this.progressMetrics?.monthlyHoursGoal ?: 0
+            ),
+            tasks = this.todayTasks?.map { it.toDomain(fallbackCourseId) }.orEmpty(),
+            deadlines = this.upcomingDeadlines?.map { it.toDomain() }.orEmpty(),
+            streakDays = this.streak?.currentStreakDays ?: 0,
+            aiSuggestion = this.aiSuggestion?.text
+        )
+    }
+    
+    fun TodayTaskDto.toDomain(fallbackCourseId: String): DashboardTask {
+        return DashboardTask(
+            id = this.taskId.orEmpty(),
+            courseId = this.courseId.takeIf { !it.isNullOrBlank() } ?: fallbackCourseId,
+            title = this.title.orEmpty(),
+            durationMinutes = this.durationMinutes ?: 0,
+            priority = this.priority ?: "LOW",
+            isCompleted = this.isCompleted ?: false
+        )
+    }
 
 fun UpcomingDeadlineDto.toDomain(): DashboardDeadline {
     return DashboardDeadline(

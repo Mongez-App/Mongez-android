@@ -2,8 +2,9 @@ package com.iti.mongez.presentation.dashboard
 
 import androidx.annotation.StringRes
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
-import com.iti.mongez.designsystem.screens.dashboard.TaskPriority
+
 import com.iti.mongez.presentation.R
+import com.iti.mongez.presentation.core.models.TaskItem
 
 data class FocusItem(
     val courseId: String,
@@ -11,13 +12,7 @@ data class FocusItem(
     val durationText: String
 )
 
-data class TaskItem(
-    val id: String,
-    val title: String,
-    val duration: String,
-    val priority: TaskPriority,
-    val isCompleted: Boolean
-)
+
 
 data class DeadlineItem(
     val id: String,

@@ -67,4 +67,10 @@ object NetworkModule {
     fun provideTasksApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.TasksApiService {
         return retrofit.create(com.iti.mongez.data.sources.remote.services.TasksApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideStudySessionApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.StudySessionApiService {
+        return retrofit.create(com.iti.mongez.data.sources.remote.services.StudySessionApiService::class.java)
+    }
 }

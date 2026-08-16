@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class CourseTaskDto(
     @SerializedName("id") val id: String?,
-    @SerializedName("user_id") val userId: String?,
-    @SerializedName("course_id") val courseId: String?,
+    @SerializedName("user_id", alternate = ["userId"]) val userId: String?,
+    @SerializedName("course_id", alternate = ["courseId"]) val courseId: String?,
     @SerializedName("title") val title: String?,
     @SerializedName("duration_minutes") val durationMinutes: Int?,
     @SerializedName("active_spent_time") val activeSpentTime: Int?,
