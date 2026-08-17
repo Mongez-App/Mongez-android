@@ -32,6 +32,8 @@ import com.iti.mongez.presentation.studyroom.contract.StudyRoomEffect
 import com.iti.mongez.presentation.studyroom.contract.StudyRoomIntent
 import com.iti.mongez.presentation.studyroom.uiState.StudyRoomState
 import com.iti.mongez.presentation.studyroom.viewmodel.StudyRoomViewModel
+import com.iti.mongez.presentation.studyroom.components.PauseSessionDialog
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import kotlinx.coroutines.flow.collectLatest
 
 data class ChatMessage(val text: String, val isUser: Boolean)
@@ -64,7 +66,7 @@ fun StudyRoomScreen(
     }
 
     BackHandler {
-        viewModel.handleIntent(StudyRoomIntent.ShowEndSessionDialog(true))
+        viewModel.handleIntent(StudyRoomIntent.ShowPauseSessionDialog(true))
     }
 
     StudyRoomContent(
@@ -80,8 +82,8 @@ fun StudyRoomContent(
     snackbarHostState: SnackbarHostState,
     onIntent: (StudyRoomIntent) -> Unit
 ) {
-    val minutes = (state.timeRemaining / 60).toString().padStart(2, '0')
-    val seconds = (state.timeRemaining % 60).toString().padStart(2, '0')
+    val minutes = (state.elapsedTimeSeconds / 60).toString().padStart(2, '0')
+    val seconds = (state.elapsedTimeSeconds % 60).toString().padStart(2, '0')
     val timeString = "$minutes:$seconds"
 
     Scaffold(
@@ -147,6 +149,18 @@ fun StudyRoomContent(
                     .padding(horizontal = Theme.spacing.lg, vertical = Theme.spacing.lg),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Back Button
+                IconButton(
+                    onClick = { onIntent(StudyRoomIntent.ShowPauseSessionDialog(true)) },
+                    modifier = Modifier.padding(end = Theme.spacing.sm)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Theme.colorScheme.text.primary
+                    )
+                }
+
                 Text(
                     text = state.title.ifEmpty { "Loading..." },
                     style = Theme.typography.headline.medium.copy(fontWeight = FontWeight.Bold),
@@ -280,7 +294,15 @@ fun StudyRoomContent(
     if (state.showEndSessionDialog) {
         EndSessionDialog(
             onDismiss = { onIntent(StudyRoomIntent.ShowEndSessionDialog(false)) },
-            onEndSession = { onIntent(StudyRoomIntent.EndSession(state.timeRemaining == 0)) }
+            onEndSession = { onIntent(StudyRoomIntent.EndSession(true)) }
+        )
+    }
+
+    // Pause Session Alert Dialog
+    if (state.showPauseSessionDialog) {
+        PauseSessionDialog(
+            onDismiss = { onIntent(StudyRoomIntent.ShowPauseSessionDialog(false)) },
+            onPauseSession = { onIntent(StudyRoomIntent.PauseSession) }
         )
     }
 }
