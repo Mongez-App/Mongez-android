@@ -1,11 +1,15 @@
 package com.iti.mongez.data.mapper
 
 import com.iti.mongez.data.dtos.organizationdtos.DiscoverTeamsResponseDto
+import com.iti.mongez.data.dtos.organizationdtos.TeamCourseDto
 import com.iti.mongez.data.dtos.organizationdtos.TeamDto
+import com.iti.mongez.data.dtos.organizationdtos.TeamEventDto
 import com.iti.mongez.data.dtos.organizationdtos.TrendingTeamDto
 import com.iti.mongez.data.dtos.organizationdtos.PendingInvitationDto
+import com.iti.mongez.domain.courses.model.Course
 import com.iti.mongez.domain.organization.model.DiscoverTeams
 import com.iti.mongez.domain.organization.model.Team
+import com.iti.mongez.domain.organization.model.TeamEvent
 import com.iti.mongez.domain.organization.model.TrendingTeam
 
 fun TeamDto.toDomain(): Team {
@@ -64,5 +68,31 @@ fun com.iti.mongez.data.dtos.organizationdtos.JoinTeamResponseDto.toDomain(): co
         message = message,
         error = error,
         details = details
+    )
+}
+
+fun TeamCourseDto.toDomain(): Course {
+    return Course(
+        id = courseId.orEmpty(),
+        name = name.orEmpty(),
+        courseCode = courseCode.orEmpty(),
+        imageUrl = courseImageUrl,
+        startDate = startDate.orEmpty(),
+        examDate = endDate.orEmpty(),
+        hasMaterials = false,
+        completionPercentage = completionPercentage ?: 0f,
+        isHidden = false,
+        courseType = "STANDARD",
+        materialUrl = null
+    )
+}
+
+fun TeamEventDto.toDomain(): TeamEvent {
+    return TeamEvent(
+        id = eventId.orEmpty(),
+        courseName = courseName.orEmpty(),
+        eventType = eventType.orEmpty(),
+        dueText = dueText.orEmpty(),
+        eventDate = eventDate.orEmpty()
     )
 }

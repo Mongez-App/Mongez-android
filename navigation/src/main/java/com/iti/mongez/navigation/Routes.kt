@@ -17,5 +17,5 @@ sealed interface AppRoute {
     object Profile : AppRoute
     data class StudyRoom(val taskId: String, val title: String, val courseId: String, val durationMinutes: Int) : AppRoute
     data class AllTasks(val tasks: List<TaskItem>) : AppRoute
-    object TrackDetails : AppRoute
+    data class TrackDetails(val teamId: String) : AppRoute
 }

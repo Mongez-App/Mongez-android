@@ -155,7 +155,7 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                         backStack.add(AppRoute.AllTasks(tasks))
                     },
                     onNavigateToTeamCourses = { teamId ->
-                        backStack.add(AppRoute.TrackDetails)
+                        backStack.add(AppRoute.TrackDetails(teamId))
                     }
                 )
             }
@@ -212,8 +212,9 @@ fun AppNavHost(viewModel: NavViewModel = hiltViewModel()) {
                     }
                 )
             }
-            is AppRoute.TrackDetails -> NavEntry(AppRoute.TrackDetails) {
+            is AppRoute.TrackDetails -> NavEntry(key) {
                 TrackDetailsScreen(
+                    teamId = key.teamId,
                     onNavigateBack = {
                         backStack.remove(key)
                     },

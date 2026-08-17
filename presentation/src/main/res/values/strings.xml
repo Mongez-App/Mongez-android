@@ -297,5 +297,6 @@
     <string name="search_courses">Search courses</string>
     <string name="no_courses_found">No courses found</string>
     <string name="no_events_found">No events found</string>
+    <string name="team_courses_title">Team Courses</string>
 
 </resources>
