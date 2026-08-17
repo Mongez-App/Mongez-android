@@ -86,7 +86,7 @@ class StudyRoomViewModel @Inject constructor(
                         when (val result = sendChatMessageUseCase(taskId, currentInput)) {
                             is Result.Success -> {
                                 val newMessages = result.data.map { ChatMessage(it.content, it.role == ChatRole.USER) }
-                                _state.update { it.copy(messages = newMessages) }
+                                _state.update { it.copy(messages = it.messages + newMessages) }
                             }
                             is Result.Failure -> {
                                 _effect.emit(StudyRoomEffect.ShowSnackbar(result.exception.message ?: "Failed to send message"))
@@ -176,12 +176,12 @@ class StudyRoomViewModel @Inject constructor(
                     if (updateResult is Result.Failure) {
                         android.util.Log.e("STUDY_ROOM_DEBUG", "updateTaskSpentTimeUseCase failed!", updateResult.exception)
                         _effect.emit(StudyRoomEffect.ShowSnackbar("Task updated failed: ${updateResult.exception.message}"))
-                        delay(3500) // Wait for user to read error
+                        delay(3500.milliseconds) // Wait for user to read error
                     } else {
                         android.util.Log.d("STUDY_ROOM_DEBUG", "updateTaskSpentTimeUseCase succeeded!")
                         result.data.alertMessage?.let { msg ->
                             _effect.emit(StudyRoomEffect.ShowSnackbar(msg))
-                            delay(2500)
+                            delay(2500.milliseconds)
                         }
                         _effect.emit(StudyRoomEffect.NavigateBack)
                     }
