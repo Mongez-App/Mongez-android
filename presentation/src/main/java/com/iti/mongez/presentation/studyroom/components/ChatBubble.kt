@@ -60,7 +60,9 @@ fun ChatBubble(text: String, isUser: Boolean, isTyping: Boolean = false) {
                     },
                     update = { textView ->
                         val markwon = Markwon.builder(textView.context)
-                            .usePlugin(JLatexMathPlugin.create(textView.textSize))
+                            .usePlugin(JLatexMathPlugin.create(textView.textSize) { builder ->
+                                builder.inlinesEnabled(true)
+                            })
                             .build()
                         markwon.setMarkdown(textView, text)
                     }

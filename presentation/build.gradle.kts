@@ -38,4 +38,7 @@ dependencies {
     implementation(libs.androidx.credentials.play)
     implementation(libs.google.id)
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+    
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.ext.latex)
 }
