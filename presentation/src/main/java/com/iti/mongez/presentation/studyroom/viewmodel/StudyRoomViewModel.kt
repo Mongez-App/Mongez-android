@@ -79,19 +79,23 @@ class StudyRoomViewModel @Inject constructor(
                     _state.update { 
                         it.copy(
                             messages = it.messages + ChatMessage(currentInput, true),
-                            inputText = ""
+                            inputText = "",
+                            isAiTyping = true
                         )
                     }
                     viewModelScope.launch {
                         when (val result = sendChatMessageUseCase(taskId, currentInput)) {
                             is Result.Success -> {
                                 val newMessages = result.data.map { ChatMessage(it.content, it.role == ChatRole.USER) }
-                                _state.update { it.copy(messages = it.messages + newMessages) }
+                                _state.update { it.copy(messages = it.messages + newMessages, isAiTyping = false) }
                             }
                             is Result.Failure -> {
+                                _state.update { it.copy(isAiTyping = false) }
                                 _effect.emit(StudyRoomEffect.ShowSnackbar(result.exception.message ?: "Failed to send message"))
                             }
-                            else -> {}
+                            else -> {
+                                _state.update { it.copy(isAiTyping = false) }
+                            }
                         }
                     }
                 }

@@ -262,6 +262,16 @@ fun StudyRoomContent(
                         isUser = msg.isUser
                     )
                 }
+                
+                if (state.isAiTyping) {
+                    item {
+                        ChatBubble(
+                            text = "",
+                            isUser = false,
+                            isTyping = true
+                        )
+                    }
+                }
             }
         }
     }
