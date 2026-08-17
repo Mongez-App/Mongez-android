@@ -13,5 +13,6 @@ data class StudyRoomState(
     val showEndSessionDialog: Boolean = false,
     val inputText: String = "",
     val isLoading: Boolean = false,
-    val messages: List<ChatMessage> = emptyList()
+    val messages: List<ChatMessage> = emptyList(),
+    val isAiTyping: Boolean = false
 )
