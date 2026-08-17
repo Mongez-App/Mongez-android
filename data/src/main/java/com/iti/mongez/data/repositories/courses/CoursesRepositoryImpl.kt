@@ -89,22 +89,37 @@ class CoursesRepositoryImpl @Inject constructor(
             fileSizeBytes = fileSizeBytes,
             pageCount = pageCount,
             deviceFileUri = deviceFileUri
-        )
-        val metadataResponse = remoteDataSource.createMaterialMetadata(courseId, metadataRequest)
+        ) //[cite: 18, 20]
+        val metadataResponse = remoteDataSource.createMaterialMetadata(courseId, metadataRequest) //[cite: 18]
 
         val materialId = metadataResponse.materialId
-            ?: throw IllegalStateException("Material ID was not returned by the server.")
+            ?: throw IllegalStateException("Material ID was not returned by the server.") //[cite: 18]
+
+        // EXTRACT THE UPLOAD URL
+        val uploadUrl = metadataResponse.uploadUrl
+            ?: throw IllegalStateException("Upload URL was not returned by the server.") //[cite: 21]
 
         // Step 2: Upload actual file binary
-        val mediaType = MediaType.parse(contentType) ?: MediaType.parse("application/octet-stream")
-        val requestBody = RequestBody.create(mediaType, fileBytes)
-        val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody)
+        val mediaType = MediaType.parse(contentType) ?: MediaType.parse("application/octet-stream") //[cite: 18]
+        val requestBody = RequestBody.create(mediaType, fileBytes) //[cite: 18]
+        val multipartBody = MultipartBody.Part.createFormData("file", fileName, requestBody) //[cite: 18]
 
-        val uploadResult = remoteDataSource.uploadMaterialFile(materialId, multipartBody)
+        // USE THE URL AND ADD EXPLICIT ERROR HANDLING
+        val uploadResult = try {
+            remoteDataSource.uploadMaterialFile(uploadUrl, multipartBody)
+        } catch (e: Exception) {
+            android.util.Log.e("UploadError", "Step 2 Failed: ${e.message}", e) // ADD THIS LINE
+            throw IllegalStateException("Metadata uploaded successfully, but the actual file failed to upload: ${e.message}")
+        }
+
+        // Validate the server status from the second response (matches "PROCESSING" from Postman)
+        if (uploadResult.status != "PROCESSING") { //[cite: 19]
+            throw IllegalStateException("File upload failed on server. Status: ${uploadResult.status}")
+        }
 
         CourseActionResponse(
             data = Unit,
-            alert = uploadResult.message?.let { Alert(it) }
+            alert = uploadResult.message?.let { Alert(it) } //[cite: 18, 19]
         )
     }
 

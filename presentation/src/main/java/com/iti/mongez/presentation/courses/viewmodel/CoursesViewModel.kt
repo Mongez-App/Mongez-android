@@ -143,6 +143,7 @@ class CoursesViewModel @Inject constructor(
 
                     _state.update { it.copy(isAddCourseSheetVisible = false) }
 
+                    // ... inside createCourse ...
                     if (intent.materials.isNotEmpty()) {
                         _effect.emit(CoursesEffect.ShowSnackbar("Course created. Uploading materials...", AppSnackbarType.Info))
 
@@ -151,7 +152,8 @@ class CoursesViewModel @Inject constructor(
                             val fileInfo = uri.getFileInfo(context)
                             val fileBytes = uri.readBytes(context)
 
-                            if (fileBytes != null) {
+                            // ADD isNotEmpty() VALIDATION HERE
+                            if (fileBytes != null && fileBytes.isNotEmpty()) {
                                 val uploadResult = uploadCourseMaterialUseCase(
                                     courseId = courseId,
                                     fileName = fileInfo.name,
@@ -164,6 +166,10 @@ class CoursesViewModel @Inject constructor(
                                 if (uploadResult is Result.Failure) {
                                     uploadError = true
                                 }
+                            } else {
+                                // Fails cleanly if the Android OS cannot read the file from the URI
+                                uploadError = true
+                                _effect.emit(CoursesEffect.ShowSnackbar("Could not read file: ${fileInfo.name}. Please select it from a different folder.", AppSnackbarType.Error))
                             }
                         }
 
@@ -171,10 +177,6 @@ class CoursesViewModel @Inject constructor(
                             _effect.emit(CoursesEffect.ShowSnackbar("Some materials failed to upload.", AppSnackbarType.Error))
                         } else {
                             _effect.emit(CoursesEffect.ShowSnackbar("Course and materials uploaded successfully!", AppSnackbarType.Success))
-                        }
-                    } else {
-                        creationResult.alertMessage?.let { alert ->
-                            _effect.emit(CoursesEffect.ShowSnackbar(message = alert, type = AppSnackbarType.Success))
                         }
                     }
 
