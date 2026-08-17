@@ -69,6 +69,9 @@ class RegisterViewModel @Inject constructor(
         if (currentState.password.isBlank()) {
             _state.update { it.copy(passwordError = "Password is required") }
             hasError = true
+        } else if (currentState.password.length < 8) {
+            _state.update { it.copy(passwordError = "Password must be at least 8 characters") }
+            hasError = true
         }
         if (currentState.password != currentState.confirmPassword) {
             _state.update { it.copy(confirmPasswordError = "Passwords do not match") }

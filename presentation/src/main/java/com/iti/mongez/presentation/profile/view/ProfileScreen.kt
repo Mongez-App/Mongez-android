@@ -70,11 +70,13 @@ fun ProfileScreen(
         viewModel.processIntent(ProfileIntent.LoadProfile)
     }
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ProfileEffect.NavigateToLogin -> onNavigateToLogin()
-                is ProfileEffect.ShowError -> onShowSnackBar(effect.message)
+                is ProfileEffect.ShowError -> onShowSnackBar(effect.message.asString(context))
             }
         }
     }

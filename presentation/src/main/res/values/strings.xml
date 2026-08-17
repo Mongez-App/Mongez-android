@@ -55,6 +55,7 @@
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_google_sign_up">Google Sign-Up not implemented yet</string>
 
+
     <!-- Preferences Setup -->
     <string name="preferences_step_of_3">Step %d of 3</string>
     <string name="preferences_study_hours_title">How many hours would you study daily ?</string>
