@@ -7,6 +7,8 @@ sealed interface StudyRoomIntent {
     object SendMessage : StudyRoomIntent
     data class ShowEndSessionDialog(val show: Boolean) : StudyRoomIntent
     data class EndSession(val isCompleted: Boolean) : StudyRoomIntent
+    data class ShowPauseSessionDialog(val show: Boolean) : StudyRoomIntent
+    object PauseSession : StudyRoomIntent
 }
 
 sealed interface StudyRoomEffect {

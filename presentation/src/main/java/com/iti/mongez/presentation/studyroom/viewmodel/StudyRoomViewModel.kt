@@ -56,7 +56,7 @@ class StudyRoomViewModel @Inject constructor(
                             taskId = intent.taskId,
                             title = intent.title,
                             courseId = intent.courseId,
-                            timeRemaining = durationSeconds,
+                            elapsedTimeSeconds = 0,
                             totalDurationSeconds = durationSeconds,
                             messages = emptyList(),
                             sessionId = null,
@@ -106,6 +106,13 @@ class StudyRoomViewModel @Inject constructor(
             is StudyRoomIntent.EndSession -> {
                 _state.update { it.copy(showEndSessionDialog = false, isPaused = true) }
                 endSession(intent.isCompleted)
+            }
+            is StudyRoomIntent.ShowPauseSessionDialog -> {
+                _state.update { it.copy(showPauseSessionDialog = intent.show, isPaused = intent.show) }
+            }
+            is StudyRoomIntent.PauseSession -> {
+                _state.update { it.copy(showPauseSessionDialog = false, isPaused = true) }
+                endSession(isCompleted = false)
             }
         }
     }
@@ -167,7 +174,7 @@ class StudyRoomViewModel @Inject constructor(
                     android.util.Log.d("STUDY_ROOM_DEBUG", "endSessionUseCase succeeded!")
                     _state.update { it.copy(isLoading = false) }
                     
-                    val activeSpentTime = (_state.value.totalDurationSeconds - _state.value.timeRemaining) / 60
+                    val activeSpentTime = _state.value.elapsedTimeSeconds / 60
                     android.util.Log.d("STUDY_ROOM_DEBUG", "Calling updateTaskSpentTimeUseCase. taskId: ${_state.value.taskId}, taskCompleted: $isCompleted, activeSpentTimeMinutes: $activeSpentTime")
                     
                     // Also update the task itself
@@ -209,13 +216,8 @@ class StudyRoomViewModel @Inject constructor(
             while (true) {
                 delay(1000L.milliseconds)
                 val currentState = _state.value
-                if (!currentState.isPaused && currentState.timeRemaining > 0) {
-                    val newTime = currentState.timeRemaining - 1
-                    if (newTime <= 0) {
-                        _state.update { it.copy(timeRemaining = 0, showEndSessionDialog = true, isPaused = true) }
-                    } else {
-                        _state.update { it.copy(timeRemaining = newTime) }
-                    }
+                if (!currentState.isPaused) {
+                    _state.update { it.copy(elapsedTimeSeconds = it.elapsedTimeSeconds + 1) }
                 }
             }
         }
