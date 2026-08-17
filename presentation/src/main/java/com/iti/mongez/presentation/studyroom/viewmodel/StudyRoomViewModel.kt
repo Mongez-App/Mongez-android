@@ -86,7 +86,9 @@ class StudyRoomViewModel @Inject constructor(
                     viewModelScope.launch {
                         when (val result = sendChatMessageUseCase(taskId, currentInput)) {
                             is Result.Success -> {
-                                val newMessages = result.data.map { ChatMessage(it.content, it.role == ChatRole.USER) }
+                                val newMessages = result.data
+                                    .filter { it.role != ChatRole.USER }
+                                    .map { ChatMessage(it.content, false) }
                                 _state.update { it.copy(messages = it.messages + newMessages, isAiTyping = false) }
                             }
                             is Result.Failure -> {
