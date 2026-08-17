@@ -44,9 +44,9 @@ interface CoursesApiService {
 
     // Step 2: Upload file binary (Multipart)
     @Multipart
-    @POST("upload/{material_id}")
+    @POST
     suspend fun uploadMaterialFile(
-        @Path("material_id") materialId: String,
+        @Url url: String, // Accepts the dynamic upload_url
         @Part file: MultipartBody.Part
     ): FileUploadResponseDto
 

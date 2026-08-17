@@ -255,6 +255,14 @@ class CourseDetailsViewModel @Inject constructor(
         fileBytes: ByteArray,
         deviceFileUri: String?
     ) {
+        // ADD THIS GUARDRAIL
+        if (fileBytes.isEmpty()) {
+            viewModelScope.launch {
+                _effect.emit(CourseDetailsEffect.ShowSnackbar("Error: File is empty or cannot be read from the device.", AppSnackbarType.Error))
+            }
+            return
+        }
+
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
