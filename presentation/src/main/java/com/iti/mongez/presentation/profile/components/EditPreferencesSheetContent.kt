@@ -93,7 +93,8 @@ fun EditPreferencesSheetContent(
                 onClick = onSave,
                 variant = AppButtonVariant.Primary,
                 modifier = Modifier.weight(1f),
-                isLoading = isLoading
+                isLoading = isLoading,
+                enabled = selectedDays.isNotEmpty()
             )
         }
     }

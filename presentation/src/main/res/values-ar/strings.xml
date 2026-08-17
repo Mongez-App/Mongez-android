@@ -55,6 +55,7 @@
     <string name="error_registration_failed">فشل إنشاء الحساب</string>
     <string name="error_google_sign_up">التسجيل بـ Google غير مدعوم حاليًا</string>
 
+
     <!-- Preferences Setup -->
     <string name="preferences_step_of_3">الخطوة %d من 3</string>
     <string name="preferences_study_hours_title">كم ساعة تود أن تدرس يومياً ؟</string>

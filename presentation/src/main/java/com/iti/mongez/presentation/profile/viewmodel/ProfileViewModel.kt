@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.iti.mongez.presentation.profile.contract.ProfileEffect
 import com.iti.mongez.presentation.profile.contract.ProfileIntent
 import com.iti.mongez.presentation.profile.uiState.ProfileViewState
+import com.iti.mongez.presentation.utils.UiText
 import com.iti.mongez.domain.settings.model.AppSettings
 import com.iti.mongez.domain.settings.model.Language
 import com.iti.mongez.domain.settings.usecase.GetAppSettingsUseCase
@@ -174,7 +175,7 @@ class ProfileViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _viewState.update { it.copy(isLoading = false) }
-                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Failed to load preferences"))
+                    _effect.emit(ProfileEffect.ShowError(UiText.DynamicString(result.exception.message ?: "Failed to load preferences")))
                 }
                 is Result.Loading -> {}
             }
@@ -210,7 +211,7 @@ class ProfileViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _viewState.update { it.copy(isLoading = false) }
-                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Failed to save preferences"))
+                    _effect.emit(ProfileEffect.ShowError(UiText.DynamicString(result.exception.message ?: "Failed to save preferences")))
                 }
                 is Result.Loading -> {}
             }
@@ -311,7 +312,7 @@ class ProfileViewModel @Inject constructor(
                 }
                 is Result.Failure -> {
                     _viewState.update { it.copy(isLoading = false) }
-                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Update failed"))
+                    _effect.emit(ProfileEffect.ShowError(UiText.DynamicString(result.exception.message ?: "Update failed")))
                 }
                 is Result.Loading -> {}
             }
@@ -336,7 +337,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
                 is Result.Failure -> {
-                    _effect.emit(ProfileEffect.ShowError(result.exception.message ?: "Failed to update calendar sync"))
+                    _effect.emit(ProfileEffect.ShowError(UiText.DynamicString(result.exception.message ?: "Failed to update calendar sync")))
                 }
                 is Result.Loading -> {}
             }
@@ -364,13 +365,13 @@ class ProfileViewModel @Inject constructor(
                             }
                         }
                         is Result.Failure -> {
-                            _effect.emit(ProfileEffect.ShowError(statusResult.exception.message ?: "Failed to update sync status"))
+                            _effect.emit(ProfileEffect.ShowError(UiText.DynamicString(statusResult.exception.message ?: "Failed to update sync status")))
                         }
                         is Result.Loading -> {}
                     }
                 }
                 is Result.Failure -> {
-                    _effect.emit(ProfileEffect.ShowError(syncResult.exception.message ?: "Sync failed"))
+                    _effect.emit(ProfileEffect.ShowError(UiText.DynamicString(syncResult.exception.message ?: "Sync failed")))
                 }
                 is Result.Loading -> {}
             }
