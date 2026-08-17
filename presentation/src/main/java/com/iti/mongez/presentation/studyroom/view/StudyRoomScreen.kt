@@ -108,6 +108,7 @@ fun StudyRoomContent(
                     value = state.inputText,
                     onValueChange = { onIntent(StudyRoomIntent.UpdateInputText(it)) },
                     modifier = Modifier.weight(1f),
+                    enabled = !state.isPaused,
                     placeholder = { Text("Ask your AI tutor", color = Theme.colorScheme.text.tertiary) },
                     shape = RoundedCornerShape(Theme.radius.md),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -117,6 +118,7 @@ fun StudyRoomContent(
                 )
                 IconButton(
                     onClick = { onIntent(StudyRoomIntent.SendMessage) },
+                    enabled = !state.isPaused,
                     modifier = Modifier
                         .size(Theme.spacing.huge)
                         .clip(CircleShape)
