@@ -16,6 +16,11 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
+        
+        if (originalRequest.url().host().contains("cloudinary.com")) {
+            return chain.proceed(originalRequest)
+        }
+
         val requestBuilder = originalRequest.newBuilder()
 
         // 1. Fetch token directly from Firebase (handles refresh automatically)
