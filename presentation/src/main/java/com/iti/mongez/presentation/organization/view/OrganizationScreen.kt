@@ -23,6 +23,20 @@ import com.iti.mongez.presentation.organization.viewmodel.OrganizationViewModel
 import androidx.compose.ui.text.font.FontWeight
 import com.iti.mongez.designsystem.components.search.AppSearchBar
 import com.iti.mongez.presentation.organization.components.DiscoverTeamCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import com.iti.mongez.presentation.organization.components.DiscoverTeamBottomSheet
+import com.iti.mongez.presentation.organization.contract.OrganizationIntent
+import com.iti.mongez.presentation.organization.uiState.JoinTeamState
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+
+private data class SelectedDiscoverTeam(
+    val teamName: String,
+    val organizationName: String,
+    val imageUrl: String?,
+    val status: String?
+)
 
 @Composable
 fun OrganizationScreen(
@@ -31,7 +45,25 @@ fun OrganizationScreen(
     onNavigateToTeamCourses: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val joinTeamState by viewModel.joinTeamState.collectAsState()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var selectedTeamForJoin by remember { mutableStateOf<SelectedDiscoverTeam?>(null) }
+    val context = LocalContext.current
+
+    LaunchedEffect(joinTeamState) {
+        when (joinTeamState) {
+            is JoinTeamState.Success -> {
+                Toast.makeText(context, (joinTeamState as JoinTeamState.Success).message, Toast.LENGTH_SHORT).show()
+                selectedTeamForJoin = null
+                viewModel.handleIntent(OrganizationIntent.ResetJoinTeamState)
+            }
+            is JoinTeamState.Error -> {
+                Toast.makeText(context, (joinTeamState as JoinTeamState.Error).message, Toast.LENGTH_SHORT).show()
+                viewModel.handleIntent(OrganizationIntent.ResetJoinTeamState)
+            }
+            else -> {}
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -40,6 +72,28 @@ fun OrganizationScreen(
             .padding(horizontal = Theme.spacing.md)
     ) {
         Spacer(modifier = Modifier.height(Theme.spacing.md))
+        
+        @OptIn(ExperimentalMaterial3Api::class)
+        if (selectedTeamForJoin != null) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    selectedTeamForJoin = null
+                    viewModel.handleIntent(OrganizationIntent.ResetJoinTeamState)
+                },
+                containerColor = Theme.colorScheme.surface.background
+            ) {
+                DiscoverTeamBottomSheet(
+                    teamName = selectedTeamForJoin!!.teamName,
+                    organizationName = selectedTeamForJoin!!.organizationName,
+                    imageUrl = selectedTeamForJoin!!.imageUrl,
+                    status = selectedTeamForJoin!!.status,
+                    isLoading = joinTeamState is JoinTeamState.Loading,
+                    onJoinClick = { inviteCode ->
+                        viewModel.handleIntent(OrganizationIntent.JoinTeam(inviteCode))
+                    }
+                )
+            }
+        }
         
         Text(
             text = stringResource(com.iti.mongez.presentation.R.string.nav_organization),
@@ -156,7 +210,14 @@ fun OrganizationScreen(
                                         organizationName = invitation.organizationName,
                                         imageUrl = invitation.imageUrl,
                                         appliedDate = invitation.appliedDate,
-                                        onClick = { },
+                                        onClick = {
+                                            selectedTeamForJoin = SelectedDiscoverTeam(
+                                                teamName = invitation.name,
+                                                organizationName = invitation.organizationName,
+                                                imageUrl = invitation.imageUrl,
+                                                status = "Pending"
+                                            )
+                                        },
                                         modifier = Modifier.animateItem()
                                     )
                                 }
@@ -180,7 +241,14 @@ fun OrganizationScreen(
                                         teamName = team.name,
                                         organizationName = team.organizationName ?: "Unknown Organization",
                                         imageUrl = team.imageUrl,
-                                        onClick = { },
+                                        onClick = {
+                                            selectedTeamForJoin = SelectedDiscoverTeam(
+                                                teamName = team.name,
+                                                organizationName = team.organizationName ?: "Unknown Organization",
+                                                imageUrl = team.imageUrl,
+                                                status = team.status
+                                            )
+                                        },
                                         modifier = Modifier.animateItem()
                                     )
                                 }

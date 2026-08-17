@@ -7,4 +7,5 @@ import com.iti.mongez.domain.organization.model.Team
 interface OrganizationRepository {
     suspend fun getMyTeams(): Result<List<Team>>
     suspend fun getDiscoverTeams(): Result<DiscoverTeams>
+    suspend fun joinTeam(inviteCode: String): Result<com.iti.mongez.domain.organization.model.JoinTeamResponse>
 }

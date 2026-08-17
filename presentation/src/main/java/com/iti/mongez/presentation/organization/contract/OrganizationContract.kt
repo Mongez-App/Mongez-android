@@ -5,6 +5,8 @@ import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
 sealed interface OrganizationIntent {
     object LoadData : OrganizationIntent
     data class Refresh(val showLoading: Boolean = false) : OrganizationIntent
+    data class JoinTeam(val inviteCode: String) : OrganizationIntent
+    object ResetJoinTeamState : OrganizationIntent
 }
 
 sealed interface OrganizationEffect {

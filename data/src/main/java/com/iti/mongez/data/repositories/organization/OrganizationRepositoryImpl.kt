@@ -16,13 +16,21 @@ class OrganizationRepositoryImpl @Inject constructor(
     override suspend fun getMyTeams(): Result<List<Team>> {
         return safeApi {
             val response = remoteDataSource.getTeams()
-            response.teams.map { it.toDomain() }
+            response.map { it.toDomain() }
         }
     }
 
     override suspend fun getDiscoverTeams(): Result<DiscoverTeams> {
         return safeApi {
             val response = remoteDataSource.getDiscoverTeams()
+            response.toDomain()
+        }
+    }
+
+    override suspend fun joinTeam(inviteCode: String): Result<com.iti.mongez.domain.organization.model.JoinTeamResponse> {
+        return safeApi {
+            val request = com.iti.mongez.data.dtos.organizationdtos.JoinTeamRequestDto(inviteCode)
+            val response = remoteDataSource.joinTeam(request)
             response.toDomain()
         }
     }

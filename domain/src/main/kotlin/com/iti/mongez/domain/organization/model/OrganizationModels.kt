@@ -29,3 +29,20 @@ data class DiscoverTeams(
     val pendingInvitations: List<PendingInvitation>,
     val trendingTeams: List<TrendingTeam>
 )
+
+data class JoinTeamData(
+    val orgId: String?,
+    val orgName: String?,
+    val teamId: String?,
+    val teamName: String?,
+    val status: String?,
+    val message: String?
+)
+
+data class JoinTeamResponse(
+    val success: Boolean,
+    val data: JoinTeamData?,
+    val message: String?,
+    val error: String?,
+    val details: String?
+)
