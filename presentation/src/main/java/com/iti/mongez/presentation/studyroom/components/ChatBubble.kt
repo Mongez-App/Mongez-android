@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import io.noties.markwon.Markwon
 import io.noties.markwon.ext.latex.JLatexMathPlugin
+import io.noties.markwon.inlineparser.MarkwonInlineParserPlugin
 
 @Composable
 fun ChatBubble(text: String, isUser: Boolean, isTyping: Boolean = false) {
@@ -60,6 +61,23 @@ fun ChatBubble(text: String, isUser: Boolean, isTyping: Boolean = false) {
                     },
                     update = { textView ->
                         val markwon = Markwon.builder(textView.context)
+                            .usePlugin(io.noties.markwon.inlineparser.MarkwonInlineParserPlugin.create())
+                            .usePlugin(object : io.noties.markwon.AbstractMarkwonPlugin() {
+                                override fun configure(registry: io.noties.markwon.MarkwonPlugin.Registry) {
+                                    registry.require(io.noties.markwon.inlineparser.MarkwonInlineParserPlugin::class.java)
+                                        .factoryBuilder()
+                                        .addInlineProcessor(object : io.noties.markwon.inlineparser.InlineProcessor() {
+                                            private val pattern = java.util.regex.Pattern.compile("\\$(?!\\$)([\\s\\S]+?)(?<!\\\\)\\$")
+                                            override fun specialCharacter(): Char = '$'
+                                            override fun parse(): org.commonmark.node.Node? {
+                                                val match = match(pattern) ?: return null
+                                                val node = io.noties.markwon.ext.latex.JLatexMathNode()
+                                                node.latex(match.substring(1, match.length - 1))
+                                                return node
+                                            }
+                                        })
+                                }
+                            })
                             .usePlugin(JLatexMathPlugin.create(textView.textSize) { builder ->
                                 builder.inlinesEnabled(true)
                             })
