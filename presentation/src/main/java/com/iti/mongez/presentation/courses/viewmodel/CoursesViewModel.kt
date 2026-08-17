@@ -1,6 +1,7 @@
 package com.iti.mongez.presentation.courses.viewmodel
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.mongez.designsystem.components.snackbar.AppSnackbarType
@@ -11,6 +12,7 @@ import com.iti.mongez.domain.courses.usecase.CreateCourseUseCase
 import com.iti.mongez.domain.courses.usecase.DeleteCourseUseCase
 import com.iti.mongez.domain.courses.usecase.GetCoursesUseCase
 import com.iti.mongez.domain.courses.usecase.UploadCourseMaterialUseCase
+import com.iti.mongez.domain.core.usecase.UploadImageUseCase
 import com.iti.mongez.presentation.courses.contract.CoursesEffect
 import com.iti.mongez.presentation.courses.contract.CoursesIntent
 import com.iti.mongez.presentation.courses.uiState.CoursesState
@@ -28,7 +30,8 @@ class CoursesViewModel @Inject constructor(
     private val getCoursesUseCase: GetCoursesUseCase,
     private val createCourseUseCase: CreateCourseUseCase,
     private val deleteCourseUseCase: DeleteCourseUseCase,
-    private val uploadCourseMaterialUseCase: UploadCourseMaterialUseCase
+    private val uploadCourseMaterialUseCase: UploadCourseMaterialUseCase,
+    private val uploadImageUseCase: UploadImageUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CoursesState())
@@ -126,10 +129,34 @@ class CoursesViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isCreatingCourse = true) }
 
+            var finalImageUrl = intent.imageUrl
+
+            if (finalImageUrl.startsWith("content://") || finalImageUrl.startsWith("file://")) {
+                _effect.emit(CoursesEffect.ShowSnackbar("Uploading image...", AppSnackbarType.Info))
+                val imageUri = Uri.parse(finalImageUrl)
+                val imageBytes = imageUri.readBytes(context)
+
+                if (imageBytes != null && imageBytes.isNotEmpty()) {
+                    when (val uploadResult = uploadImageUseCase(imageBytes)) {
+                        is Result.Success -> {
+                            finalImageUrl = uploadResult.data
+                        }
+                        is Result.Failure -> {
+                            _effect.emit(CoursesEffect.ShowSnackbar("Image upload failed. Proceeding without image.", AppSnackbarType.Error))
+                            finalImageUrl = ""
+                        }
+                        else -> {}
+                    }
+                } else {
+                    _effect.emit(CoursesEffect.ShowSnackbar("Failed to read image from device.", AppSnackbarType.Error))
+                    finalImageUrl = ""
+                }
+            }
+
             val result = createCourseUseCase(
                 name = intent.name,
                 courseCode = intent.courseCode,
-                imageUrl = intent.imageUrl,
+                imageUrl = finalImageUrl,
                 startDate = intent.startDate,
                 examDate = intent.examDate,
                 courseType = intent.courseType,
@@ -143,7 +170,6 @@ class CoursesViewModel @Inject constructor(
 
                     _state.update { it.copy(isAddCourseSheetVisible = false) }
 
-                    // ... inside createCourse ...
                     if (intent.materials.isNotEmpty()) {
                         _effect.emit(CoursesEffect.ShowSnackbar("Course created. Uploading materials...", AppSnackbarType.Info))
 
@@ -152,7 +178,6 @@ class CoursesViewModel @Inject constructor(
                             val fileInfo = uri.getFileInfo(context)
                             val fileBytes = uri.readBytes(context)
 
-                            // ADD isNotEmpty() VALIDATION HERE
                             if (fileBytes != null && fileBytes.isNotEmpty()) {
                                 val uploadResult = uploadCourseMaterialUseCase(
                                     courseId = courseId,
@@ -167,7 +192,6 @@ class CoursesViewModel @Inject constructor(
                                     uploadError = true
                                 }
                             } else {
-                                // Fails cleanly if the Android OS cannot read the file from the URI
                                 uploadError = true
                                 _effect.emit(CoursesEffect.ShowSnackbar("Could not read file: ${fileInfo.name}. Please select it from a different folder.", AppSnackbarType.Error))
                             }
@@ -177,6 +201,10 @@ class CoursesViewModel @Inject constructor(
                             _effect.emit(CoursesEffect.ShowSnackbar("Some materials failed to upload.", AppSnackbarType.Error))
                         } else {
                             _effect.emit(CoursesEffect.ShowSnackbar("Course and materials uploaded successfully!", AppSnackbarType.Success))
+                        }
+                    } else {
+                        creationResult.alertMessage?.let { alert ->
+                            _effect.emit(CoursesEffect.ShowSnackbar(message = alert, type = AppSnackbarType.Success))
                         }
                     }
 

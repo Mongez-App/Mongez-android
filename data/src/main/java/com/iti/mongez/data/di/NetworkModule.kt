@@ -3,6 +3,7 @@ package com.iti.mongez.data.di
 import com.iti.mongez.data.BuildConfig
 import com.iti.mongez.data.core.network.AuthInterceptor
 import com.iti.mongez.data.sources.remote.services.ApiService
+import com.iti.mongez.data.sources.remote.services.CloudinaryApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,5 +73,11 @@ object NetworkModule {
     @Singleton
     fun provideStudySessionApiService(retrofit: Retrofit) : com.iti.mongez.data.sources.remote.services.StudySessionApiService {
         return retrofit.create(com.iti.mongez.data.sources.remote.services.StudySessionApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCloudinaryApiService(retrofit: Retrofit): CloudinaryApiService {
+        return retrofit.create(CloudinaryApiService::class.java)
     }
 }

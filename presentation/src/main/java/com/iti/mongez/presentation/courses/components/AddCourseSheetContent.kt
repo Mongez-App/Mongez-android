@@ -270,15 +270,15 @@ fun AddCourseSheetContent(
         AppButton(
             text = stringResource(R.string.button_add_course),
             onClick = {
-                val mockedImageUrl = if (coverImageUri != null && !isOnlineCourse) {
-                    "https://www.dreamstime.com/photos-images/course-word.html"
+                val imageUrlToUpload = if (coverImageUri != null && !isOnlineCourse) {
+                    coverImageUri.toString()
                 } else {
                     ""
                 }
                 onAddCourse(
                     courseName,
                     courseCode,
-                    mockedImageUrl,
+                    imageUrlToUpload,
                     startDateIso,
                     examDateIso,
                     if (!isOnlineCourse) selectedFiles else emptyList(),
