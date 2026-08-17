@@ -19,6 +19,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 @HiltViewModel
 class OrganizationViewModel @Inject constructor(
@@ -35,6 +38,8 @@ class OrganizationViewModel @Inject constructor(
 
     private val _effect = MutableSharedFlow<OrganizationEffect>()
     val effect: SharedFlow<OrganizationEffect> = _effect.asSharedFlow()
+
+    private var pollingJob: Job? = null
 
     init {
         handleIntent(OrganizationIntent.LoadData)
@@ -104,5 +109,22 @@ class OrganizationViewModel @Inject constructor(
                 onLoading = {}
             )
         }
+    }
+
+    fun startPolling(intervalMs: Long = 5000L) {
+        if (pollingJob?.isActive == true) return
+        pollingJob = viewModelScope.launch {
+            while (isActive) {
+                delay(intervalMs)
+                if (_state.value !is OrganizationUiState.Loading) {
+                    loadData(showLoading = false)
+                }
+            }
+        }
+    }
+
+    fun stopPolling() {
+        pollingJob?.cancel()
+        pollingJob = null
     }
 }

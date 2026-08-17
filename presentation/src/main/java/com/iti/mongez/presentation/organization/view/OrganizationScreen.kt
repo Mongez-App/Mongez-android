@@ -50,6 +50,21 @@ fun OrganizationScreen(
     var selectedTeamForJoin by remember { mutableStateOf<SelectedDiscoverTeam?>(null) }
     val context = LocalContext.current
 
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                viewModel.startPolling()
+            } else if (event == androidx.lifecycle.Lifecycle.Event.ON_PAUSE) {
+                viewModel.stopPolling()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            viewModel.stopPolling()
+        }
+    }
     LaunchedEffect(joinTeamState) {
         when (joinTeamState) {
             is JoinTeamState.Success -> {
