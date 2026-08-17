@@ -14,8 +14,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.iti.mongez.designsystem.theme.Theme
 
+import android.widget.TextView
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.viewinterop.AndroidView
+import io.noties.markwon.Markwon
+import io.noties.markwon.ext.latex.JLatexMathPlugin
+import io.noties.markwon.inlineparser.MarkwonInlineParserPlugin
+
 @Composable
 fun ChatBubble(text: String, isUser: Boolean, isTyping: Boolean = false) {
+    val textColor = Theme.colorScheme.text.primary.toArgb()
+    val textSizeSp = Theme.typography.body.medium.fontSize.value
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
@@ -35,12 +45,46 @@ fun ChatBubble(text: String, isUser: Boolean, isTyping: Boolean = false) {
                 )
                 .background(
                     if (isUser) Theme.colorScheme.brand.primary.copy(alpha = 0.5f)
-                    else Theme.colorScheme.surface.surfaceHigh
+                    else Theme.colorScheme.surface.surfaceContainer
                 )
                 .padding(Theme.spacing.md)
         ) {
             if (isTyping) {
                 TypingIndicator()
+            } else if (!isUser) {
+                AndroidView(
+                    factory = { context ->
+                        TextView(context).apply {
+                            setTextColor(textColor)
+                            textSize = textSizeSp
+                        }
+                    },
+                    update = { textView ->
+                        val markwon = Markwon.builder(textView.context)
+                            .usePlugin(io.noties.markwon.inlineparser.MarkwonInlineParserPlugin.create())
+                            .usePlugin(object : io.noties.markwon.AbstractMarkwonPlugin() {
+                                override fun configure(registry: io.noties.markwon.MarkwonPlugin.Registry) {
+                                    registry.require(io.noties.markwon.inlineparser.MarkwonInlineParserPlugin::class.java)
+                                        .factoryBuilder()
+                                        .addInlineProcessor(object : io.noties.markwon.inlineparser.InlineProcessor() {
+                                            private val pattern = java.util.regex.Pattern.compile("\\$(?!\\$)([\\s\\S]+?)(?<!\\\\)\\$")
+                                            override fun specialCharacter(): Char = '$'
+                                            override fun parse(): org.commonmark.node.Node? {
+                                                val match = match(pattern) ?: return null
+                                                val node = io.noties.markwon.ext.latex.JLatexMathNode()
+                                                node.latex(match.substring(1, match.length - 1))
+                                                return node
+                                            }
+                                        })
+                                }
+                            })
+                            .usePlugin(JLatexMathPlugin.create(textView.textSize) { builder ->
+                                builder.inlinesEnabled(true)
+                            })
+                            .build()
+                        markwon.setMarkdown(textView, text)
+                    }
+                )
             } else {
                 Text(
                     text = text,
