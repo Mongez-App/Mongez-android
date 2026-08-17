@@ -8,7 +8,6 @@ import com.iti.mongez.data.sources.local.TokenManager
 import com.iti.mongez.data.sources.remote.interfaces.AuthRemoteDataSource
 import com.iti.mongez.data.network.safeApi
 import com.iti.mongez.data.sources.remote.FirebaseAuthDataSource
-import com.iti.mongez.data.sources.remote.interfaces.UserRemoteDataSource
 import com.iti.mongez.domain.auth.model.User
 import com.iti.mongez.domain.auth.repository.AuthRepository
 import com.iti.mongez.domain.core.Result
@@ -22,7 +21,6 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuthDataSource: FirebaseAuthDataSource,
     private val authRemoteDataSource: AuthRemoteDataSource,
-    private val userRemoteDataSource: UserRemoteDataSource,
     private val tokenManager: TokenManager,
     private val userDao: UserDao,
     private val appSettingsRepository: AppSettingsRepository
@@ -54,10 +52,7 @@ class AuthRepositoryImpl @Inject constructor(
             tokenManager.saveToken(firebaseToken)
             println("Firebase Token : $firebaseToken")
             
-            val profile = userRemoteDataSource.getFullUserProfile()
-            val request = buildHandshakeRequest(profile.name)
-            
-            val response = authRemoteDataSource.handshake(request)
+            val response = authRemoteDataSource.getUserProfile()
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
@@ -86,9 +81,7 @@ class AuthRepositoryImpl @Inject constructor(
             val firebaseToken = firebaseAuthDataSource.signInWithGoogleCredential(idToken)
             tokenManager.saveToken(firebaseToken)
 
-            val request = buildHandshakeRequest()
-
-            val response = authRemoteDataSource.handshake(request)
+            val response = authRemoteDataSource.getUserProfile()
             val user = response.toDomain()
             userDao.insertUser(user.toEntity())
             user
