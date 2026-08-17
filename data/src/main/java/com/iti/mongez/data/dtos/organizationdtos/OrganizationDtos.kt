@@ -56,3 +56,23 @@ data class JoinTeamResponseDto(
     @SerializedName("error") val error: String?,
     @SerializedName("details") val details: String?
 )
+
+data class TeamCourseDto(
+    @SerializedName("course_id") val courseId: String?,
+    @SerializedName("team_id") val teamId: String?,
+    @SerializedName("user_id") val userId: String?,
+    @SerializedName("name") val name: String?,
+    @SerializedName("course_code") val courseCode: String?,
+    @SerializedName("start_date") val startDate: String?,
+    @SerializedName("end_date") val endDate: String?,
+    @SerializedName("course_image_url") val courseImageUrl: String?,
+    @SerializedName("completion_percentage") val completionPercentage: Float?
+)
+
+data class TeamEventDto(
+    @SerializedName("event_id") val eventId: String?,
+    @SerializedName("course_name") val courseName: String?,
+    @SerializedName("event_type") val eventType: String?,
+    @SerializedName("due_text") val dueText: String?,
+    @SerializedName("event_date") val eventDate: String?
+)

@@ -46,3 +46,11 @@ data class JoinTeamResponse(
     val error: String?,
     val details: String?
 )
+
+data class TeamEvent(
+    val id: String,
+    val courseName: String,
+    val eventType: String,
+    val dueText: String,
+    val eventDate: String
+)
