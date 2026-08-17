@@ -41,6 +41,20 @@ private fun Throwable.toDomainException(): AppException {
     return when (this) {
 
         // --- Firebase Auth Exceptions ---
+        // Account already exists with the same email
+        is FirebaseAuthUserCollisionException ->
+            AuthException.EmailAlreadyInUse()
+
+        // Account doesn't exist or has been disabled/deleted
+        is FirebaseAuthInvalidUserException ->
+            AuthException.UserNotFound()
+
+        // Password too short/weak during registration
+        // NOTE: Must be checked BEFORE FirebaseAuthInvalidCredentialsException
+        // because it is a subclass of it.
+        is FirebaseAuthWeakPasswordException ->
+            AuthException.WeakPassword()
+
         // Wrong password OR malformed email — Firebase uses the same exception class,
         // so we inspect the errorCode to give the user a more precise message.
         is FirebaseAuthInvalidCredentialsException -> {
@@ -50,18 +64,6 @@ private fun Throwable.toDomainException(): AppException {
                 AuthException.InvalidCredentials()
             }
         }
-
-        // Account doesn't exist or has been disabled/deleted
-        is FirebaseAuthInvalidUserException ->
-            AuthException.UserNotFound()
-
-        // Account already exists with the same email
-        is FirebaseAuthUserCollisionException ->
-            AuthException.EmailAlreadyInUse()
-
-        // Password too short/weak during registration
-        is FirebaseAuthWeakPasswordException ->
-            AuthException.WeakPassword()
 
         // Firebase-level network failure (e.g. no DNS)
         is FirebaseNetworkException ->
